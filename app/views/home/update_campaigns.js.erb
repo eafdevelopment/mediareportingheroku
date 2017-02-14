@@ -1,0 +1,5 @@
+<% if @campaigns.any? %>
+
+  $("#campaigns_select").empty().append("<%= escape_javascript(render(:partial => @campaigns)) %>")
+
+<% end %>

@@ -1,7 +1,19 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+dmu = Client.find_or_create_by(name: 'DMU')
+christies = Client.find_or_create_by(name: 'Christies')
+dmu.save!
+christies.save!
+
+sample_dmu_campaigns = ['DMU Campaign 1', 'DMU Campaign 2', 'DMU Campaign 3']
+sample_christies_campaigns = ['Christies 1', 'Christies 2', 'Christies 3']
+
+sample_dmu_campaigns.each do |c|
+  campaign = Campaign.find_or_create_by(name: c)
+  campaign.client = Client.find_by(name: 'DMU')
+  campaign.save!
+end
+
+sample_christies_campaigns.each do |c|
+  campaign = Campaign.find_or_create_by(name: c)
+  campaign.client = Client.find_by(name: 'Christies')
+  campaign.save!
+end

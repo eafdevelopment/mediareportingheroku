@@ -15,5 +15,6 @@
 //= require foundation
 
 // Our own JS files required below
+//= require home
 
 $(function(){ $(document).foundation(); });
