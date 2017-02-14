@@ -1,0 +1,15 @@
+.row
+  .small-12.columns
+    %h2 Report Search
+    = form_tag (reports_path), method: "get" do
+      = label_tag "Client"
+      = select_tag "client", options_for_select(['DMU']), prompt: 'Select client'
+      = label_tag "Campaign"
+      = select_tag "campaign", options_for_select(['A'], ['B']), prompt: 'Select client campaign'
+      = label_tag "Channel"
+      = select_tag "channel", options_for_select(['Facebook']), prompt: 'Select channel'
+      = label_tag "Date From"
+      = date_field_tag "date_from"
+      = label_tag "Date To"
+      = date_field_tag "date_to"
+      = submit_tag "Submit", class: "button small"
