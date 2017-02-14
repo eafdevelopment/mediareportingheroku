@@ -1,6 +1,6 @@
 .row
-  .small-12.columns
-    %h2 Report Search
+  .small-12.columns.homeForm
+    %h3 Report Search
     = form_tag (reports_path), method: "get" do
       = label_tag "Client"
       = select_tag "client", options_for_select(['DMU']), prompt: 'Select client'

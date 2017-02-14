@@ -9,4 +9,13 @@
     = javascript_include_tag "application"
     = csrf_meta_tags
   %body
+    .top-bar
+      .top-bar-title
+        = link_to root_path do
+          = image_tag('eight&four_logo.png')
+      %div
+        .top-bar-right
+          %ul.menu
+            %li
+              %a{href: '/'} Home
     = yield
