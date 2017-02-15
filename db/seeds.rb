@@ -3,6 +3,10 @@ christies = Client.find_or_create_by(name: 'Christies')
 dmu.save!
 christies.save!
 
+facebook = ClientChannel.find_or_create_by(type: 'Facebook')
+facebook.update(client: dmu) #, authentication: { access_key: "hello" })
+facebook.save!
+
 sample_dmu_campaigns = ['DMU Campaign 1', 'DMU Campaign 2', 'DMU Campaign 3']
 sample_christies_campaigns = ['Christies 1', 'Christies 2', 'Christies 3']
 
