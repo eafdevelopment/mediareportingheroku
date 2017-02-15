@@ -27,6 +27,8 @@ gem 'haml-rails', '~> 0.9.0'
 gem 'foreman', '~> 0.83.0'
 # Config variables
 gem 'yappconfig', '~> 0.3.1'
+# Facebook Marketing API integration
+gem 'facebook_ads', '~> 0.1'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
