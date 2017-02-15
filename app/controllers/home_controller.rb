@@ -3,6 +3,7 @@ class HomeController < ApplicationController
   def index
     @clients = Client.all.order(name: :desc)
     @campaigns = Campaign.all.order(name: :desc)
+    @channels = ClientChannel.all
   end
 
   def update_campaigns
