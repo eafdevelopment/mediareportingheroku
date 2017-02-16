@@ -1,0 +1,12 @@
+.row
+  .small-12.columns
+    = form_for @campaign, url: {action: "create"} do |f|
+      - if @campaign.errors.any?
+        %ul
+          - @campaign.errors.full_messages.each do |msg|
+            %li= msg
+      = f.label :client
+      = f.select :client, options_for_select(@clients.collect { |c| [c.name, c.id] })
+      = f.label :campaign_name
+      = f.text_field :name
+      = f.submit "Add Campaign", class: 'button small'
