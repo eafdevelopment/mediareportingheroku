@@ -7,7 +7,7 @@ dmu_1.client_channels.create({
 })
 # DMU Leicester Castle on Google Analytics
 dmu_1.client_channels.create({
-  type: "ClientChannels::Google",
+  type: "ClientChannels::GoogleAnalytics",
   uid: ""
 })
 
@@ -19,7 +19,7 @@ dmu_2.client_channels.create({
   uid: "act_1406179109678952"
 })
 # DMU International on Google Analytics
-dmu_1.client_channels.create({
-  type: "ClientChannels::Google",
-  uid: ""
+dmu_2.client_channels.create({
+  type: "ClientChannels::GoogleAnalytics",
+  uid: "110182207"
 })
