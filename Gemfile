@@ -29,6 +29,10 @@ gem 'foreman', '~> 0.83.0'
 gem 'yappconfig', '~> 0.3.1'
 # Facebook Marketing API integration
 gem 'facebook_ads', '~> 0.1'
+# Google's official Ruby client library for oauth2
+gem 'googleauth'
+# Google Analytics API integration
+gem 'google-api-client', '~> 0.9'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

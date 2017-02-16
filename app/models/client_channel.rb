@@ -6,7 +6,7 @@ class ClientChannel < ApplicationRecord
 
   # Validations
 
-
+  validates_uniqueness_of :uid
 
   # Methods
 
