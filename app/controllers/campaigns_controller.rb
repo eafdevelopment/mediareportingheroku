@@ -12,11 +12,10 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.new(campaign_params)
     @campaign.client = @client
     if @campaign.save
-      # Add the campaign channels
-      # client_channel = @client.client_channels.find_by(type: params[:campaign][:channel])
-      
+      # Save the campaign channels here
       redirect_to clients_path
     else
+      flash[:notice] = "There was a problem creating the campaign"
       redirect_to :back
       # render :new
     end
