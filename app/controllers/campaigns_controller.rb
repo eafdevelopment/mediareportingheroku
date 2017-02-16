@@ -1,20 +1,24 @@
 class CampaignsController < ApplicationController
 
-  before_action :find_client, only: :create
+  before_action :find_client, only: :new
 
   def new
-    @clients = Client.all
     @campaign = Campaign.new
+    @client_channels = @client.client_channels.all
   end
 
   def create
+    # Create the campaign
     @campaign = Campaign.new(campaign_params)
     @campaign.client = @client
     if @campaign.save
+      # Add the campaign channels
+      # client_channel = @client.client_channels.find_by(type: params[:campaign][:channel])
+      
       redirect_to clients_path
     else
-      @clients = Client.all
-      render :new
+      redirect_to :back
+      # render :new
     end
   end
 
@@ -25,6 +29,6 @@ class CampaignsController < ApplicationController
   end
 
   def find_client
-    @client = Client.find(params[:campaign][:client])
+    @client = Client.find(params[:client])
   end
 end

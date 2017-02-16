@@ -1,12 +1,20 @@
 .row
   .small-12.columns
-    = form_for @campaign, url: {action: "create"} do |f|
+    %h4 New Campaign for #{@client.name}
+    = form_for @campaign, url: {action: "create"} do |campaign_form|
       - if @campaign.errors.any?
         %ul
           - @campaign.errors.full_messages.each do |msg|
             %li= msg
-      = f.label :client
-      = f.select :client, options_for_select(@clients.collect { |c| [c.name, c.id] })
-      = f.label :campaign_name
-      = f.text_field :name
-      = f.submit "Add Campaign", class: 'button small'
+      = campaign_form.label :campaign_name
+      = campaign_form.text_field :name
+
+      - @client_channels.each do |client_channel|
+        %h4 Campaign on #{name(client_channel)} ?
+        
+        = campaign_form.fields_for :campaign_channels do |campaign_channel|
+          = campaign_channel.label "Unique ID"
+          = campaign_channel.hidden_field :client_channel_id, value: client_channel.id
+          = campaign_channel.text_field :uid
+
+      = campaign_form.submit "Add Campaign", class: 'button small'
