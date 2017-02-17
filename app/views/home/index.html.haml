@@ -7,7 +7,7 @@
       = label_tag "Campaign"
       = select_tag :campaign, options_for_select(@campaigns.collect { |campaign| [campaign.name.titleize, campaign.id] }, 0), prompt: 'Select client campaign', id: 'campaigns_select'
       = label_tag "Channel"
-      = select_tag :channel, options_for_select(['Facebook']), prompt: 'Select channel'
+      = select_tag :channel, options_for_select([['Facebook', 'ClientChannels::Facebook'],['Google Analytics', 'ClientChannels::GoogleAnalytics']]), prompt: 'Select channel'
       = label_tag "Date From"
       = date_field_tag :date_from, Date.yesterday.strftime('%Y-%m-%d')
       = label_tag "Date To"
