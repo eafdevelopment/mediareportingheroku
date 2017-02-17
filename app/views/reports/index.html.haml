@@ -18,13 +18,9 @@
           %td= params[:date_to]
 
     %h4 Your results...
-    %table
-      %tr
-        %th Adset ID
-        %th Ad ID
-        %th Impressions
-      - @insights.each do |insight|
+    - if @results.any?
+      %table
         %tr
-          %td= insight.adset_id
-          %td= insight.ad_id
-          %td= insight.impressions
+          %th Adset ID
+          %th Ad ID
+          %th Impressions
