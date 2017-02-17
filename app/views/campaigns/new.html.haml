@@ -12,11 +12,8 @@
 
       = campaign_form.fields_for :campaign_channels do |f|
         %h4 Campaign on #{name(f.object.client_channel)} ?
-        = check_box_tag :using_channel, 1, nil, id: name(f.object.client_channel), class: 'channelCheckbox'
-
-        .uidSections{id: uid_field(f.object.client_channel)}
-          = f.label "Unique ID"
-          = f.hidden_field :client_channel_id, value: f.object.client_channel.id
-          = f.text_field :uid
+        = f.label "Unique ID"
+        = f.hidden_field :client_channel_id, value: f.object.client_channel.id
+        = f.text_field :uid
 
       = campaign_form.submit "Add Campaign", class: 'button small'
