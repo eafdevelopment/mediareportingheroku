@@ -1,0 +1,5 @@
+<% if @campaign_channels.any? %>
+  
+  $("#channel").empty().append("<%= escape_javascript(render(:partial => @campaign_channels)) %>")
+
+<% end %>
