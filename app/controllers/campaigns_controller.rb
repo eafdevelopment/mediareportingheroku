@@ -1,20 +1,12 @@
 class CampaignsController < ApplicationController
 
-  before_action :find_client, only: :new
+  before_action :find_client
 
   def new
     @campaign = Campaign.new
     @client_channels = @client.client_channels.all
-
-    # @campaign_channels = []
-    # 5.times do
-    #   @kennel << CampaignChannel.new
-    # end
-
-
-    @channels = Hash.new
-    @client_channels.each do |channel|     
-      @channels[channel] = CampaignChannel.new
+    @client_channels.each do |client_channel|
+      @campaign.campaign_channels.build(client_channel: client_channel)
     end
   end
 
@@ -26,9 +18,7 @@ class CampaignsController < ApplicationController
       # Save the campaign channels here
       redirect_to clients_path
     else
-      flash[:notice] = "There was a problem creating the campaign"
-      redirect_to :back
-      # render :new
+      render :new
     end
   end
 
@@ -39,6 +29,6 @@ class CampaignsController < ApplicationController
   end
 
   def find_client
-    @client = Client.find(params[:client])
+    @client = Client.find(params[:client_id])
   end
 end
