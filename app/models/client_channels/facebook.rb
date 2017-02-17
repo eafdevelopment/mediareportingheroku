@@ -17,7 +17,7 @@ class ClientChannels::Facebook < ClientChannel
     # Find and return Insights for a Facebook account & campaign
     # parameters = { campaign_id: 'xyz', fromDate: '', startDate: '' }
     FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
-    ad_campaign = FacebookAds::AdCampaign.find(params[:campaign_id])
+    ad_campaign = FacebookAds::AdCampaign.find(params[:uid])
     insights = ad_campaign.ad_insights
   end
 
