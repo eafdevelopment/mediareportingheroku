@@ -14,6 +14,7 @@ class ClientChannels::Facebook < ClientChannel
   # end
 
   def fetch_metrics(params)
+    puts "\n> params: " + params.inspect
     # Find and return Insights for a Facebook account & campaign
     # params = { uid: '6063884630694', fromDate: '', startDate: '' }
     FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
