@@ -9,7 +9,7 @@
       = label_tag "Channel"
       = select_tag :channel, options_for_select(['Facebook']), prompt: 'Select channel'
       = label_tag "Date From"
-      = date_field_tag :date_from
+      = date_field_tag :date_from, Date.yesterday.strftime('%Y-%m-%d')
       = label_tag "Date To"
-      = date_field_tag :date_to
+      = date_field_tag :date_to, Date.yesterday.strftime('%Y-%m-%d')
       = submit_tag "Submit", class: "button small homeForm-submit"
