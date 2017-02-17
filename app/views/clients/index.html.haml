@@ -10,7 +10,6 @@
           - client.campaigns.each do |campaign|
             .callout
               %p= campaign.name
-
               %ul
                 - campaign.campaign_channels.each do |campaign_channel|
                   %li
@@ -18,6 +17,7 @@
                       = name(campaign_channel.client_channel)
                     UID:
                     = campaign_channel.uid
+              = link_to 'Edit Campaign', edit_client_campaign_path(client, campaign)
 
         - else
           No campaigns added yet

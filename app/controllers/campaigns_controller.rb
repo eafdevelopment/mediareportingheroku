@@ -15,11 +15,21 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.new(campaign_params)
     @campaign.client = @client
     if @campaign.save
-      # Save the campaign channels here
       redirect_to clients_path
     else
       render :new
     end
+  end
+
+  def edit
+    @campaign = Campaign.find(params[:id])
+    @client_channels = @client.client_channels.all
+  end
+
+  def destroy
+    campaign = Campaign.find(params[:id])
+    campaign.destroy!
+    redirect_to clients_path
   end
 
   private

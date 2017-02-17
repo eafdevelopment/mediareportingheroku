@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170216154401) do
+ActiveRecord::Schema.define(version: 20170217123938) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,11 +24,10 @@ ActiveRecord::Schema.define(version: 20170216154401) do
   end
 
   create_table "campaigns", force: :cascade do |t|
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string   "name"
     t.integer  "client_id"
-    t.string   "facebook_campaign_id"
   end
 
   create_table "client_channels", force: :cascade do |t|
