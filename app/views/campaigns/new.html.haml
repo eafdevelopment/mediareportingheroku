@@ -1,8 +1,7 @@
-.row
+.row.addCampaign
   .small-12.columns
-    %h4 New Campaign for #{@client.name}
-
-    = form_for @campaign, url: {action: "create"} do |campaign_form|
+    %h3.eight-header.addCampaign-header Add Campaign
+    = form_for @campaign, url: {action: "create"} do |f|
       - if @campaign.errors.any?
         %ul
           - @campaign.errors.full_messages.each do |msg|
