@@ -1,0 +1,14 @@
+.row.clients
+  .small-12.columns
+    = link_to "+ New Campaign", new_campaign_path, class: 'button small top-bar-button'
+
+.row
+  .small-12.columns
+    - @clients.each do |client|
+      %h4.clients-header= client.name
+      %ul
+        - if client.campaigns.length != 0
+          - client.campaigns.each do |campaign|
+            %li.clients-name= campaign.name
+        - else
+          %li.clients-name No campaigns added yet 

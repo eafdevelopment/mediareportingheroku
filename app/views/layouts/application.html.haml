@@ -11,12 +11,12 @@
     = favicon_link_tag "favicon.png"
   %body
     .top-bar
-      .top-bar-title
+      .top-bar-title.small-6.columns
         = link_to root_path do
           = image_tag('eight&four_logo.png')
-      %div
-        .top-bar-right
+      .small-6-columns
+        .top-bar-right#client-button
           %ul.menu
             %li
-              %a{href: '/'} Home
+              = link_to "Clients", clients_path, class: 'top-bar-button'
     = yield

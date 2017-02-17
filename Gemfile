@@ -11,8 +11,6 @@ gem 'puma', '~> 3.0'
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
-# Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.2'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
@@ -27,10 +25,17 @@ gem 'haml-rails', '~> 0.9.0'
 gem 'foreman', '~> 0.83.0'
 # Config variables
 gem 'yappconfig', '~> 0.3.1'
+# Facebook Marketing API integration
+gem 'facebook_ads', '~> 0.1'
+# Google's official Ruby client library for oauth2
+gem 'googleauth'
+# Google Analytics API integration
+gem 'google-api-client', '~> 0.9'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
+  gem 'dotenv-rails'
 end
 
 group :development do

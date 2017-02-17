@@ -16,3 +16,15 @@
           %td= params[:channel]
           %td= params[:date_from]
           %td= params[:date_to]
+
+    %h4 Your results...
+    %table
+      %tr
+        %th Adset ID
+        %th Ad ID
+        %th Impressions
+      - @insights.each do |insight|
+        %tr
+          %td= insight.adset_id
+          %td= insight.ad_id
+          %td= insight.impressions

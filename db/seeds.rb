@@ -1,19 +1,25 @@
-dmu = Client.find_or_create_by(name: 'DMU')
-christies = Client.find_or_create_by(name: 'Christies')
-dmu.save!
-christies.save!
+# Create DMU Leicester Castle
+dmu_1 = Client.find_or_create_by(name: "DMU Leicester Castle Business School")
+# DMU Leicester Castle on Facebook
+dmu_1.client_channels.create({
+  type: "ClientChannels::Facebook",
+  uid: "act_1376049629358567"
+})
+# DMU Leicester Castle on Google Analytics
+dmu_1.client_channels.create({
+  type: "ClientChannels::GoogleAnalytics",
+  uid: ""
+})
 
-sample_dmu_campaigns = ['DMU Campaign 1', 'DMU Campaign 2', 'DMU Campaign 3']
-sample_christies_campaigns = ['Christies 1', 'Christies 2', 'Christies 3']
-
-sample_dmu_campaigns.each do |c|
-  campaign = Campaign.find_or_create_by(name: c)
-  campaign.client = Client.find_by(name: 'DMU')
-  campaign.save!
-end
-
-sample_christies_campaigns.each do |c|
-  campaign = Campaign.find_or_create_by(name: c)
-  campaign.client = Client.find_by(name: 'Christies')
-  campaign.save!
-end
+# Create DMU International
+dmu_2 = Client.find_or_create_by(name: "DMU International")
+# DMU International on Facebook
+dmu_2.client_channels.create({
+  type: "ClientChannels::Facebook",
+  uid: "act_1406179109678952"
+})
+# DMU International on Google Analytics
+dmu_2.client_channels.create({
+  type: "ClientChannels::GoogleAnalytics",
+  uid: "110182207"
+})

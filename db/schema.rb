@@ -10,19 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170214130721) do
+ActiveRecord::Schema.define(version: 20170216120912) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "campaigns", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
     t.string   "name"
     t.integer  "client_id"
+    t.string   "facebook_campaign_id"
+  end
+
+  create_table "client_channels", force: :cascade do |t|
+    t.string   "type"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.integer  "client_id"
+    t.jsonb    "authentication", default: "{}", null: false
+    t.string   "uid"
   end
 
   create_table "clients", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.string   "facebook_account_id"
   end
 
 end

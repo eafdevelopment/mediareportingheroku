@@ -1,0 +1,24 @@
+.clients {
+  margin-top: 2rem;
+
+  &-header {
+    text-transform: uppercase;
+    letter-spacing: .2rem;
+
+    font-size: 1.5rem;
+    font-weight: 700;
+
+    border-bottom: 1px solid #9EC73A;
+    display: inline-block;
+    margin-botton: 1.5rem;
+  }
+
+  &-name {
+    list-style-type: none;
+    letter-spacing: .1rem;
+    font-weight: 500;
+    margin-bottom: .3rem;
+  }
+
+
+}
