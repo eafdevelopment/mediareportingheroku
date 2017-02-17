@@ -12,7 +12,7 @@ class ClientChannels::GoogleAnalytics < ClientChannel
     rr.metrics = [metric("ga:sessions"), metric("ga:sessionDuration")]
     rr.date_ranges = [dateRange("7daysAgo", "today")]
     grr.report_requests = [rr]
-    response = auth_client.batch_get_reports(grr)
+    response = google_client.batch_get_reports(grr)
     response.reports.each do |report|
       report.data.rows.each do |row|
         puts row
@@ -22,7 +22,7 @@ class ClientChannels::GoogleAnalytics < ClientChannel
 
   private
 
-  def auth_client
+  def google_client
     creds = Google::Auth::ServiceAccountCredentials.make_creds({
       :json_key_io => File.open(Rails.root.join("client_secrets_4023d7d9e162.json").to_s),
       :scope => "https://www.googleapis.com/auth/analytics.readonly"
