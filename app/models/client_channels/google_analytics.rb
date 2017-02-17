@@ -6,6 +6,8 @@ class ClientChannels::GoogleAnalytics < ClientChannel
   def fetch_metrics(params)
     # Find and return metrics from a view in a Google Analytics account
     # params = { uid: '110182207', fromDate: '7daysAgo', startDate: 'today' }
+    # IMPORTANT: GA allows request of up to 5 reports, but currently our
+    # app will only handle the first returned report
     grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
     rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
     rr.view_id = params[:uid]
@@ -13,11 +15,11 @@ class ClientChannels::GoogleAnalytics < ClientChannel
     rr.date_ranges = [dateRange("7daysAgo", "today")]
     grr.report_requests = [rr]
     response = google_client.batch_get_reports(grr)
-    response.reports.each do |report|
-      report.data.rows.each do |row|
-        puts row
-      end
-    end
+    # turn the response into a set of key-value pairs to return for the view
+    report = response.reports.first
+    metric_headers = report.column_header.metric_header.metric_header_entries.map{|header| header.name}
+    metric_values = report.data.rows.map{|row| row.metrics.map{|metric| metric.values} }.flatten
+    return metric_headers.zip(metric_values).to_h
   end
 
   private
