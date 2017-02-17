@@ -1,12 +1,13 @@
-.row
+.row.addCampaign
   .small-12.columns
+    %h3.eight-header.addCampaign-header Add Campaign
     = form_for @campaign, url: {action: "create"} do |f|
       - if @campaign.errors.any?
         %ul
           - @campaign.errors.full_messages.each do |msg|
             %li= msg
-      = f.label :client
+      = f.label :client, class: 'addCampaign-label'
       = f.select :client, options_for_select(@clients.collect { |c| [c.name, c.id] })
-      = f.label :campaign_name
+      = f.label :campaign_name, class: 'addCampaign-label'
       = f.text_field :name
-      = f.submit "Add Campaign", class: 'button small'
+      = f.submit "Add Campaign", class: 'button small eight-button'
