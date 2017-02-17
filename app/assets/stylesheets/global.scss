@@ -1,0 +1,34 @@
+.eight {
+
+  &-button, .addCampaign-button {
+    text-transform: uppercase;
+    letter-spacing: $btn-spacing;
+
+    font-size: $btn-font-size;
+    font-weight: 500;
+
+    border: $btn-topbar-border;
+    background-color: $btn-background;
+    color: $btn-color;
+
+    transition: $btn-background-transition;
+
+    &:hover{
+      color: $btn-background;
+      background-color: $btn-color;
+    }
+  }
+
+  &-header {
+
+    text-transform: uppercase;
+    letter-spacing: .2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-bottom: 1px solid #9EC73A;
+    margin-botton: 1rem;
+    display: inline-block;
+    
+  }
+
+}

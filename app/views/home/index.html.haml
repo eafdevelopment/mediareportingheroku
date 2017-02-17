@@ -1,15 +1,15 @@
 .row
   .small-12.columns.homeForm
-    %h3.homeForm-header Report Search
+    %h3.eight-header Report Search
     = form_tag (reports_path), method: "get" do
       = label_tag "Client"
       = select_tag :client, options_for_select(format_options(@clients)), prompt: 'Select client', id: 'client_select'
       = label_tag "Campaign"
       = select_tag :campaign, options_for_select(format_options(@campaigns)), prompt: 'Select client campaign', id: 'campaigns_select'
       = label_tag "Channel"
-      = select_tag :channel, options_for_select([['Facebook', 'ClientChannels::Facebook'],['Google Analytics', 'ClientChannels::GoogleAnalytics']]), prompt: 'Select channel'
+      = select_tag :channel, options_for_select([['Select campaign', '']]), multiple: true
       = label_tag "Date From"
       = date_field_tag :date_from, Date.yesterday.strftime('%Y-%m-%d')
       = label_tag "Date To"
       = date_field_tag :date_to, Date.yesterday.strftime('%Y-%m-%d')
-      = submit_tag "Submit", class: "button small homeForm-submit"
+      = submit_tag "Submit", class: "button small eight-button"

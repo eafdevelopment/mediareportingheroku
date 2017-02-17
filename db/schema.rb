@@ -37,7 +37,6 @@ ActiveRecord::Schema.define(version: 20170217123938) do
     t.integer  "client_id"
     t.jsonb    "authentication", default: "{}", null: false
     t.string   "uid"
-    t.string   "name"
   end
 
   create_table "clients", force: :cascade do |t|

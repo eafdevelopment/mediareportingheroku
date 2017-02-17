@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   end
 
   get 'home/update_campaigns', as: 'update_campaigns'
+  get 'home/update_campaign_channels', as: 'update_campaign_channels'
 
   root to: 'home#index'
 end

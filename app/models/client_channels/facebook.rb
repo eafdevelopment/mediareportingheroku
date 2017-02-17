@@ -20,9 +20,9 @@ class ClientChannels::Facebook < ClientChannel
     ad_campaign = FacebookAds::AdCampaign.find(params[:uid])
     insights = ad_campaign.ad_insights # returns an array!
     return {
-      cpc: insights.map{ |insight| insight.cpc }.sum,
-      ctr: insights.map{ |insight| insight.ctr }.sum,
-      impressions: insights.map{ |insight| insight.impressions }.sum
+      facebookCpc: insights.map{ |insight| insight.cpc }.sum,
+      facebookCtr: insights.map{ |insight| insight.ctr }.sum,
+      facebookImpressions: insights.map{ |insight| insight.impressions }.sum
     }
   end
 

@@ -12,4 +12,12 @@ class HomeController < ApplicationController
       format.js
     end
   end
+
+  def update_campaign_channels
+    @campaign_channels = CampaignChannel.where(campaign_id: params[:campaign_id])
+    respond_to do |format|
+      format.js
+    end
+  end
+  
 end

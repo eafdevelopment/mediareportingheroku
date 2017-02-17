@@ -1,13 +1,12 @@
-.row
+.row.addCampaign
   .small-12.columns
-    %h4 New Campaign for #{@client.name}
-
+    %h3.eight-header.addCampaign-header Add Campaign
     = form_for @campaign, url: {action: "create"} do |campaign_form|
       - if @campaign.errors.any?
         %ul
           - @campaign.errors.full_messages.each do |msg|
             %li= msg
-      = campaign_form.label :campaign_name
+      = campaign_form.label :name
       = campaign_form.text_field :name
 
       = campaign_form.fields_for :campaign_channels do |f|
