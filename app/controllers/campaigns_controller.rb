@@ -5,6 +5,17 @@ class CampaignsController < ApplicationController
   def new
     @campaign = Campaign.new
     @client_channels = @client.client_channels.all
+
+    # @campaign_channels = []
+    # 5.times do
+    #   @kennel << CampaignChannel.new
+    # end
+
+
+    @channels = Hash.new
+    @client_channels.each do |channel|     
+      @channels[channel] = CampaignChannel.new
+    end
   end
 
   def create
@@ -24,7 +35,7 @@ class CampaignsController < ApplicationController
   private
 
   def campaign_params
-    params.require(:campaign).permit(:name)
+    params.require(:campaign).permit(:name, campaign_channels_attributes: [:client_channel_id, :uid])
   end
 
   def find_client

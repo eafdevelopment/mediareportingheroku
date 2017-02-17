@@ -10,10 +10,9 @@
       = campaign_form.label :campaign_name
       = campaign_form.text_field :name
 
-      - @client_channels.each do |client_channel|
+      - @channels.each do |client_channel, campaign_channel|
         %h4 Campaign on #{name(client_channel)} ?
-        
-        = campaign_form.fields_for "campaign_channels[]", (CampaignChannel.new) do |f|
+        = fields_for "campaign_channels[]", campaign_channel do |f|
           = f.label "Unique ID"
           = f.hidden_field :client_channel_id, value: client_channel.id
           = f.text_field :uid
