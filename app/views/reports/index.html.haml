@@ -6,22 +6,22 @@
         %tr
           %th Client
           %th Campaign
-          %th Channel
+          %th Channel(s)
           %th From
           %th To
       %tbody
         %tr
           %td= @client.name
           %td= @campaign.name
-          %td= params[:channel]
+          %td= params[:channel].join(", ")
           %td= params[:date_from]
           %td= params[:date_to]
 
     %h4 Your results...
     - if @results.any?
       %table
-        %tr
-          %th Adset ID
-          %th Ad ID
-          %th Impressions
-      
+        - @results.each do |campaign_channel|
+          - campaign_channel.each do |metric, value|
+            %tr
+              %th= metric
+              %td= value

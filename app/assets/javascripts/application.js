@@ -16,5 +16,6 @@
 
 // Our own JS files required below
 //= require home
+//= require campaigns
 
 $(function(){ $(document).foundation(); });

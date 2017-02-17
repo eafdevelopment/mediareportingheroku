@@ -1,14 +1,23 @@
-.row.clients
-  .small-12.columns
-    = link_to "+ New Campaign", new_campaign_path, class: 'button small top-bar-button'
-
 .row
   .small-12.columns
     - @clients.each do |client|
-      %h4.clients-header= client.name
-      %ul
+      .small-6.columns
+        %h4= client.name
+      .small-6.columns
+        = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small'
+      .small-12.columns
         - if client.campaigns.length != 0
           - client.campaigns.each do |campaign|
-            %li.clients-name= campaign.name
+            .callout
+              %p= campaign.name
+              %ul
+                - campaign.campaign_channels.each do |campaign_channel|
+                  %li
+                    %strong
+                      = name(campaign_channel.client_channel)
+                    UID:
+                    = campaign_channel.uid
+              = link_to 'Edit Campaign', edit_client_campaign_path(client, campaign)
+
         - else
-          %li.clients-name No campaigns added yet 
+          No campaigns added yet
