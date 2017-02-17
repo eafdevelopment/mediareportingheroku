@@ -3,9 +3,9 @@
     %h3.homeForm-header Report Search
     = form_tag (reports_path), method: "get" do
       = label_tag "Client"
-      = select_tag :client, options_for_select(@clients.collect { |c| [c.name, c.id] }), prompt: 'Select client', id: 'client_select'
+      = select_tag :client, options_for_select(format_options(@clients)), prompt: 'Select client', id: 'client_select'
       = label_tag "Campaign"
-      = select_tag :campaign, options_for_select(@campaigns.collect { |campaign| [campaign.name.titleize, campaign.id] }, 0), prompt: 'Select client campaign', id: 'campaigns_select'
+      = select_tag :campaign, options_for_select(format_options(@campaigns)), prompt: 'Select client campaign', id: 'campaigns_select'
       = label_tag "Channel"
       = select_tag :channel, options_for_select([['Facebook', 'ClientChannels::Facebook'],['Google Analytics', 'ClientChannels::GoogleAnalytics']]), prompt: 'Select channel'
       = label_tag "Date From"
