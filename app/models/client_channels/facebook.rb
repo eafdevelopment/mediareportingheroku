@@ -15,7 +15,7 @@ class ClientChannels::Facebook < ClientChannel
 
   def fetch_metrics(params)
     # Find and return Insights for a Facebook account & campaign
-    # params = { uid: '6063884630694', fromDate: '', startDate: '' }
+    # params = { uid: '6063884630694', from_date: '', start_date: '' }
     # TEMPORARILY SWITCHING TO DUMMY DATA
     # FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
     # ad_campaign = FacebookAds::AdCampaign.find(params[:uid])

@@ -13,8 +13,8 @@ class ReportsController < ApplicationController
       @results.push(
         campaign_channel.client_channel.fetch_metrics({
           uid: campaign_channel.uid,
-          fromDate: params[:date_from],
-          startDate: params[:date_to]
+          from_date: params[:date_from],
+          from_date: params[:date_to]
         })
       )
     end
