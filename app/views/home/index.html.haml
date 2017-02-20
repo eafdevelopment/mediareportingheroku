@@ -5,7 +5,7 @@
       = label_tag "Client"
       = select_tag :client, options_for_select(format_options(@clients)), prompt: 'Select client', id: 'client_select'
       = label_tag "Campaign"
-      = select_tag :campaign, options_for_select(format_options(@campaigns)), prompt: 'Select client campaign', id: 'campaigns_select'
+      = select_tag :campaign, options_for_select(@campaigns ? format_options(@campaigns) : ''), prompt: 'Select client campaign', id: 'campaigns_select'
       = label_tag "Channel"
       = select_tag :channel, options_for_select([['Select campaign', '']]), multiple: true
       = label_tag "Date From"
