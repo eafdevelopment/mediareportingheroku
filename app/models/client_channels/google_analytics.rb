@@ -3,11 +3,11 @@ require 'googleauth'
 
 class ClientChannels::GoogleAnalytics < ClientChannel
 
-  def fetch_metrics(params)
+  def fetch_metrics(from_date, to_date, uid, optional={})
     # Find and return metrics from a view in a Google Analytics account
-    # params = { uid: '110182207', from_date: '7daysAgo', from_date: 'today' }
+    # example data: uid: '110182207', from_date: '7daysAgo', from_date: 'today'
     # IMPORTANT: GA allows request of up to 5 reports, but currently our
-    # app will only handle the first returned report
+    # app will only look at the first returned report
     grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
     rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
     rr.view_id = params[:uid]
