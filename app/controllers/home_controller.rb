@@ -1,3 +1,8 @@
+# Home index is the landing page with report search form
+# Update Campaigns is a route currently being used in the form's ajax request
+# to update the campaign or channel drop down with data relevant to that client
+# and the selections being made
+
 class HomeController < ApplicationController
 
   def index

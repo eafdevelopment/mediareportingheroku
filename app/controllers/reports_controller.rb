@@ -1,3 +1,7 @@
+# Reports Controller manages API calls and fetching of the data
+# It is then displayed on the reports index, or search results page, and 
+# will also respond with a CSV download of raw data
+
 class ReportsController < ApplicationController
 
   def index

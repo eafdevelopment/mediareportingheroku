@@ -1,3 +1,7 @@
+# ClientChannel connects a client to their relevant reporting channels
+# For example Client DMU International has a client channel - DMU International Facebook -
+# that stores their UID for the relevant DMU International account on Facebook
+
 class ClientChannel < ApplicationRecord
 
   # Relationships

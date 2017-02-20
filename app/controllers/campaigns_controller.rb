@@ -1,3 +1,9 @@
+# Campaigns sit under a client and have a relation to the CampaignChannels
+# they are associated with
+# eight&four can create a new campaign, belonging to one of their existing clients,
+# and save the relevant UIDs for each of the channels they are using to track it
+# Campaigns may or may not run accross all the channels they use for that client
+
 class CampaignsController < ApplicationController
 
   before_action :find_client
