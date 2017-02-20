@@ -37,3 +37,9 @@ CampaignChannel.where(
   client_channel_id: dmu_2.client_channels.where(type: ClientChannels::Facebook).first.id,
   uid: "6063884630694"
 ).first_or_create
+
+# Other Faceobok UIDs for testing and creating campaigns / campaign channels
+# 6064123749960
+# 6064039871360
+# 6064123751360
+# 6064123751160
