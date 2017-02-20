@@ -2,7 +2,7 @@
   .small-12.columns
     %h4 Edit campaign for #{@client.name}
 
-    = form_for @campaign, url: {action: "create"} do |campaign_form|
+    = form_for [@client, @campaign] do |campaign_form|
       - if @campaign.errors.any?
         %ul
           - @campaign.errors.full_messages.each do |msg|
@@ -16,6 +16,6 @@
         = f.hidden_field :client_channel_id, value: f.object.client_channel.id
         = f.text_field :uid
 
-      = campaign_form.submit "Add Campaign", class: 'button small'
+      = campaign_form.submit "Update Campaign", class: 'button small'
 
     = link_to "Delete Campaign", client_campaign_path(@client, @campaign), :confirm => "Are you sure?", :method => :delete

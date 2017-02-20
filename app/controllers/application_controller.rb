@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   def basic_auth
     if Rails.env.production?
       authenticate_or_request_with_http_basic do |username, password|
-        username == "eight&four" && password == "welovemayo"
+        username == ENV["PRODUCTION_USERNAME"] && password == ENV["PRODUCTION_PASSWORD"]
       end
     end
   end

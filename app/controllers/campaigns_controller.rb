@@ -7,6 +7,7 @@
 class CampaignsController < ApplicationController
 
   before_action :find_client
+  before_action :find_campaign, only: [:edit, :update]
 
   def new
     @campaign = Campaign.new
@@ -22,6 +23,7 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.new(campaign_params)
     @campaign.client = @client
     if @campaign.save
+      flash[:notice] = "Campaign successfully created"
       redirect_to clients_path
     else
       render :new
@@ -29,8 +31,16 @@ class CampaignsController < ApplicationController
   end
 
   def edit
-    @campaign = Campaign.find(params[:id])
     @client_channels = @client.client_channels.all
+  end
+
+  def update
+    if @campaign.update(campaign_params)
+      flash[:notice] = "Campaign successfully updated"
+      redirect_to clients_path
+    else
+      render :edit
+    end
   end
 
   def destroy
@@ -42,14 +52,15 @@ class CampaignsController < ApplicationController
   private
 
   def campaign_params
-    if params[:campaign][:campaign_channels_attributes][:uid] == ""
-    end
-
-    params.require(:campaign).permit(:name, campaign_channels_attributes: [:client_channel_id, :uid])
+    params.require(:campaign).permit(:name, campaign_channels_attributes: [:id, :client_channel_id, :uid])
   end
 
   def find_client
     @client = Client.find(params[:client_id])
+  end
+
+  def find_campaign
+    @campaign = Campaign.find(params[:id])
   end
 
   def remove_ignored_campaign_channels!
