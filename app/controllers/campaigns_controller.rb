@@ -11,7 +11,7 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    remove_ignored_campaign_channels
+    remove_ignored_campaign_channels!
     # Create the campaign & campaign channels
     @campaign = Campaign.new(campaign_params)
     @campaign.client = @client
@@ -37,8 +37,6 @@ class CampaignsController < ApplicationController
 
   def campaign_params
     if params[:campaign][:campaign_channels_attributes][:uid] == ""
-      puts 'HI THERE THE BELOW'
-      puts params[:campaign]
     end
 
     params.require(:campaign).permit(:name, campaign_channels_attributes: [:client_channel_id, :uid])
@@ -48,7 +46,7 @@ class CampaignsController < ApplicationController
     @client = Client.find(params[:client_id])
   end
 
-  def remove_ignored_campaign_channels
+  def remove_ignored_campaign_channels!
     params[:campaign]["campaign_channels_attributes"].each do |k, v|
       if v[:uid] == ""
         params[:campaign]['campaign_channels_attributes'].delete k
