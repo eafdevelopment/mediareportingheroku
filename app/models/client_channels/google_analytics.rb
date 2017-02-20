@@ -26,7 +26,7 @@ class ClientChannels::GoogleAnalytics < ClientChannel
 
   def google_client
     creds = Google::Auth::ServiceAccountCredentials.make_creds({
-      :json_key_io => File.open(Rails.root.join("client_secrets_4023d7d9e162.json").to_s),
+      :json_key_io => File.open(Rails.root.join("/private/client_secrets_4023d7d9e162.json").to_s),
       :scope => "https://www.googleapis.com/auth/analytics.readonly"
     })
     client = Google::Apis::AnalyticsreportingV4::AnalyticsReportingService.new

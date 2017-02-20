@@ -23,5 +23,5 @@
 # Ignore environment variables
 .env
 
-# Ignore client secrets
-client_secrets*.*
+# Ignore client secrets 
+/private/*.json
