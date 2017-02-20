@@ -24,7 +24,7 @@
       .row
         .small-12.columns
           - flash.each do |name, msg|
-            .callout{class: name, data: {"closeable": ""}}
+            .callout{class: name, "data-closable" => ""}
               = msg
-              %button.close-button{data: {"close": ""}}
-                %span &times;
+              %button.close-button{"aria-label" => "Dismiss Alert", "data-close" => "", :type => "button"}
+                %span{"aria-hidden" => "true"} ×

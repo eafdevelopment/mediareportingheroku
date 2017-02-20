@@ -10,7 +10,7 @@ class ClientChannels::GoogleAnalytics < ClientChannel
     # app will only look at the first returned report
     grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
     rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
-    rr.view_id = params[:uid]
+    rr.view_id = uid
     rr.metrics = [metric("ga:sessions"), metric("ga:sessionDuration")]
     rr.date_ranges = [date_range("7daysAgo", "today")]
     grr.report_requests = [rr]
