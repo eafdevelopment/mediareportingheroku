@@ -20,3 +20,11 @@
             %li
               = link_to "Clients", clients_path, class: 'eight-button'
     = yield
+    - if flash.any?
+      .row
+        .small-12.columns
+          - flash.each do |name, msg|
+            .callout{class: name, data: {"closeable": ""}}
+              = msg
+              %button.close-button{data: {"close": ""}}
+                %span &times;
