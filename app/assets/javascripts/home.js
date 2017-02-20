@@ -9,7 +9,7 @@ $(document).ready(function() {
         client_id: clientId
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.log('AJAX Error: ' + textStatus);
+        alert('There was a problem loading campaigns. Please refresh and re-select your client');
       },
       success: function() {
         console.log('Client selected & campaigns found');
@@ -27,7 +27,7 @@ $(document).ready(function() {
         campaign_id: campaignId
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.log('AJAX Error: ' + textStatus);
+        alert('There was a problem loading channels. Please refresh and re-select your client and campaign');
       },
       success: function() {
         console.log('Campaign selected & campaign channels found');
