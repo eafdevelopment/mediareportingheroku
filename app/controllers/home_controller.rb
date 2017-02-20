@@ -7,7 +7,6 @@ class HomeController < ApplicationController
 
   def index
     @clients = Client.all.order(name: :desc)
-    flash[:notice] = "Sorry, we weren't able to log you in with those details."
   end
 
   def update_campaigns
