@@ -1,6 +1,6 @@
 class ClientChannels::Facebook < ClientChannel
 
-  def fetch_metrics(from_date, to_date, uid, optional={})
+  def fetch_metrics(from_date, to_date, uid, ga_campaign_name, optional={})
     # Find and return Insights from a Facebook campaign, and any
     # Google Analytics metrics that we want with them
     FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
@@ -8,13 +8,15 @@ class ClientChannels::Facebook < ClientChannel
     insights = ad_campaign.ad_insights(
       range: Date.parse(from_date)..Date.parse(to_date)
     )
-    ga_metrics = [] #optional[:summary_metrics].reject{|metric_name| !metric_name.starts_with?("ga:")}
-    return parse_facebook_insights(from_date, to_date, insights, ga_metrics, optional)
+    return {
+      client_channel_metrics: parse_facebook_insights(from_date, to_date, insights, optional),
+      additional_ga_metrics: GoogleAnalytics.fetch_and_parse_metrics(from_date, to_date, self.client.google_analytics_view_id, ga_campaign_name)
+    }
   end
 
   private
 
-  def parse_facebook_insights(from_date, to_date, insights, ga_metrics, optional)
+  def parse_facebook_insights(from_date, to_date, insights, optional)
     # We need a header row e.g. ['impressions', 'clicks', 'cpc'] ...
     # plus a row of summed or averaged values
     parsed_insights = { data_row: [] }
