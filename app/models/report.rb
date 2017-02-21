@@ -11,7 +11,7 @@ module Report
     }
     campaign_channels.each do |campaign_channel|
       metrics = campaign_channel.client_channel.fetch_metrics(from_date, to_date, campaign_channel.uid, {
-        summary_metrics: ['impressions', 'clicks', 'cpc', 'ctr']
+        summary_metrics: AppConfig.summary_metrics
       })
       summary_report[:header_row].concat(metrics[:header_row])
       summary_report[:data_rows].push(metrics[:data_row])
