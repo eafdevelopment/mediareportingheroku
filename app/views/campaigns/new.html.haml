@@ -14,5 +14,7 @@
         = f.label uid_requirement(f.object.client_channel)
         = f.hidden_field :client_channel_id, value: f.object.client_channel.id
         = f.text_field :uid
+        = f.label "Google Analytics Campaign Name"
+        = f.text_field :google_analytics_campaign_name
 
       = campaign_form.submit "Add Campaign", class: 'button small'

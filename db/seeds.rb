@@ -43,3 +43,26 @@ CampaignChannel.where(
 # 6064039871360
 # 6064123751360
 # 6064123751160
+
+# Create Dirty Martini client
+dm = Client.where(
+  name: "Dirty Martini",
+  google_analytics_view_id: "75361758"
+).first_or_create
+
+# Dirty Martini on Facebook
+dm.client_channels.where(
+  type: "ClientChannels::Facebook",
+  uid: "1089006294443938"
+).first_or_create
+
+# A Dirty Martini campaign
+dm_campaign = dm.campaigns.find_or_create_by(name: "An Example Campaign for Dirty Martini")
+
+# This campaign on Dirty Martini's Facebook
+CampaignChannel.where(
+  campaign_id: dm_campaign.id,
+  client_channel_id: dm.client_channels.where(type: ClientChannels::Facebook).first.id,
+  uid: "6059092214976",
+  google_analytcs_campaign_name: "always_on_london_celebrations_traffic_driving"
+).first_or_create
