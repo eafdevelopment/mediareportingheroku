@@ -28,5 +28,11 @@ RSpec.describe "Generating a client report", type: :feature do
       expect(page).to have_content @client.name
       expect(page).to have_content @campaign.name
     end
+
+    it "display some data" do
+      search_url = reports_path(client: @client.id, campaign: @campaign.id, channel: ['ClientChannels::Facebook'], date_from: '2017-02-13', date_to: '2017-02-20')
+      visit search_url
+      expect(page.all('table#metrics-table tr').count).to eq 2      
+    end
   end
 end
