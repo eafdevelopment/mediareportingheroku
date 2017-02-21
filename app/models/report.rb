@@ -30,7 +30,6 @@ module Report
       csv_report[:header_row].concat(metrics[:header_row])
       csv_report[:data_rows].push(metrics[:data_row])
     end
-    # puts "> csv_report: " + csv_report.inspect
     return csv_report
   end
 

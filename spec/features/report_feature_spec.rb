@@ -1,7 +1,5 @@
 require 'rails_helper'
 
-# include WaitForAjax
-
 RSpec.describe "Generating a client report", type: :feature do
 
   before do

@@ -27,3 +27,5 @@
           %tr
             - row.each do |item|
               %td= item
+
+    = link_to 'Download', reports_path(format: 'csv', client: @client.id, campaign: @campaign.id, channel: params[:channel], date_from: params[:date_from], date_to: params[:date_to]), class: 'eight-button'
