@@ -52,6 +52,7 @@ group :test do
   # Running tests with RSpec and Capybara 
   gem 'rspec-rails'
   gem 'capybara'
+  gem 'factory_girl_rails', '~> 4.5.0'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

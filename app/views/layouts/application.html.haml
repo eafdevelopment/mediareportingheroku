@@ -18,6 +18,8 @@
         .top-bar-right#client-button
           %ul.menu
             %li
+              = link_to "Report", root_path, class: 'eight-button report-button'
+            %li
               = link_to "Clients", clients_path, class: 'eight-button'
     - if flash.any?
       .row

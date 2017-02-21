@@ -69,6 +69,11 @@ GEM
     facebook_ads (0.1.11)
       hashie (~> 3.4)
       rest-client (>= 1.6)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.5.0)
+      factory_girl (~> 4.5.0)
+      railties (>= 3.0.0)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.17)
@@ -273,6 +278,7 @@ DEPENDENCIES
   capybara
   dotenv-rails
   facebook_ads (~> 0.1)
+  factory_girl_rails (~> 4.5.0)
   foreman (~> 0.83.0)
   foundation-rails (~> 6.2.3.0)
   google-api-client (~> 0.9)
