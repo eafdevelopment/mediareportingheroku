@@ -17,7 +17,7 @@ class ClientChannels::Facebook < ClientChannel
     }.reject(&:blank?)
     # if we have been given optional summary metrics, exclude any headers
     # that aren't one of those, so they won't appear in the report
-    if optional[:summary_metrics]
+    if optional[:summary_metrics].present?
       result[:header_row].reject!{ |header| !optional[:summary_metrics].include?(header) }
     end
     # For each header row item, add the summed values to the data row
