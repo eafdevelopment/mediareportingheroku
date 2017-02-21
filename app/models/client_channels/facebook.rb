@@ -13,18 +13,30 @@ class ClientChannels::Facebook < ClientChannel
       # (exclude headers for IDs & non-float values, e.g. dates, for now -
       # this basically simplifies the report until we know how every
       # value should be handled)
+
+      # puts "KEY: #{key}"
+      # puts "VAL: #{val}"
       valid_float?(val) && !key.include?("_id") ? key : ""
     }.reject(&:blank?)
     # if we have been given optional summary metrics, exclude any headers
     # that aren't one of those, so they won't appear in the report
+    
     if optional[:summary_metrics].present?
       result[:header_row].reject!{ |header| !optional[:summary_metrics].include?(header) }
     end
     # For each header row item, add the summed values to the data row
     # so we get ['summed_impressions_here', 'summed_clicks_here', 'summed_cpc_here']
-    # TODO: we shouldn't sum all of these values! e.g. cpc & ctr should probs be averages
+
     result[:header_row].each do |header_item|
-      result[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
+      if header_item == 'ctr'
+        average_ctr = average('clicks', 'impressions', insights)
+        result[:data_row].push((average_ctr*100).round(3))
+      elsif header_item == 'cpc'
+        average_cpc = average('spend', 'clicks', insights)
+        result[:data_row].push(average_cpc.round(2).to_s)
+      else
+        result[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
+      end
     end
     return result
   end
@@ -35,4 +47,9 @@ class ClientChannels::Facebook < ClientChannel
     !!Float(value) rescue false
   end
 
+  def average(a, b, insights)
+    total_a = insights.sum{ |insight| insight[a].to_f }
+    total_b = insights.sum{ |insight| insight[b].to_f }
+    total_a / total_b
+  end
 end
