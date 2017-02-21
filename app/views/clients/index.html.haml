@@ -3,10 +3,11 @@
     - @clients.each do |client|
       .small-6.columns
         %h4= client.name
+        %p Google Analytics View ID: #{client.google_analytics_view_id}
       .small-6.columns
         = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small'
-      .small-12.columns
-        - if client.campaigns.length != 0
+      - if client.campaigns.any?
+        .small-12.columns
           - client.campaigns.each do |campaign|
             .callout
               %p= campaign.name
@@ -19,5 +20,5 @@
                     = campaign_channel.uid
               = link_to 'Edit Campaign', edit_client_campaign_path(client, campaign)
 
-        - else
-          No campaigns added yet
+      - else
+        No campaigns added yet
