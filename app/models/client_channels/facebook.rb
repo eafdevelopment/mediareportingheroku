@@ -42,19 +42,6 @@ class ClientChannels::Facebook < ClientChannel
         parsed_insights[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
       end
     end
-    # If any google_analytics_metrics were given, append those to our rows here
-    if ga_metrics.any?
-      puts "> need to append some GA metrics"
-      # fetched_ga_metrics = GoogleAnalytics.fetch_metrics(
-      #   from_date,
-      #   to_date,
-      #   self.client.google_analytics_view_id,
-      #   self.google_analytics_campaign_name,
-      #   ga_metrics
-      # )
-      # puts "> fetched_ga_metrics: " + fetched_ga_metrics.inspect
-
-    end
     return parsed_insights
   end
 
