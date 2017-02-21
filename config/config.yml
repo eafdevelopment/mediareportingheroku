@@ -1,9 +1,20 @@
-summary_metrics:
-  - impressions
-  - sessions
-  - clicks
-  - ctr
-  - cpc
-  - goal_conversions
-  - cost_per_goal_conversion
-  - average_session_duration
+default: &defaults
+
+  summary_metrics:
+    - impressions
+    - sessions
+    - clicks
+    - ctr
+    - cpc
+    - goal_conversions
+    - cost_per_goal_conversion
+    - average_session_duration
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
