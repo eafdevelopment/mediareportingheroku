@@ -18,10 +18,12 @@
           %td= params[:date_to]
 
     %h4 Your results...
-    - if @results.any?
+    - if @summary_report.any?
       %table
-        - @results.each do |campaign_channel|
-          - campaign_channel.each do |metric, value|
-            %tr
-              %th= metric
-              %td= value
+        %tr
+          - @summary_report[:header_row].each do |header_item|
+            %th= header_item
+        - @summary_report[:data_rows].each do |row|
+          %tr
+            - row.each do |item|
+              %td= item
