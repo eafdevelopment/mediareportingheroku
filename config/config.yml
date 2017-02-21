@@ -10,6 +10,9 @@ default: &defaults
     - cost_per_goal_conversion
     - average_session_duration
 
+  exclude_metrics:
+    - cpp
+
 development:
   <<: *defaults
 

@@ -19,16 +19,18 @@ class ClientChannels::Facebook < ClientChannel
     # plus a row of summed or averaged values
     parsed_insights = { data_row: [] }
     parsed_insights[:header_row] = insights.first.map{ |key, val|
+
       # (exclude headers for IDs & non-float values, e.g. dates, for now -
       # this basically simplifies the report until we know how every
       # value should be handled)
-      valid_float?(val) && !key.include?("_id") ? key : ""
+      (valid_float?(val) || valid_date?(val)) && !key.include?("_id") ? key : ""
     }.reject(&:blank?)
     # if we have been given optional summary metrics, exclude any headers
     # that aren't one of those, so they won't appear in the report
     if optional[:summary_metrics].present?
       parsed_insights[:header_row].reject!{ |header| !optional[:summary_metrics].include?(header) }
     end
+
     # For each header row item, add the summed values to the data row
     # so we get ['summed_impressions_here', 'summed_clicks_here', 'summed_cpc_here']
     parsed_insights[:header_row].each do |header_item|
@@ -38,6 +40,10 @@ class ClientChannels::Facebook < ClientChannel
       elsif header_item == 'cpc'
         average_cpc = average('spend', 'clicks', insights)
         parsed_insights[:data_row].push(average_cpc.round(2).to_s)
+      elsif header_item == 'cpm'
+        total_spend = total('spend', insights)
+        impressions_per_thousand = total('impressions', insights)/1000
+        parsed_insights[:data_row].push((total_spend / impressions_per_thousand).round(2).to_s)
       else
         parsed_insights[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
       end
@@ -62,9 +68,17 @@ class ClientChannels::Facebook < ClientChannel
     !!Float(value) rescue false
   end
 
+  def valid_date?(value)
+    value.include? '-'
+  end
+
   def average(a, b, insights)
     total_a = insights.sum{ |insight| insight[a].to_f }
     total_b = insights.sum{ |insight| insight[b].to_f }
     total_a / total_b
+  end
+
+  def total(field, insights)
+    insights.sum{ |insight| insight[field].to_f }
   end
 end
