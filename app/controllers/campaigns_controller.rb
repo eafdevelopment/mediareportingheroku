@@ -65,7 +65,7 @@ class CampaignsController < ApplicationController
 
   def remove_ignored_campaign_channels!
     params[:campaign]["campaign_channels_attributes"].each do |k, v|
-      if v[:uid] == ""
+      if !v[:uid].present?
         params[:campaign]['campaign_channels_attributes'].delete k
       end
     end
