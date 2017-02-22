@@ -1,6 +1,6 @@
 .row.clients
-  .small-12.columns
-    = link_to "Add New Client", new_client_path, class: 'button large eight-button'
+  = link_to "+ Add New Client", new_client_path, class: 'button medium eight-button clients-button'
+  .small-12.columns.clients-box
     - @clients.each do |client|
       .row
         .small-6.columns
