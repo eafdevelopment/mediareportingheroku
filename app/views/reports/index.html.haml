@@ -11,11 +11,11 @@
           %th To
       %tbody
         %tr
-          %td.mertric= @client.name
-          %td.metric= @campaign.name
-          %td.metric= params[:channel].join(", ")
-          %td.metric= params[:date_from]
-          %td.metric= params[:date_to]
+          %td= @client.name
+          %td= @campaign.name
+          %td= params[:channel].join(", ")
+          %td= params[:date_from]
+          %td= params[:date_to]
 
     %h4 Your results...
     - if @summary_report.any?
