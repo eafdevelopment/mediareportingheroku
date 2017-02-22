@@ -2,7 +2,6 @@ require 'google/apis/analyticsreporting_v4'
 require 'googleauth'
 
 module GoogleAnalytics
-  attr_accessor :metric
 
   def self.fetch_and_parse_metrics(from_date, to_date, uid, campaign_name)
     # Find and return metrics from a view in a Google Analytics account
