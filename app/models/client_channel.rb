@@ -9,7 +9,7 @@ class ClientChannel < ApplicationRecord
   has_many :campaign_channels, inverse_of: :client_channel
 
   # Validations
-  validates :uid, presence: true, uniqueness: true
+  validates :uid, presence: true
 
   # Methods
 
