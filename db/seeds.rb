@@ -1,20 +1,26 @@
 # Create DMU Leicester Castle
-dmu_1 = Client.find_or_create_by(name: "DMU Leicester Castle Business School")
+dmu_1 = Client.where(
+  name: "DMU - Leicester Castle Business School",
+  google_analytics_view_id: ""
+).first_or_create
+
+# Create DMU International
+dmu_2 = Client.where(
+  name: "DMU International - eight&four",
+  google_analytics_view_id: ""
+).first_or_create
+
+# Create De Montfort University Leicester (DMU)
+dmu_3 = Client.where(
+  name: "De Montfort University Leicester (DMU)",
+  google_analytics_view_id: ""
+).first_or_create
 
 # DMU Leicester Castle on Facebook
 dmu_1.client_channels.where(
   type: "ClientChannels::Facebook",
-  uid: "act_1376049629358567"
+  uid: "act_1143706438973923"
 ).first_or_create
-
-# DMU Leicester Castle on Twitter
-dmu_1.client_channels.where(
-  type: "ClientChannels::Twitter",
-  uid: "hello_twitter_1"
-).first_or_create
-
-# Create DMU International
-dmu_2 = Client.find_or_create_by(name: "DMU International")
 
 # DMU International on Facebook
 dmu_2.client_channels.where(
@@ -22,20 +28,63 @@ dmu_2.client_channels.where(
   uid: "act_1406179109678952"
 ).first_or_create
 
-# DMU International on Twitter
-dmu_2.client_channels.where(
-  type: "ClientChannels::Twitter",
-  uid: "hello_twitter_2"
+# De Montfort University on Facebook
+dmu_3.client_channels.where(
+  type: "ClientChannels::Facebook",
+  uid: "act_1376049629358567"
 ).first_or_create
 
-# A DMU International campaign
-dmu_2_campaign = dmu_2.campaigns.find_or_create_by(name: "An Example Campaign for DMU International")
+# De Montfort University campaigns
+dmu_3_campaign_1 = dmu_3.campaigns.find_or_create_by(name: "recruitment_2017_facebook_acquisition_traffic_driving_video")
+dmu_3_campaign_2 = dmu_3.campaigns.find_or_create_by(name: "2017_interview_remarketing_promoted_posts")
+dmu_3_campaign_3 = dmu_3.campaigns.find_or_create_by(name: "conversion_remarketing_2017_instagram_traffic_driving")
+dmu_3_campaign_4 = dmu_3.campaigns.find_or_create_by(name: "conversion_remarketing_2017_facebook_promoted_posts")
+dmu_3_campaign_5 = dmu_3.campaigns.find_or_create_by(name: "recruitment_2017_facebook_acquisition_canvas_traffic_driving")
+dmu_3_campaign_6 = dmu_3.campaigns.find_or_create_by(name: "recruitment_2017_facebook_acquisition_traffic_driving_image")
+dmu_3_campaign_7 = dmu_3.campaigns.find_or_create_by(name: "Promoted Pages - Audience Generation")
 
-# This campaign on DMU's Facebook
+# These campaigns on De Montfort University's Facebook
 CampaignChannel.where(
-  campaign_id: dmu_2_campaign.id,
-  client_channel_id: dmu_2.client_channels.where(type: ClientChannels::Facebook).first.id,
-  uid: "6063884630694"
+  campaign_id: dmu_3_campaign_1.id,
+  client_channel_id: dmu_3.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6066496188078",
+  google_analytics_campaign_name: ""
+).first_or_create
+CampaignChannel.where(
+  campaign_id: dmu_3_campaign_2.id,
+  client_channel_id: dmu_3.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6065738876478",
+  google_analytics_campaign_name: ""
+).first_or_create
+CampaignChannel.where(
+  campaign_id: dmu_3_campaign_3.id,
+  client_channel_id: dmu_3.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6063185312278",
+  google_analytics_campaign_name: ""
+).first_or_create
+CampaignChannel.where(
+  campaign_id: dmu_3_campaign_4.id,
+  client_channel_id: dmu_3.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6063176740078",
+  google_analytics_campaign_name: ""
+).first_or_create
+CampaignChannel.where(
+  campaign_id: dmu_3_campaign_5.id,
+  client_channel_id: dmu_3.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6061533889878",
+  google_analytics_campaign_name: ""
+).first_or_create
+CampaignChannel.where(
+  campaign_id: dmu_3_campaign_6.id,
+  client_channel_id: dmu_3.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6056859080478",
+  google_analytics_campaign_name: ""
+).first_or_create
+CampaignChannel.where(
+  campaign_id: dmu_3_campaign_7.id,
+  client_channel_id: dmu_3.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6028768937278",
+  google_analytics_campaign_name: ""
 ).first_or_create
 
 # Other Faceobok UIDs for testing and creating campaigns / campaign channels
@@ -43,6 +92,8 @@ CampaignChannel.where(
 # 6064039871360
 # 6064123751360
 # 6064123751160
+
+# ------------------------------------------------------------------------------------- #
 
 # Create Dirty Martini client
 dm = Client.where(
