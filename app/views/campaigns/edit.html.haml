@@ -18,6 +18,6 @@
         = f.label "Google Analytics Campaign Name"
         = f.text_field :google_analytics_campaign_name
 
-      = campaign_form.submit "Update Campaign", class: 'button small'
+      = campaign_form.submit "Update Campaign", class: 'button small eight-button'
 
     = link_to "Delete Campaign", client_campaign_path(@client, @campaign), :confirm => "Are you sure?", :method => :delete
