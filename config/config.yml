@@ -12,6 +12,7 @@ default: &defaults
 
   exclude_metrics:
     - cpp
+    - reach
 
 development:
   <<: *defaults

@@ -22,7 +22,7 @@ class ClientChannels::Facebook < ClientChannel
     parsed_insights = { data_row: [] }
     parsed_insights[:header_row] = insights.first.map{ |key, val|
       # (exclude IDs, non-float & non-date values for now, to simplify reporting)
-      (valid_float?(val) || valid_date?(val)) && !key.include?("_id") ? key : ""
+      valid_float?(val) && !AppConfig.exclude_metrics.include?(key) && !key.include?("_id") ? key : ""
     }.reject(&:blank?)
 
     # if we have been given optional summary metrics, exclude any headers
