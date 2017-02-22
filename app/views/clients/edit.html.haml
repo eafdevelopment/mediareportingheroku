@@ -11,7 +11,7 @@
       = client_form.label :google_analytics_view_id
       = client_form.text_field :google_analytics_view_id
 
-      = client_form.submit "Update Client", class: 'button small'
+      = client_form.submit "Update Client", class: 'button small eight-button'
     
     %p WARNING! Deleting a client will delete all of their campaigns and other associated data from this application.
     = link_to "Delete Client", client_path(@client), data: {confirm: "Are you sure?"}, :method => :delete, class: 'button small alert'

@@ -1,10 +1,10 @@
 .row.clients
   .small-12.columns
-    = link_to "Add New Client", new_client_path, class: 'button large'
+    = link_to "Add New Client", new_client_path, class: 'button large eight-button'
     - @clients.each do |client|
       .row
         .small-6.columns
-          %h4= link_to client.name, edit_client_path(client)
+          %h4.eight-link= link_to client.name, edit_client_path(client)
           %p Google Analytics View ID: #{client.google_analytics_view_id}
         .small-6.columns
           = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small eight-button'
