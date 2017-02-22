@@ -21,12 +21,10 @@ class ClientChannels::Facebook < ClientChannel
     # plus a row of summed or averaged values
     parsed_insights = { data_row: [] }
     parsed_insights[:header_row] = insights.first.map{ |key, val|
-
-      # (exclude headers for IDs & non-float values, e.g. dates, for now -
-      # this basically simplifies the report until we know how every
-      # value should be handled)
-      (valid_float?(val) || valid_date?(val)) && !key.include?("_id") ? key : ""
+      # (exclude IDs, non-float & non-date values for now, to simplify reporting)
+      valid_float?(val) && !AppConfig.exclude_metrics.include?(key) && !key.include?("_id") ? key : ""
     }.reject(&:blank?)
+
     # if we have been given optional summary metrics, exclude any headers
     # that aren't one of those, so they won't appear in the report
     if optional[:summary_metrics].present?
@@ -34,7 +32,7 @@ class ClientChannels::Facebook < ClientChannel
     end
 
     # For each header row item, add the summed values to the data row
-    # so we get ['summed_impressions_here', 'summed_clicks_here', 'summed_cpc_here']
+    # so we get ['summed_impressions_here', 'summed_clicks_here', 'calculated_cpc_here']
     parsed_insights[:header_row].each do |header_item|
       if header_item == 'ctr'
         average_ctr = average('clicks', 'impressions', insights)

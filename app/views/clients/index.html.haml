@@ -1,24 +1,25 @@
 .row.clients
   .small-12.columns
+    = link_to "Add New Client", new_client_path, class: 'button large'
     - @clients.each do |client|
-      .small-6.columns
-        %h4= client.name
-        %p Google Analytics View ID: #{client.google_analytics_view_id}
-      .small-6.columns
-        = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small eight-button'
+      .row
+        .small-6.columns
+          %h4= link_to client.name, edit_client_path(client)
+          %p Google Analytics View ID: #{client.google_analytics_view_id}
+        .small-6.columns
+          = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small eight-button'
       - if client.campaigns.any?
-        .small-12.columns
-          - client.campaigns.each do |campaign|
-            .callout
-              %p= campaign.name
-              %ul
-                - campaign.campaign_channels.each do |campaign_channel|
-                  %li
-                    %strong
-                      = name(campaign_channel.client_channel)
-                    UID:
-                    = campaign_channel.uid
-              = link_to 'Edit Campaign', edit_client_campaign_path(client, campaign)
+        - client.campaigns.each do |campaign|
+          .callout
+            %p= campaign.name
+            %ul
+              - campaign.campaign_channels.each do |campaign_channel|
+                %li
+                  %strong
+                    = name(campaign_channel.client_channel)
+                  UID:
+                  = campaign_channel.uid
+            = link_to 'Edit Campaign', edit_client_campaign_path(client, campaign)
 
       - else
-        No campaigns added yet
+        No campaigns added yet.

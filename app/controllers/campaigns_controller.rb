@@ -9,6 +9,16 @@ class CampaignsController < ApplicationController
   before_action :find_client
   before_action :find_campaign, only: [:edit, :update]
 
+  def index
+    # this route receives AJAX $.get requests to update
+    # the New Report form fields on home#index
+    client = Client.find_by(id: params[:client_id])
+    @campaigns = client.campaigns
+    respond_to do |format|
+      format.js
+    end
+  end
+  
   def new
     @campaign = Campaign.new
     @client_channels = @client.client_channels.all

@@ -2,7 +2,6 @@ require 'google/apis/analyticsreporting_v4'
 require 'googleauth'
 
 module GoogleAnalytics
-  attr_accessor :metric
 
   def self.fetch_and_parse_metrics(from_date, to_date, uid, campaign_name)
     # Find and return metrics from a view in a Google Analytics account
@@ -12,24 +11,27 @@ module GoogleAnalytics
     #
     # IMPORTANT: GA allows us to request up to 5 reports, but currently our
     # app will only look at the first returned report
-    metrics_to_return = {
-      header_row: [],
-      data_row: []
-    }
-    grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
-    rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
-    rr.view_id = uid
-    rr.metrics = [
-      self.metric("ga:sessions"),
-      self.metric("ga:goalCompletionsAll"),
-      self.metric("ga:costPerGoalConversion"),
-      self.metric("ga:avgSessionDuration")
-    ]
-    rr.date_ranges = [self.date_range(from_date, to_date)]
-    rr.filters_expression = "ga:campaign==" + campaign_name
-    grr.report_requests = [rr]
-    response = self.google_client.batch_get_reports(grr)
-    return self.parse_metrics(response.reports.first)
+    if campaign_name.present?
+      grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
+      rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
+      rr.view_id = uid
+      rr.metrics = [
+        self.metric("ga:sessions"),
+        self.metric("ga:goalCompletionsAll"),
+        self.metric("ga:costPerGoalConversion"),
+        self.metric("ga:avgSessionDuration")
+      ]
+      rr.date_ranges = [self.date_range(from_date, to_date)]
+      rr.filters_expression = "ga:campaign==" + campaign_name
+      grr.report_requests = [rr]
+      response = self.google_client.batch_get_reports(grr)
+      return self.parse_metrics(response.reports.first)
+    else
+      return {
+        header_row: [],
+        data_row: []
+      }
+    end
   end
 
   private
@@ -62,6 +64,16 @@ module GoogleAnalytics
       header_row: report.column_header.metric_header.metric_header_entries.map{|header| header.name},
       data_row: report.data.totals.map{|total_row| total_row.values}.flatten
     }
+    # Some of the metrics Google Analytics gives us should be modified
+    # for display in the front-end
+    parsed_metrics[:header_row].each_with_index do |header, index|
+      if header == "ga:avgSessionDuration"
+        # Google gives us an avgSessionDuration in seconds, e.g. 36.92846216
+        # which we need to turn into a readable time value, e.g. 00:00:37
+        avg_session_duration = parsed_metrics[:data_row][index].to_f.round
+        parsed_metrics[:data_row][index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
+      end
+    end
     return parsed_metrics
   end
 

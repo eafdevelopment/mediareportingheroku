@@ -1,0 +1,13 @@
+.row.showClient
+  .small-12.columns
+    %h3.eight-header.addCampaign-header View Client
+
+    %p
+      Name:
+      %span= @client.name
+    %p
+      Google Analytics View ID:
+      %span= @client.google_analytics_view_id
+
+    = link_to "Edit Client", edit_client_path(@client), class: 'button small'
+    = link_to "Delete Client", client_path(@client), data: {confirm: "Are you sure?"}, :method => :delete, class: 'button small alert'
