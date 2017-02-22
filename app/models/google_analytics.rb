@@ -11,10 +11,6 @@ module GoogleAnalytics
     #
     # IMPORTANT: GA allows us to request up to 5 reports, but currently our
     # app will only look at the first returned report
-    metrics_to_return = {
-      header_row: [],
-      data_row: []
-    }
     grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
     rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
     rr.view_id = uid
