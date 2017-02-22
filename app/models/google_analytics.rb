@@ -57,6 +57,16 @@ module GoogleAnalytics
       header_row: report.column_header.metric_header.metric_header_entries.map{|header| header.name},
       data_row: report.data.totals.map{|total_row| total_row.values}.flatten
     }
+    # Some of the metrics Google Analytics gives us should be modified
+    # for display in the front-end
+    parsed_metrics[:header_row].each_with_index do |header, index|
+      if header == "ga:avgSessionDuration"
+        # Google gives us an avgSessionDuration in seconds, e.g. 36.92846216
+        # which we need to turn into a readable time value, e.g. 00:00:37
+        avg_session_duration = parsed_metrics[:data_row][index].to_f.round
+        parsed_metrics[:data_row][index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
+      end
+    end
     return parsed_metrics
   end
 
