@@ -1,0 +1,14 @@
+.row.addClient
+  .small-12.columns
+    %h3.eight-header.addCampaign-header Add Client
+    = form_for @client, url: {action: "create"} do |client_form|
+      - if @client.errors.any?
+        %ul
+          - @client.errors.full_messages.each do |msg|
+            %li= msg
+      = client_form.label :name
+      = client_form.text_field :name, required: true
+      = client_form.label :google_analytics_view_id
+      = client_form.text_field :google_analytics_view_id
+
+      = client_form.submit "Add Client", class: 'button small'

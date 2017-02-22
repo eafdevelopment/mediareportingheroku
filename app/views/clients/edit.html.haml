@@ -1,0 +1,17 @@
+.row.editClient
+  .small-12.columns
+    %h3.eight-header.addCampaign-header Edit Client
+    = form_for @client, url: {action: "update"} do |client_form|
+      - if @client.errors.any?
+        %ul
+          - @client.errors.full_messages.each do |msg|
+            %li= msg
+      = client_form.label :name
+      = client_form.text_field :name, required: true
+      = client_form.label :google_analytics_view_id
+      = client_form.text_field :google_analytics_view_id
+
+      = client_form.submit "Update Client", class: 'button small'
+    
+    %p WARNING! Deleting a client will delete all of their campaigns and other associated data from this application.
+    = link_to "Delete Client", client_path(@client), data: {confirm: "Are you sure?"}, :method => :delete, class: 'button small alert'
