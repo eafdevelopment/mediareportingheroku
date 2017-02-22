@@ -11,20 +11,27 @@ module GoogleAnalytics
     #
     # IMPORTANT: GA allows us to request up to 5 reports, but currently our
     # app will only look at the first returned report
-    grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
-    rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
-    rr.view_id = uid
-    rr.metrics = [
-      self.metric("ga:sessions"),
-      self.metric("ga:goalCompletionsAll"),
-      self.metric("ga:costPerGoalConversion"),
-      self.metric("ga:avgSessionDuration")
-    ]
-    rr.date_ranges = [self.date_range(from_date, to_date)]
-    rr.filters_expression = "ga:campaign==" + campaign_name
-    grr.report_requests = [rr]
-    response = self.google_client.batch_get_reports(grr)
-    return self.parse_metrics(response.reports.first)
+    if campaign_name.present?
+      grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
+      rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
+      rr.view_id = uid
+      rr.metrics = [
+        self.metric("ga:sessions"),
+        self.metric("ga:goalCompletionsAll"),
+        self.metric("ga:costPerGoalConversion"),
+        self.metric("ga:avgSessionDuration")
+      ]
+      rr.date_ranges = [self.date_range(from_date, to_date)]
+      rr.filters_expression = "ga:campaign==" + campaign_name
+      grr.report_requests = [rr]
+      response = self.google_client.batch_get_reports(grr)
+      return self.parse_metrics(response.reports.first)
+    else
+      return {
+        header_row: [],
+        data_row: []
+      }
+    end
   end
 
   private
