@@ -3,9 +3,9 @@
     %h3.eight-header Report Search
     = form_tag (reports_path), method: "get" do
       = label_tag "Client *"
-      = select_tag :client, options_for_select(format_options(@clients)), prompt: 'Select client', id: 'client_select', required: true
+      = select_tag :client, options_for_select(format_options(@clients)), prompt: 'Select client', data: {ajax_url: client_campaigns_path('_CLIENT_ID_')}, id: 'client_select', required: true
       = label_tag "Campaign *"
-      = select_tag :campaign, options_for_select(@campaigns ? format_options(@campaigns) : ''), prompt: 'Select client campaign', id: 'campaigns_select', required: true
+      = select_tag :campaign, options_for_select(@campaigns ? format_options(@campaigns) : ''), prompt: 'Select client campaign', data: {ajax_url: campaign_campaign_channels_path('_CAMPAIGN_ID_')}, id: 'campaigns_select', required: true
       = label_tag "Channel *"
       = select_tag :channel, options_for_select([['Select campaign', '']]), multiple: true, required: true
       = label_tag "Date From"
