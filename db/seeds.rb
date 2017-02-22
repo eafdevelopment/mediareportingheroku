@@ -57,12 +57,23 @@ dm.client_channels.where(
 ).first_or_create
 
 # A Dirty Martini campaign
-dm_campaign = dm.campaigns.find_or_create_by(name: "An Example Campaign for Dirty Martini")
+dm_campaign = dm.campaigns.find_or_create_by(name: "always_on_london_celebrations_traffic_driving")
 
 # This campaign on Dirty Martini's Facebook
 CampaignChannel.where(
   campaign_id: dm_campaign.id,
-  client_channel_id: dm.client_channels.where(type: ClientChannels::Facebook).first.id,
+  client_channel_id: dm.client_channels.find_by(type: ClientChannels::Facebook).id,
   uid: "6059092214976",
-  google_analytcs_campaign_name: "always_on_london_celebrations_traffic_driving"
+  google_analytics_campaign_name: "always_on_london_celebrations_traffic_driving"
+).first_or_create
+
+# Another Dirty Martini campaign
+dm_campaign_2 = dm.campaigns.find_or_create_by(name: "always_on_cardiff_celebrations_traffic_driving")
+
+# This campaign on Dirty Martini's Facebook
+CampaignChannel.where(
+  campaign_id: dm_campaign_2.id,
+  client_channel_id: dm.client_channels.find_by(type: ClientChannels::Facebook).id,
+  uid: "6059092214176",
+  google_analytics_campaign_name: "always_on_cardiff_celebrations_traffic_driving"
 ).first_or_create
