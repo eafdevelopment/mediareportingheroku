@@ -11,4 +11,10 @@
       = client_form.label :google_analytics_view_id
       = client_form.text_field :google_analytics_view_id
 
+      = client_form.fields_for :client_channels do |f|
+        %h4 Campaign on #{name(f.object)}?
+        = f.label :uid, "Unique campaign ID"
+        = f.hidden_field :client_id, value: f.object.client.id
+        = f.text_field :uid
+
       = client_form.submit "Add Client", class: 'button small'

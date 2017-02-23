@@ -14,6 +14,10 @@ class ClientsController < ApplicationController
 
   def new
     @client = Client.new
+    Rails.application.eager_load! #TODO: where does this belong in a config file?
+    ClientChannel.subclasses.each do |subclass|
+      client_channel = @client.client_channels.build(type: subclass.name)
+    end
   end
 
   def create
