@@ -13,4 +13,8 @@ class ClientChannel < ApplicationRecord
 
   # Methods
 
+  def nice_name
+    self.class.name.split('::').last
+  end
+
 end

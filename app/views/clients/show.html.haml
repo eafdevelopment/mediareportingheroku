@@ -9,5 +9,12 @@
       Google Analytics View ID:
       %span= @client.google_analytics_view_id
 
+    %p
+      Client channels:
+      - if @client.client_channels.any?
+        %span= @client.client_channels.subclasses.map{|channel| channel.name.split('::').last }.join(", ")
+      - else
+        %span [None yet.]
+
     = link_to "Edit Client", edit_client_path(@client), class: 'button small eight-button'
     = link_to "Delete Client", client_path(@client), data: {confirm: "Are you sure?"}, :method => :delete, class: 'button small alert eight-button'
