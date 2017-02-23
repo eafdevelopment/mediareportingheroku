@@ -19,7 +19,7 @@ class ReportsController < ApplicationController
     @csv_report = Report.build_csv_report(params[:date_from], params[:date_to], campaign_channels)
     respond_to do |format|
       format.html
-      format.csv { send_data csv_download(@csv_report) }
+      format.csv { send_data csv_download(@csv_report), filename: file_name(client_channels) }
     end
   end
 
@@ -42,5 +42,10 @@ class ReportsController < ApplicationController
         csv << data_row
       end
     end
+  end
+
+  def file_name(client_channels)
+    channel = client_channels.first.class.name.split('::').last
+    "#{@client.name}_#{channel}_report_from_#{params[:date_from]}_to_#{params[:date_to]}.csv"
   end
 end
