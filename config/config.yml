@@ -10,10 +10,6 @@ default: &defaults
     - ga:costPerGoalConversion
     - ga:avgSessionDuration
 
-  exclude_metrics:
-    - cpp
-    - reach
-
 development:
   <<: *defaults
 

@@ -22,7 +22,7 @@ class ClientChannels::Facebook < ClientChannel
     parsed_insights = { data_row: [] }
     parsed_insights[:header_row] = insights.first.map{ |key, val|
       # (exclude IDs, non-float & non-date values for now, to simplify reporting)
-      valid_float?(val) && !AppConfig.exclude_metrics.include?(key) && !key.include?("_id") ? key : ""
+      valid_float?(val) && !key.include?("_id") ? key : ""
     }.reject(&:blank?)
 
     # if we have been given optional summary metrics, exclude any headers
@@ -44,6 +44,10 @@ class ClientChannels::Facebook < ClientChannel
         total_spend = total('spend', insights)
         impressions_per_thousand = total('impressions', insights)/1000
         parsed_insights[:data_row].push((total_spend / impressions_per_thousand).round(2).to_s)
+      elsif header_item == 'cpp'
+        total_spend = total('spend', insights)
+        total_reach = total('reach', insights)
+        parsed_insights[:data_row].push((total_spend / total_reach).round(5).to_s)
       else
         parsed_insights[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
       end
