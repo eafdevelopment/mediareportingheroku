@@ -21,72 +21,56 @@ class ClientChannels::Facebook < ClientChannel
   def parse_facebook_insights(insights, optional)
     # We need a header row e.g. ['impressions', 'clicks', 'cpc'] ...
     # plus a row of summed or averaged values
-    parsed_insights = { data_row: [] }
-    
+    parsed_insights = { data_rows: [], summary_row: [] }
     parsed_insights[:header_row] = insights.first.map{ |key, val|
       # (exclude IDs, non-float & non-date values for now, to simplify reporting)
-      valid_float?(val) && !key.include?("_id") ? key : ""
+      (key == "date_start" || valid_float?(val)) && !key.include?("_id") ? key : ""
     }.reject(&:blank?)
-
     # if we have been given optional summary metrics, exclude any headers
     # that aren't one of those, so they won't appear in the report
     if optional[:summary_metrics].present?
       parsed_insights[:header_row].reject!{ |header| !optional[:summary_metrics].include?(header) }
     end
-    
-    puts parsed_insights[:header_row]
-    
-    # puts insights
-    # insights.each do |insight|
-    #   puts insight.ad_id.to_s + ' - ' + insight.date_start.to_s
-    # end
-    
-    # insights_grouped_by_date = insights.group_by(&:date_start)
-    # insights_grouped_by_date.each do |that_days_insights|
-    #   # puts that_days_insights
-    #   parsed_insights[:header_row].each do |header_item|
-        
+    insights_grouped_by_date = insights.group_by(&:date_start)
+    insights_grouped_by_date.each do |that_days_insights|
+      parsed_insights[:data_rows].push(make_row(parsed_insights[:header_row], that_days_insights))
+    end
+    parsed_insights[:summary_row] = make_row(parsed_insights[:header_row], insights)
+    return parsed_insights
+  end
 
-    # For each header row item, add the summed values to the data row
-    # so we get ['summed_impressions_here', 'summed_clicks_here', 'calculated_cpc_here']
-    parsed_insights[:header_row].each do |header_item|
+  def make_row(col_headers, insights)
+    # For each col_header, add the summed values to the data row
+    row = []
+    date = nil
+    if valid_date?(insights.first)
+      # if passed a set of insights grouped by date, the first value in 'insights'
+      # will be a date, so update insights to be the second value (the insights array)
+      date = insights.first
+      insights = insights.second
+    end
+    col_headers.each do |header_item|
       if header_item == 'ctr'
         average_ctr = average('clicks', 'impressions', insights)
-        parsed_insights[:data_row].push((average_ctr*100).round(3))
+        row.push((average_ctr*100).round(3).to_s)
       elsif header_item == 'cpc'
         average_cpc = average('spend', 'clicks', insights)
-        parsed_insights[:data_row].push(average_cpc.round(2).to_s)
+        row.push(average_cpc.round(2).to_s)
       elsif header_item == 'cpm'
         total_spend = total('spend', insights)
         impressions_per_thousand = total('impressions', insights)/1000
-        parsed_insights[:data_row].push((total_spend / impressions_per_thousand).round(2).to_s)
+        row.push((total_spend / impressions_per_thousand).round(2).to_s)
       elsif header_item == 'cpp'
         total_spend = total('spend', insights)
         total_reach = total('reach', insights)
-        parsed_insights[:data_row].push((total_spend / total_reach).round(5).to_s)
+        row.push((total_spend / total_reach).round(5).to_s)
+      elsif header_item == 'date_start' && date.present?
+        row.push(date)
       else
-        parsed_insights[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
+        row.push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
       end
     end
-
-    # # For each header row item, add the summed values to the data row
-    # # so we get ['summed_impressions_here', 'summed_clicks_here', 'calculated_cpc_here']
-    # parsed_insights[:header_row].each do |header_item|
-    #   if header_item == 'ctr'
-    #     average_ctr = average('clicks', 'impressions', insights)
-    #     parsed_insights[:data_row].push((average_ctr*100).round(3))
-    #   elsif header_item == 'cpc'
-    #     average_cpc = average('spend', 'clicks', insights)
-    #     parsed_insights[:data_row].push(average_cpc.round(2).to_s)
-    #   elsif header_item == 'cpm'
-    #     total_spend = total('spend', insights)
-    #     impressions_per_thousand = total('impressions', insights)/1000
-    #     parsed_insights[:data_row].push((total_spend / impressions_per_thousand).round(2).to_s)
-    #   else
-    #     parsed_insights[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
-    #   end
-    # end
-    return parsed_insights
+    return row
   end
 
   def valid_float?(value)
@@ -94,7 +78,7 @@ class ClientChannels::Facebook < ClientChannel
   end
 
   def valid_date?(value)
-    value.include? '-'
+    !!Date.parse(value) rescue false
   end
 
   def average(a, b, insights)

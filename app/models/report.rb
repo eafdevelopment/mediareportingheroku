@@ -7,7 +7,8 @@ module Report
   def self.build_summary_report(from_date, to_date, campaign_channels)
     summary_report = {
       header_row: [],
-      data_rows: []
+      data_rows: [],
+      summary_row: []
     }
     campaign_channels.each do |campaign_channel|
       metrics = campaign_channel.client_channel.fetch_metrics(
@@ -20,8 +21,8 @@ module Report
       summary_report[:header_row].concat(
         metrics[:client_channel_metrics][:header_row] + metrics[:additional_ga_metrics][:header_row]
       )
-      summary_report[:data_rows].push(
-        metrics[:client_channel_metrics][:data_row] + metrics[:additional_ga_metrics][:data_row]
+      summary_report[:summary_row].concat(
+        metrics[:client_channel_metrics][:summary_row] + metrics[:additional_ga_metrics][:summary_row]
       )
     end
     return summary_report
@@ -30,7 +31,8 @@ module Report
   def self.build_csv_report(from_date, to_date, campaign_channels)
     csv_report = {
       header_row: [],
-      data_rows: []
+      data_rows: [],
+      summary_row: []
     }
     campaign_channels.each do |campaign_channel|
       metrics = campaign_channel.client_channel.fetch_metrics(
@@ -42,8 +44,8 @@ module Report
       csv_report[:header_row].concat(
         metrics[:client_channel_metrics][:header_row] + metrics[:additional_ga_metrics][:header_row]
       )
-      csv_report[:data_rows].push(
-        metrics[:client_channel_metrics][:data_row] + metrics[:additional_ga_metrics][:data_row]
+      csv_report[:data_rows].concat(
+        metrics[:client_channel_metrics][:data_rows] + metrics[:additional_ga_metrics][:data_rows]
       )
     end
     return csv_report

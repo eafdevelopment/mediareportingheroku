@@ -23,9 +23,8 @@
         %tr
           - @summary_report[:header_row].each do |header_item|
             %th= header_item
-        - @summary_report[:data_rows].each do |row|
-          %tr
-            - row.each do |item|
-              %td.metric= item
+        %tr
+          - @summary_report[:summary_row].each do |item|
+            %td.metric= item
 
     = link_to 'Download', reports_path(format: 'csv', client: @client.id, campaign: @campaign.id, channel: params[:channel], date_from: params[:date_from], date_to: params[:date_to]), class: 'small button eight-button'
