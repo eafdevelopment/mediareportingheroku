@@ -1,7 +1,7 @@
 # Create DMU International
 dmu_intl = Client.where(
   name: "DMU International - eight&four",
-  google_analytics_view_id: "110182207"
+  google_analytics_view_id: "90647904"
 ).first_or_create
 
 # DMU International on Facebook
@@ -13,7 +13,7 @@ dmu_intl.client_channels.where(
 # Create DMU (EU)
 dmu_eu = Client.where(
   name: "DMU (EU)",
-  google_analytics_view_id: ""
+  google_analytics_view_id: "90647904"
 ).first_or_create
 
 # DMU (EU) on Facebook
