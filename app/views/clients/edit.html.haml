@@ -17,7 +17,7 @@
         = f.hidden_field :client_id, value: f.object.client.id
         = f.text_field :uid
 
-      = client_form.submit "Update Client", class: 'button small'
+      = client_form.submit "Update Client", class: 'button small eight-button'
     
     %p WARNING! Deleting a client will delete all of their campaigns and other associated data from this application.
     = link_to "Delete Client", client_path(@client), data: {confirm: "Are you sure?"}, :method => :delete, class: 'button small alert'

@@ -25,7 +25,7 @@ class ClientChannels::Facebook < ClientChannel
     
     parsed_insights[:header_row] = insights.first.map{ |key, val|
       # (exclude IDs, non-float & non-date values for now, to simplify reporting)
-      (valid_float?(val) || valid_date?(val)) && !key.include?("_id") ? key : ""
+      valid_float?(val) && !key.include?("_id") ? key : ""
     }.reject(&:blank?)
 
     # if we have been given optional summary metrics, exclude any headers
@@ -41,12 +41,31 @@ class ClientChannels::Facebook < ClientChannel
     #   puts insight.ad_id.to_s + ' - ' + insight.date_start.to_s
     # end
     
-    insights_grouped_by_date = insights.group_by(&:date_start)
-    insights_grouped_by_date.each do |that_days_insights|
-      # puts that_days_insights
-      parsed_insights[:header_row].each do |header_item|
+    # insights_grouped_by_date = insights.group_by(&:date_start)
+    # insights_grouped_by_date.each do |that_days_insights|
+    #   # puts that_days_insights
+    #   parsed_insights[:header_row].each do |header_item|
         
 
+    # For each header row item, add the summed values to the data row
+    # so we get ['summed_impressions_here', 'summed_clicks_here', 'calculated_cpc_here']
+    parsed_insights[:header_row].each do |header_item|
+      if header_item == 'ctr'
+        average_ctr = average('clicks', 'impressions', insights)
+        parsed_insights[:data_row].push((average_ctr*100).round(3))
+      elsif header_item == 'cpc'
+        average_cpc = average('spend', 'clicks', insights)
+        parsed_insights[:data_row].push(average_cpc.round(2).to_s)
+      elsif header_item == 'cpm'
+        total_spend = total('spend', insights)
+        impressions_per_thousand = total('impressions', insights)/1000
+        parsed_insights[:data_row].push((total_spend / impressions_per_thousand).round(2).to_s)
+      elsif header_item == 'cpp'
+        total_spend = total('spend', insights)
+        total_reach = total('reach', insights)
+        parsed_insights[:data_row].push((total_spend / total_reach).round(5).to_s)
+      else
+        parsed_insights[:data_row].push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
       end
     end
 
