@@ -14,7 +14,7 @@ class ClientChannels::Facebook < ClientChannel
     ga_metrics = GoogleAnalytics.fetch_and_parse_metrics(from_date, to_date, self.client.google_analytics_view_id, ga_campaign_name)
     all_metrics = {
       header_row: fb_metrics[:header_row].concat(ga_metrics[:header_row]),
-      data_rows: fb_metrics[:data_rows].each_with_index{|data_row, index| data_row.concat(ga_metrics[:data_rows][index]) },
+      data_rows: fb_metrics[:data_rows].each_with_index{|data_row, index| data_row.concat(ga_metrics[:data_rows][index]) unless ga_metrics[:data_rows][index].nil? },
       summary_row: fb_metrics[:summary_row].concat(ga_metrics[:summary_row])
     }
     return all_metrics
