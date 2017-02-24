@@ -77,6 +77,10 @@ module GoogleAnalytics
         # which we need to turn into a readable time value, e.g. 00:00:37
         avg_session_duration = parsed_metrics[:summary_row][index].to_f.round
         parsed_metrics[:summary_row][index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
+        parsed_metrics[:data_rows].each do |data_row|
+          avg_session_duration = data_row[index].to_f.round
+          data_row[index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
+        end
       end
     end
     # Lastly, switch each "ga:" header for it's nicer name

@@ -89,7 +89,7 @@ class ClientChannels::Facebook < ClientChannel
           row.push('')
         end
       else
-        row.push(insights.sum{ |i| i[insight].to_f }.to_s)
+        row.push(insights.sum{ |i| i[insight].to_f }.round(2).to_s)
       end
     end
     return row
