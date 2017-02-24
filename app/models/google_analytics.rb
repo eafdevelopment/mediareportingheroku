@@ -64,9 +64,10 @@ module GoogleAnalytics
   end
 
   def self.parse_metrics(report)
+    data_rows = report.data.try(:rows) ? report.data.rows.map{|row| row.metrics.map{|metrics_row| metrics_row.values}.flatten } : []
     parsed_metrics = {
       header_row: report.column_header.metric_header.metric_header_entries.map{|header| header.name},
-      data_rows: report.data.rows.map{|row| row.metrics.map{|metrics_row| metrics_row.values}.flatten },
+      data_rows: data_rows,
       summary_row: report.data.totals.map{|total_row| total_row.values}.flatten
     }
     # Some of the metrics Google Analytics gives us should be modified
