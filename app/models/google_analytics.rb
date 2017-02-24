@@ -11,28 +11,25 @@ module GoogleAnalytics
     #
     # IMPORTANT: GA allows us to request up to 5 reports, but currently our
     # app will only look at the first returned report
-    # if campaign_name.present?
-    #   grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
-    #   rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
-    #   rr.view_id = uid
-    #   rr.metrics = [
-    #     self.metric("ga:sessions"),
-    #     self.metric("ga:goalCompletionsAll"),
-    #     self.metric("ga:costPerGoalConversion"),
-    #     self.metric("ga:avgSessionDuration")
-    #   ]
-    #   rr.date_ranges = [self.date_range(from_date, to_date)]
-    #   rr.filters_expression = "ga:campaign==" + campaign_name
-    #   grr.report_requests = [rr]
-    #   response = self.google_client.batch_get_reports(grr)
-    #   return self.parse_metrics(response.reports.first)
-    # else
+    header_rows = AppConfig.csv_header_columns.reject{|header| !header.include?("ga:")}.map{|header| header.first}
+    if campaign_name.present? && header_rows.any?
+      grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
+      rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
+      rr.view_id = uid
+      rr.metrics = header_rows.map{ |header| self.metric(header) }
+      rr.date_ranges = [self.date_range(from_date, to_date)]
+      rr.filters_expression = "ga:campaign==" + campaign_name
+      rr.dimensions = [self.dimension("ga:day")]
+      grr.report_requests = [rr]
+      response = self.google_client.batch_get_reports(grr)
+      return self.parse_metrics(response.reports.first)
+    else
       return {
         header_row: [],
         data_rows: [],
         summary_row: []
       }
-    # end
+    end
   end
 
   private
@@ -54,6 +51,12 @@ module GoogleAnalytics
     return range
   end
 
+  def self.dimension(name)
+    dimension = Google::Apis::AnalyticsreportingV4::Dimension.new
+    dimension.name = name
+    return dimension
+  end
+
   def self.metric(expression)
     metric = Google::Apis::AnalyticsreportingV4::Metric.new
     metric.expression = expression
@@ -63,7 +66,7 @@ module GoogleAnalytics
   def self.parse_metrics(report)
     parsed_metrics = {
       header_row: report.column_header.metric_header.metric_header_entries.map{|header| header.name},
-      data_rows: [],
+      data_rows: report.data.rows.map{|row| row.metrics.map{|metrics_row| metrics_row.values}.flatten },
       summary_row: report.data.totals.map{|total_row| total_row.values}.flatten
     }
     # Some of the metrics Google Analytics gives us should be modified
@@ -72,9 +75,13 @@ module GoogleAnalytics
       if header == "ga:avgSessionDuration"
         # Google gives us an avgSessionDuration in seconds, e.g. 36.92846216
         # which we need to turn into a readable time value, e.g. 00:00:37
-        avg_session_duration = parsed_metrics[:data_row][index].to_f.round
+        avg_session_duration = parsed_metrics[:summary_row][index].to_f.round
         parsed_metrics[:summary_row][index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
       end
+    end
+    # Lastly, switch each "ga:" header for it's nicer name
+    parsed_metrics[:header_row].each_with_index do |header, index|
+      parsed_metrics[:header_row][index] = AppConfig.csv_header_columns[header]
     end
     return parsed_metrics
   end

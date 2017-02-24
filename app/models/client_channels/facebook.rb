@@ -10,10 +10,14 @@ class ClientChannels::Facebook < ClientChannel
       range: date_range,
       time_increment: 1
     )
-    return {
-      client_channel_metrics: parse_facebook_insights(insights, optional),
-      additional_ga_metrics: GoogleAnalytics.fetch_and_parse_metrics(from_date, to_date, self.client.google_analytics_view_id, ga_campaign_name)
+    fb_metrics = parse_facebook_insights(insights, optional)
+    ga_metrics = GoogleAnalytics.fetch_and_parse_metrics(from_date, to_date, self.client.google_analytics_view_id, ga_campaign_name)
+    all_metrics = {
+      header_row: fb_metrics[:header_row].concat(ga_metrics[:header_row]),
+      data_rows: fb_metrics[:data_rows].each_with_index{|data_row, index| data_row.concat(ga_metrics[:data_rows][index]) },
+      summary_row: fb_metrics[:summary_row].concat(ga_metrics[:summary_row])
     }
+    return all_metrics
   end
 
   private
@@ -27,9 +31,9 @@ class ClientChannels::Facebook < ClientChannel
     # that aren't one of those, so they won't appear in the report
     if optional[:summary_metrics].present?
       # List of report headers in app config with following format {data_attribute: column_header}
-      parsed_insights[:header_row] = AppConfig.summary_header_columns.to_hash
+      parsed_insights[:header_row] = AppConfig.summary_header_columns.reject{|k,v| k.include?("ga:")}.to_hash
     else
-      parsed_insights[:header_row] = AppConfig.csv_header_columns.to_hash
+      parsed_insights[:header_row] = AppConfig.csv_header_columns.reject{|k,v| k.include?("ga:")}.to_hash
     end
 
     # Create data rows for each individual date within the date range searched
@@ -38,6 +42,7 @@ class ClientChannels::Facebook < ClientChannel
     insights_grouped_by_date.each do |that_days_insights|
       parsed_insights[:data_rows].push(make_row(parsed_insights[:header_row], that_days_insights))
     end
+    # Include a summary row, too, for displaying in the view
     parsed_insights[:summary_row] = make_row(parsed_insights[:header_row], insights)
 
     # Return header_row array instead of hash object with 'pretty' column headers
