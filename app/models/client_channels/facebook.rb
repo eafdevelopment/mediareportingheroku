@@ -67,18 +67,22 @@ class ClientChannels::Facebook < ClientChannel
       elsif insight == 'cpm'
         total_spend = total('spend', insights)
         impressions_per_thousand = total('impressions', insights)/1000
-        row.push((total_spend / impressions_per_thousand).round(2).to_s)
+        total_spend != 0 && impressions_per_thousand != 0 ? row.push((total_spend / impressions_per_thousand).round(2).to_s) : ''
       elsif insight == 'cpp'
         total_spend = total('spend', insights)
         total_reach = total('reach', insights)
-        row.push((total_spend / total_reach).round(5).to_s)
+        total_spend != 0 && total_reach != 0 ? row.push((total_spend / total_reach).round(5).to_s) : ''
       elsif insight == 'date_start' && date.present?
         row.push(date)
       elsif insight == 'account_name'
         row.push(self.client.name)
       elsif insight == 'campaign_name'
-        campaign = FacebookAds::AdCampaign.find(insights.first.campaign_id)
-        row.push(campaign['name'])
+        if insights.first && insights.first.campaign_id
+          campaign = FacebookAds::AdCampaign.find(insights.first.campaign_id)
+          row.push(campaign['name'])
+        else
+          row.push('')
+        end
       else
         row.push(insights.sum{ |i| i[insight].to_f }.to_s)
       end
@@ -97,7 +101,11 @@ class ClientChannels::Facebook < ClientChannel
   def average(a, b, insights)
     total_a = insights.sum{ |insight| insight[a].to_f }
     total_b = insights.sum{ |insight| insight[b].to_f }
-    total_a / total_b
+    if total_a == 0 && total_b == 0
+      0
+    else
+      total_a / total_b
+    end
   end
 
   def total(field, insights)
