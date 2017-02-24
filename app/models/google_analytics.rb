@@ -36,7 +36,7 @@ module GoogleAnalytics
 
   def self.google_client
     creds = Google::Auth::ServiceAccountCredentials.make_creds({
-      :json_key_io => File.open(Rails.root.join("private/analytics_client_secret.json").to_s),
+      :json_key_io => StringIO.new(JSON.parse(ENV["GOOGLE_CLIENT_SECRETS"].to_json)),
       :scope => "https://www.googleapis.com/auth/analytics.readonly"
     })
     client = Google::Apis::AnalyticsreportingV4::AnalyticsReportingService.new
