@@ -1,11 +1,12 @@
 .row
   .small-12.columns.searched
-    %h4 Your search...
+    %h2 #{@client.name} Report
+    %h4 Summary of your search
     %table#metrics-table
       %thead
         %tr
           %th Client
-          %th Campaign
+          %th Campaign Name
           %th Channel(s)
           %th From
           %th To
@@ -13,11 +14,12 @@
         %tr
           %td= @client.name
           %td= @campaign.name
-          %td= params[:channel].join(", ")
+          - params[:channel].each do |channel|
+            %td= channel.split('::').last
           %td= params[:date_from]
           %td= params[:date_to]
 
-    %h4 Your results...
+    %h4 #{params[:channel].first.split('::').last} summary metrics
     - if @summary_report.any?
       %table
         %tr

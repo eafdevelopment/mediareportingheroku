@@ -9,4 +9,12 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+
+  def remove_ignored_uid_fields!(params)
+    params.each do |k, v|
+      if !v[:uid].present?
+        params.delete k
+      end
+    end
+  end
 end

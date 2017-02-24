@@ -74,6 +74,12 @@ class ClientChannels::Facebook < ClientChannel
         row.push((total_spend / total_reach).round(5).to_s)
       elsif insight == 'date_start' && date.present?
         row.push(date)
+      elsif insight == 'account_name'
+        row.push(self.client.name)
+      elsif insight == 'campaign_name'
+        # puts insights.first.campaign_id
+        campaign = FacebookAds::AdCampaign.find(insights.first.campaign_id)
+        row.push(campaign['name'])
       else
         row.push(insights.sum{ |i| i[insight].to_f }.to_s)
       end

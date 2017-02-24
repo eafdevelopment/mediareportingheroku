@@ -16,6 +16,8 @@ default: &defaults
 
   csv_header_columns:
     date_start: 'Date'
+    account_name: 'Account Name'
+    campaign_name: 'Campaign Name'
     spend: 'Spend'
     impressions: 'Impressions'
     clicks: 'Clicks'

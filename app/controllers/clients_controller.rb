@@ -20,6 +20,7 @@ class ClientsController < ApplicationController
   end
 
   def create
+    remove_ignored_uid_fields!(params[:client]["client_channels_attributes"])
     @client = Client.new(client_params)
     if @client.save
       flash[:notice] = "Client successfully created."
@@ -39,6 +40,9 @@ class ClientsController < ApplicationController
   end
 
   def update
+    # TODO: This needs to be adjusted so a user can delete the value and it
+    # saves in the db as opposed to ignoring the empty string
+    remove_ignored_uid_fields!(params[:client]["client_channels_attributes"])
     if @client.update(client_params)
       flash[:notice] = "Client successfully updated."
       redirect_to client_path(@client)

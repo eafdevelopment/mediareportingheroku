@@ -28,7 +28,7 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    remove_ignored_campaign_channels!
+    remove_ignored_uid_fields!(params[:campaign]["campaign_channels_attributes"])
     # Create the campaign & campaign channels
     @campaign = Campaign.new(campaign_params)
     @campaign.client = @client
@@ -71,13 +71,5 @@ class CampaignsController < ApplicationController
 
   def find_campaign
     @campaign = Campaign.find(params[:id])
-  end
-
-  def remove_ignored_campaign_channels!
-    params[:campaign]["campaign_channels_attributes"].each do |k, v|
-      if !v[:uid].present?
-        params[:campaign]['campaign_channels_attributes'].delete k
-      end
-    end
   end
 end
