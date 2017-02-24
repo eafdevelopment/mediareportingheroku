@@ -14,6 +14,23 @@ default: &defaults
     - ClientChannels::Facebook
     - ClientChannels::Twitter
 
+  csv_header_columns:
+    date_start: 'Date'
+    spend: 'Spend'
+    impressions: 'Impressions'
+    clicks: 'Clicks'
+    cpm: 'CPM'
+    reach: 'Reach'
+    cpp: 'CPP'
+    ctr: 'CTR'
+    cpc: 'CPC'
+
+  summary_header_columns:
+    impressions: 'Impressions'
+    clicks: 'Clicks'
+    cpc: 'CPC'
+    ctr: 'CTR'
+
 development:
   <<: *defaults
 

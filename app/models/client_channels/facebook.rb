@@ -22,52 +22,60 @@ class ClientChannels::Facebook < ClientChannel
     # We need a header row e.g. ['impressions', 'clicks', 'cpc'] ...
     # plus a row of summed or averaged values
     parsed_insights = { data_rows: [], summary_row: [] }
-    parsed_insights[:header_row] = insights.first.map{ |key, val|
-      # (exclude IDs, non-float & non-date values for now, to simplify reporting)
-      (key == "date_start" || valid_float?(val)) && !key.include?("_id") ? key : ""
-    }.reject(&:blank?)
-    # if we have been given optional summary metrics, exclude any headers
+
+    # If we have been given optional summary metrics, exclude any headers
     # that aren't one of those, so they won't appear in the report
     if optional[:summary_metrics].present?
-      parsed_insights[:header_row].reject!{ |header| !optional[:summary_metrics].include?(header) }
+      # List of report headers in app config with following format {data_attribute: column_header}
+      parsed_insights[:header_row] = AppConfig.summary_header_columns.to_hash
+    else
+      parsed_insights[:header_row] = AppConfig.csv_header_columns.to_hash
     end
+
+    # Create data rows for each individual date within the date range searched
+    # Data rows are created from the columns in the summary table or csv report
     insights_grouped_by_date = insights.group_by(&:date_start)
     insights_grouped_by_date.each do |that_days_insights|
       parsed_insights[:data_rows].push(make_row(parsed_insights[:header_row], that_days_insights))
     end
     parsed_insights[:summary_row] = make_row(parsed_insights[:header_row], insights)
+
+    # Return header_row array instead of hash object with 'pretty' column headers
+    parsed_insights[:header_row] = parsed_insights[:header_row].values
+    
     return parsed_insights
   end
 
   def make_row(col_headers, insights)
-    # For each col_header, add the summed values to the data row
+    # For each col_header, add the summed values or calculate the relevant data row
     row = []
     date = nil
     if valid_date?(insights.first)
-      # if passed a set of insights grouped by date, the first value in 'insights'
+      # If passed a set of insights grouped by date, the first value in 'insights'
       # will be a date, so update insights to be the second value (the insights array)
       date = insights.first
       insights = insights.second
     end
-    col_headers.each do |header_item|
-      if header_item == 'ctr'
+
+    col_headers.each do |insight, header|
+      if insight == 'ctr'
         average_ctr = average('clicks', 'impressions', insights)
         row.push((average_ctr*100).round(3).to_s)
-      elsif header_item == 'cpc'
+      elsif insight == 'cpc'
         average_cpc = average('spend', 'clicks', insights)
         row.push(average_cpc.round(2).to_s)
-      elsif header_item == 'cpm'
+      elsif insight == 'cpm'
         total_spend = total('spend', insights)
         impressions_per_thousand = total('impressions', insights)/1000
         row.push((total_spend / impressions_per_thousand).round(2).to_s)
-      elsif header_item == 'cpp'
+      elsif insight == 'cpp'
         total_spend = total('spend', insights)
         total_reach = total('reach', insights)
         row.push((total_spend / total_reach).round(5).to_s)
-      elsif header_item == 'date_start' && date.present?
+      elsif insight == 'date_start' && date.present?
         row.push(date)
       else
-        row.push(insights.sum{ |insight| insight[header_item].to_f }.to_s)
+        row.push(insights.sum{ |i| i[insight].to_f }.to_s)
       end
     end
     return row

@@ -25,6 +25,7 @@ module Report
         metrics[:client_channel_metrics][:summary_row] + metrics[:additional_ga_metrics][:summary_row]
       )
     end
+    puts 'RETURNING A SUMMARY REPORT'
     return summary_report
   end
 
@@ -48,6 +49,7 @@ module Report
         metrics[:client_channel_metrics][:data_rows] + metrics[:additional_ga_metrics][:data_rows]
       )
     end
+    puts 'RETURNING A CSV_REPORT'
     return csv_report
   end
 
