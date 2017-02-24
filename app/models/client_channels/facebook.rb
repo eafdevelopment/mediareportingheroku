@@ -77,7 +77,6 @@ class ClientChannels::Facebook < ClientChannel
       elsif insight == 'account_name'
         row.push(self.client.name)
       elsif insight == 'campaign_name'
-        # puts insights.first.campaign_id
         campaign = FacebookAds::AdCampaign.find(insights.first.campaign_id)
         row.push(campaign['name'])
       else
