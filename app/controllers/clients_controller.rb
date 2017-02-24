@@ -14,9 +14,8 @@ class ClientsController < ApplicationController
 
   def new
     @client = Client.new
-    Rails.application.eager_load! #TODO: where does this belong in a config file?
-    ClientChannel.subclasses.each do |subclass|
-      @client.client_channels.build(type: subclass.name)
+    AppConfig.client_channel_subclasses.each do |subclass|
+      @client.client_channels.build(type: subclass)
     end
   end
 
@@ -34,9 +33,8 @@ class ClientsController < ApplicationController
   end
 
   def edit
-    Rails.application.eager_load! #TODO: where does this belong in a config file?
-    ClientChannel.subclasses.each do |subclass|
-      @client.client_channels.build(type: subclass.name) unless @client.client_channels.find_by(type: subclass.name)
+    AppConfig.client_channel_subclasses.each do |subclass|
+      @client.client_channels.build(type: subclass) unless @client.client_channels.find_by(type: subclass)
     end
   end
 
