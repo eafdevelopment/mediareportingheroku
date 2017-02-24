@@ -10,6 +10,10 @@ default: &defaults
     - ga:costPerGoalConversion
     - ga:avgSessionDuration
 
+  client_channel_subclasses:
+    - ClientChannels::Facebook
+    - ClientChannels::Twitter
+
 development:
   <<: *defaults
 
