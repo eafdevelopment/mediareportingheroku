@@ -1,15 +1,5 @@
 default: &defaults
 
-  summary_metrics:
-    - impressions
-    - ga:sessions
-    - clicks
-    - ctr
-    - cpc
-    - ga:goalCompletionsAll
-    - ga:costPerGoalConversion
-    - ga:avgSessionDuration
-
   client_channel_subclasses:
     - ClientChannels::Facebook
     - ClientChannels::Twitter
@@ -26,12 +16,20 @@ default: &defaults
     cpp: 'CPP'
     ctr: 'CTR'
     cpc: 'CPC'
+    'ga:sessions': 'Sessions'
+    'ga:avgSessionDuration': 'Average Session Duration'
+    'ga:goalCompletionsAll': 'Goal Completions (all)'
+    'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
   summary_header_columns:
     impressions: 'Impressions'
     clicks: 'Clicks'
     cpc: 'CPC'
     ctr: 'CTR'
+    'ga:sessions': 'Sessions'
+    'ga:avgSessionDuration': 'Average Session Duration'
+    'ga:goalCompletionsAll': 'Goal Completions (all)'
+    'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
 development:
   <<: *defaults

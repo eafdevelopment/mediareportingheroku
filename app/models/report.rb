@@ -16,7 +16,7 @@ module Report
         to_date,
         campaign_channel.uid,
         campaign_channel.google_analytics_campaign_name,
-        { summary_metrics: AppConfig.summary_metrics }
+        { summary_metrics: AppConfig.summary_header_columns.map(&:first) }
       )
       summary_report[:header_row].concat(
         metrics[:client_channel_metrics][:header_row] + metrics[:additional_ga_metrics][:header_row]
