@@ -73,7 +73,7 @@ class CampaignsController < ApplicationController
   end
 
   def remove_ignored_campaign_channel_uids
-    remove_ignored_uid_fields!(params[:client][:campaign_channels_attributes]) if params[:client]
+    remove_ignored_uid_fields!(params[:campaign][:campaign_channels_attributes]) if params[:campaign]
     true
   end
 end
