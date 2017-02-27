@@ -1,6 +1,7 @@
 default: &defaults
 
   client_channel_subclasses:
+    - ClientChannels::Adwords
     - ClientChannels::Facebook
     - ClientChannels::Instagram
     - ClientChannels::Twitter
