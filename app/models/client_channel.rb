@@ -17,4 +17,33 @@ class ClientChannel < ApplicationRecord
     self.class.name.split('::').last
   end
 
+  # Public: Fetch metrics for the client channel. Subclasses of ClientChannel
+  # should implement this!
+  #
+  # Parameters:
+  #
+  #   from_date - Start date for metrics
+  #
+  #   to_date - End date for metrics (inclusive)
+  #
+  #   uid - UID of 'thing' (probably a campaign) being fetched.
+  #
+  #   ga_campaign_name - The campaign in Google Analytics that correspond to 
+  #                      the requested campaign.
+  #
+  #   optional - Hash of extra parameters including:
+  #      
+  #      summary_metrics: Array of summary metrics desired, instead
+  #      of standard day-by-day metrics.
+  #
+  # Returns: A hash of:
+  #   
+  #   header_row: <...>
+  #   data_rows: <...>
+  #   summary_row: <...>
+  #
+  def fetch_metrics(from_date, to_date, uid, ga_campaign_name, optional={})
+    raise "Subclass should implement #fetch_metrics!"
+  end
+
 end
