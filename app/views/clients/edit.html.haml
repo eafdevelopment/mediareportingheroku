@@ -1,5 +1,5 @@
 .row.editClient
-  .small-12.columns
+  .large-6.columns
     %h3.eight-header.addCampaign-header Edit Client
     = form_for @client, url: {action: "update"} do |client_form|
       - if @client.errors.any?

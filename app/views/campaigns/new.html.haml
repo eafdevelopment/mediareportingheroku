@@ -1,5 +1,5 @@
 .row.addCampaign
-  .small-12.columns
+  .large-6.columns
     %h3.eight-header.addCampaign-header Add Campaign for #{@client.name}
     = form_for @campaign, url: {action: "create"} do |campaign_form|
       - if @campaign.errors.any?
@@ -10,8 +10,8 @@
       = campaign_form.text_field :name
 
       = campaign_form.fields_for :campaign_channels do |f|
-        = f.label :uid, "Unique campaign ID"
         %h5 #{name(f.object.client_channel)}
+        = f.label :uid, "Unique campaign ID"
         = f.hidden_field :client_channel_id, value: f.object.client_channel.id
         = f.text_field :uid
         %h5 Google Analytics

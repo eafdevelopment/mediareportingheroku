@@ -1,5 +1,5 @@
 .row.addClient
-  .small-12.columns
+  .large-6.columns
     %h3.eight-header.addCampaign-header Add Client
     = form_for @client, url: {action: "create"} do |client_form|
       - if @client.errors.any?
