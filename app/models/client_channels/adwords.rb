@@ -33,6 +33,11 @@ class ClientChannels::Adwords < ClientChannel
         :log_level => 'INFO' # or DEBUG
       }
     })
+
+    # Will raise an exception if authorization fails, but also will refresh
+    # the access token if it has expired (which it almost certainly will have)
+    adwords.authorize
+
     return adwords
   end
 
