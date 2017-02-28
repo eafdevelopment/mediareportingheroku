@@ -1,25 +1,35 @@
 .row.clients
   = link_to "+ Add New Client", new_client_path, class: 'button medium eight-button clients-button'
-  .small-12.columns.clients-box
+  .small-12.columns
     - @clients.each do |client|
-      .row
-        .small-6.columns
-          %h4.eight-link= link_to client.name, edit_client_path(client)
-          %p Google Analytics View ID: #{client.google_analytics_view_id}
-        .small-6.columns
-          = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small eight-button'
-      - if client.campaigns.any?
-        - client.campaigns.each do |campaign|
-          .callout
-            %p= campaign.name
-            %ul
-              - campaign.campaign_channels.each do |campaign_channel|
-                %li
-                  %strong
-                    = name(campaign_channel.client_channel)
-                  UID:
-                  = campaign_channel.uid
-            = link_to 'Edit Campaign', edit_client_campaign_path(client, campaign)
+      .clients-box.callout
+        .row
+          .small-6.columns.clients-box-name
+            %h4.eight-link
+              = link_to client.name, edit_client_path(client), class: 'clients-box-client-link'
+          .small-6.columns.clients-box-new-campaign
+            = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small eight-button'
+        - if client.campaigns.any?
+          .row
+            %table.client-table
+              %thead
+                %tr
+                  %th{width: "60%"} Campaign Name
+                  %th{width: "40%"} Channels
+              %tbody
+                - client.campaigns.each do |campaign|
+                  %tr
+                    %td
+                      = link_to edit_client_campaign_path(client, campaign), class: 'clients-box-campaign-link' do
+                        = campaign.name
+                    %td= campaign.campaign_channels.map { |c| c.client_channel.nice_name }.join(', ')
 
-      - else
-        No campaigns added yet.
+
+
+
+        - else
+          No campaigns added yet.
+
+:javascript
+  - scollableTable();
+
