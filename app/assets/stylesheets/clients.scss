@@ -22,6 +22,22 @@
 
   &-box {
     margin-top: 2rem;
+
+    &-new-campaign {
+      text-align: right;
+    }
+
+    &-client-link:hover {
+      text-decoration: underline;
+    }
+
+    &-campaign-link {
+      color: #000;
+    }
+
+    &-campaign-link:hover {
+      color: $btn-color;
+    }
   }
 
   &-button {
