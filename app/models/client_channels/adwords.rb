@@ -1,6 +1,3 @@
-require 'adwords_api'
-require 'googleauth'
-
 class ClientChannels::Adwords < ClientChannel
 
   def fetch_metrics #(from_date, to_date, uid, campaign_name)
@@ -27,17 +24,17 @@ class ClientChannels::Adwords < ClientChannel
     # END TEMP
     adwords = AdwordsApi::Api.new({
       :authentication => {
-          # :access_token => 'ya29.Glv_A7K4Hw_KmK21qwuvorWItBZCYjBSPYDRnm9Cjs9sie23gQbAv0Wn0MBMjuywcupT85GVmDqEl-wd2LDZWj8dF6Am86u9Arw_YlMCOrmb2lPZQfsM6zYV9I-c',
-          :method => 'OAUTH2_SERVICE_ACCOUNT',
-          :oauth2_issuer => 'marketing-reporting@abiding-arch-104914.iam.gserviceaccount.com',
-          :oauth2_keyfile => Rails.root.join("private", "analytics_client_secret.json").to_s,
-          # :method => 'OAuth2',
+          :access_token => ENV['ADWORDS_ACCESS_TOKEN'],
+          # :method => 'OAUTH2_SERVICE_ACCOUNT',
+          # :oauth2_issuer => 'marketing-reporting@abiding-arch-104914.iam.gserviceaccount.com',
+          # :oauth2_keyfile => Rails.root.join("private", "analytics_client_secret.json").to_s,
+          :method => 'OAuth2',
           # :oauth2_key => ENV['GOOGLE_CLIENT_SECRETS'],
-          # :oauth2_client_id => '805050819915-4oa7i4v3c1mois8rd1f3e4389cq0acl8.apps.googleusercontent.com',
-          # :oauth2_client_secret => 'KEPuO1x693iP4bW8_jF-PcOz',
-          # :refresh_token => '1/xRj-7WXXpVPTD4k7ss8m73Ivph4zFudEznn_StRVb7M',
-          :developer_token => 'VLRWrvozHMMogpI6rJdsBQ',
-          :user_agent => 'eight&four'
+          :oauth2_client_id => ENV['ADWORDS_OAUTH2_CLIENT_ID'],
+          :oauth2_client_secret => ENV['ADWORDS_OAUTH2_CLIENT_SECRET'],
+          :refresh_token => ENV['ADWORDS_REFRESH_TOKEN'],
+          :developer_token => ENV['ADWORDS_DEVELOPER_TOKEN'],
+          :user_agent => 'eight&four',
           :client_customer_id => '316-190-9175', #'529-163-1130',
       },
       :service => {
