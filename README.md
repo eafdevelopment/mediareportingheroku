@@ -17,4 +17,4 @@ $foreman start
 ### Useful links for working with the APIs & SDKs
 
 * [This comment on a gist](https://gist.github.com/joost/5344705#gistcomment-1982619) gives an example of making a batch_get_reports request from the Google Analytics API
-* There's also [a Query Explorer for Google APIs](https://ga-dev-tools.appspot.com/query-explorer/)!
+* There's also [a Query Explorer for Google Analytics](https://ga-dev-tools.appspot.com/query-explorer/)!

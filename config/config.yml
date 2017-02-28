@@ -19,17 +19,18 @@ default: &defaults
     ctr: 'CTR'
     cpc: 'CPC'
     'ga:sessions': 'Sessions'
-    'ga:avgSessionDuration': 'Average Session Duration'
+    'ga:avgSessionDuration': 'Avg Session Duration'
     'ga:goalCompletionsAll': 'Goal Completions (all)'
     'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
   summary_header_columns:
     impressions: 'Impressions'
     clicks: 'Clicks'
+    spend: 'Spend'
     cpc: 'CPC'
     ctr: 'CTR'
     'ga:sessions': 'Sessions'
-    'ga:avgSessionDuration': 'Average Session Duration'
+    'ga:avgSessionDuration': 'Avg Session Duration'
     'ga:goalCompletionsAll': 'Goal Completions (all)'
     'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
@@ -37,8 +38,9 @@ default: &defaults
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>
     oauth2_client_secret: <%= ENV["ADWORDS_OAUTH2_CLIENT_SECRET"] %>
     developer_token: <%= ENV["ADWORDS_DEVELOPER_TOKEN"] %>
-    access_token: <%= ENV["ADWORDS_ACCESS_TOKEN"] %>
-    refresh_token: <%= ENV["ADWORDS_REFRESH_TOKEN"] %>
+    oauth2_token: 
+      access_token: <%= ENV["ADWORDS_ACCESS_TOKEN"] %>
+      refresh_token: <%= ENV["ADWORDS_REFRESH_TOKEN"] %>
 
 
 

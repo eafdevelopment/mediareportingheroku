@@ -73,7 +73,8 @@ module GoogleAnalytics
     # Some of the metrics Google Analytics gives us should be modified
     # for display in the front-end
     parsed_metrics[:header_row].each_with_index do |header, index|
-      if header == "ga:avgSessionDuration"
+      case header
+      when "ga:avgSessionDuration"
         # Google gives us an avgSessionDuration in seconds, e.g. 36.92846216
         # which we need to turn into a readable time value, e.g. 00:00:37
         avg_session_duration = parsed_metrics[:summary_row][index].to_f.round
@@ -81,6 +82,12 @@ module GoogleAnalytics
         parsed_metrics[:data_rows].each do |data_row|
           avg_session_duration = data_row[index].to_f.round
           data_row[index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
+        end
+      when "ga:costPerGoalConversion"
+        # This metric must be calculated later, from spend / total goal conversions
+        parsed_metrics[:summary_row][index] = ""
+        parsed_metrics[:data_rows].each do |data_row|
+          data_row[index] = ""
         end
       end
     end
