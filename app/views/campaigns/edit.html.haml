@@ -1,4 +1,8 @@
 .row
+  .small-12.columns.client-back
+    = link_to "← back to all clients", clients_path, id: 'back-link', class: 'client-link'
+
+.row.editCampaign
   .large-6.columns
     %h4 Edit campaign for #{@client.name}
 
@@ -17,7 +21,10 @@
         = f.text_field :uid
         = f.label "Google Analytics Campaign Name"
         = f.text_field :google_analytics_campaign_name
-
+        - if f.object.persisted?
+          = f.label :_destroy, "Remove campaign on #{f.object.client_channel.nice_name}"
+          = f.check_box :_destroy
+          %br
       = campaign_form.submit "Update Campaign", class: 'button small eight-button'
 
     = link_to "Delete Campaign", client_campaign_path(@client, @campaign), :confirm => "Are you sure?", :method => :delete

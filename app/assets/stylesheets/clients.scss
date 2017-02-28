@@ -30,6 +30,28 @@
     color: black;
     font-weight: 500;
   }
+}
 
+.addClient {
+  padding-top: 2rem;
+}
 
+.showClient {
+  padding-top: 2rem;
+}
+
+.editClient {
+  padding-top: 2rem;
+}
+
+.client-back {
+  margin-top: 1rem;
+}
+
+.client-link {
+  color: #000;
+}
+
+.client-link:hover {
+  color: $btn-color;
 }

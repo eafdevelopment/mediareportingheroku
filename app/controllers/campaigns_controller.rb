@@ -69,7 +69,7 @@ class CampaignsController < ApplicationController
   private
 
   def campaign_params
-    params.require(:campaign).permit(:name, campaign_channels_attributes: [:id, :client_channel_id, :google_analytics_campaign_name, :uid])
+    params.require(:campaign).permit(:name, campaign_channels_attributes: [:id, :client_channel_id, :google_analytics_campaign_name, :uid, :_destroy])
   end
 
   def find_client

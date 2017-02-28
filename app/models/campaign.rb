@@ -5,6 +5,6 @@ class Campaign < ApplicationRecord
   belongs_to :client, inverse_of: :campaigns
   has_many :campaign_channels, inverse_of: :campaign, dependent: :destroy
 
-  accepts_nested_attributes_for :campaign_channels
+  accepts_nested_attributes_for :campaign_channels, allow_destroy: true
   validates_uniqueness_of :name, scope: :client
 end
