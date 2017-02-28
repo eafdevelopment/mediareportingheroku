@@ -32,7 +32,7 @@ gem 'googleauth'
 # Google Analytics API integration
 gem 'google-api-client', '~> 0.9'
 # Google AdWords API integration
-gem 'google-adwords-api'
+gem 'google-adwords-api', require: 'adwords_api'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
