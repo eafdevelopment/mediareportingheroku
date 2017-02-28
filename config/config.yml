@@ -6,33 +6,36 @@ default: &defaults
     - ClientChannels::Instagram
     - ClientChannels::Twitter
 
-  csv_header_columns:
-    date_start: 'Date'
-    account_name: 'Account Name'
-    campaign_name: 'Campaign Name'
-    spend: 'Spend'
-    impressions: 'Impressions'
-    clicks: 'Clicks'
-    cpm: 'CPM'
-    reach: 'Reach'
-    cpp: 'CPP'
-    ctr: 'CTR'
-    cpc: 'CPC'
-    'ga:sessions': 'Sessions'
-    'ga:avgSessionDuration': 'Avg Session Duration'
-    'ga:goalCompletionsAll': 'Goal Completions (all)'
-    'ga:costPerGoalConversion': 'Cost per Goal Conversion'
-
-  summary_header_columns:
-    impressions: 'Impressions'
-    clicks: 'Clicks'
-    spend: 'Spend'
-    cpc: 'CPC'
-    ctr: 'CTR'
-    'ga:sessions': 'Sessions'
-    'ga:avgSessionDuration': 'Avg Session Duration'
-    'ga:goalCompletionsAll': 'Goal Completions (all)'
-    'ga:costPerGoalConversion': 'Cost per Goal Conversion'
+  facebook_headers:
+    for_csv:
+      date_start: 'Date'
+      account_name: 'Account Name'
+      campaign_name: 'Campaign Name'
+      spend: 'Spend'
+      impressions: 'Impressions'
+      clicks: 'Clicks'
+      cpm: 'CPM'
+      reach: 'Reach'
+      cpp: 'CPP'
+      ctr: 'CTR'
+      cpc: 'CPC'
+    for_summary:
+      impressions: 'Impressions'
+      clicks: 'Clicks'
+      spend: 'Spend'
+      cpc: 'CPC'
+      ctr: 'CTR'
+  google_analytics_headers:
+    for_csv:
+      'ga:sessions': 'Sessions'
+      'ga:avgSessionDuration': 'Avg Session Duration'
+      'ga:goalCompletionsAll': 'Goal Completions (all)'
+      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
+    for_summary:
+      'ga:sessions': 'Sessions'
+      'ga:avgSessionDuration': 'Avg Session Duration'
+      'ga:goalCompletionsAll': 'Goal Completions (all)'
+      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
   adwords:
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>

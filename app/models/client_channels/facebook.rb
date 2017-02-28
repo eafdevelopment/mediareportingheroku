@@ -30,11 +30,11 @@ class ClientChannels::Facebook < ClientChannel
 
     # If we have been given optional summary metrics, exclude any headers
     # that aren't one of those, so they won't appear in the report
-    if optional[:summary_metrics].present?
+    if optional[:summary_metrics]
       # List of report headers in app config with following format {data_attribute: column_header}
-      parsed_insights[:header_row] = AppConfig.summary_header_columns.reject{|k,v| k.include?("ga:")}.to_hash
+      parsed_insights[:header_row] = AppConfig.facebook_headers.for_summary.to_hash
     else
-      parsed_insights[:header_row] = AppConfig.csv_header_columns.reject{|k,v| k.include?("ga:")}.to_hash
+      parsed_insights[:header_row] = AppConfig.facebook_headers.for_csv.to_hash
     end
 
     # Create data rows for each individual date within the date range searched.

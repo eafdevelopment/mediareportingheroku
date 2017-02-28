@@ -12,7 +12,7 @@ module Report
         to_date,
         campaign_channel.uid,
         campaign_channel.google_analytics_campaign_name,
-        { summary_metrics: AppConfig.summary_header_columns.map(&:first) }
+        { summary_metrics: true }
       )
       summary_report[:header_row] = metrics[:header_row]
       summary_report[:summary_row] = metrics[:summary_row]
