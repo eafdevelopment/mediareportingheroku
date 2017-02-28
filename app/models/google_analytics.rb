@@ -1,6 +1,3 @@
-require 'google/apis/analyticsreporting_v4'
-require 'googleauth'
-
 module GoogleAnalytics
 
   def self.fetch_and_parse_metrics(from_date, to_date, uid, campaign_name)
@@ -11,7 +8,7 @@ module GoogleAnalytics
     #
     # IMPORTANT: GA allows us to request up to 5 reports, but currently our
     # app will only look at the first returned report
-    header_rows = AppConfig.csv_header_columns.reject{|header| !header.include?("ga:")}.map{|header| header.first}
+    header_rows = AppConfig.google_analytics_headers.for_csv.map(&:first)
     if campaign_name.present? && header_rows.any?
       grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
       rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
@@ -93,7 +90,7 @@ module GoogleAnalytics
     end
     # Lastly, switch each "ga:" header for it's nicer name
     parsed_metrics[:header_row].each_with_index do |header, index|
-      parsed_metrics[:header_row][index] = AppConfig.csv_header_columns[header]
+      parsed_metrics[:header_row][index] = AppConfig.google_analytics_headers.for_csv[header]
     end
     return parsed_metrics
   end

@@ -28,9 +28,9 @@ gem 'yappconfig', '~> 0.3.1'
 # Facebook Marketing API integration
 gem 'facebook_ads', '~> 0.1'
 # Google's official Ruby client library for oauth2
-gem 'googleauth'
+gem 'googleauth', require: 'googleauth'
 # Google Analytics API integration
-gem 'google-api-client', '~> 0.9'
+gem 'google-api-client', '~> 0.9', require: 'google/apis/analyticsreporting_v4'
 # Google AdWords API integration
 gem 'google-adwords-api', require: 'adwords_api'
 # For Twitter API integration
