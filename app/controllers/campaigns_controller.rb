@@ -42,9 +42,16 @@ class CampaignsController < ApplicationController
 
   def edit
     @client_channels = @client.client_channels.all
+    @client_channels.each do |client_channel|
+      campaign_channels = @campaign.campaign_channels.map{ |c| c.client_channel }
+      unless campaign_channels.include?(client_channel)
+        @campaign.campaign_channels.build(client_channel: client_channel)
+      end
+    end
   end
 
   def update
+    remove_ignored_uid_fields!(params[:campaign]["campaign_channels_attributes"])
     if @campaign.update(campaign_params)
       flash[:notice] = "Campaign successfully updated"
       redirect_to clients_path

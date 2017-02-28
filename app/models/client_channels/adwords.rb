@@ -37,8 +37,8 @@ class ClientChannels::Adwords < ClientChannel
           # :oauth2_client_secret => 'KEPuO1x693iP4bW8_jF-PcOz',
           # :refresh_token => '1/xRj-7WXXpVPTD4k7ss8m73Ivph4zFudEznn_StRVb7M',
           :developer_token => 'VLRWrvozHMMogpI6rJdsBQ',
-          :user_agent => 'eight&four'
-          :client_customer_id => '316-190-9175', #'529-163-1130',
+          :user_agent => 'eight&four',
+          :client_customer_id => '316-190-9175' #'529-163-1130',
       },
       :service => {
         :environment => 'PRODUCTION'
