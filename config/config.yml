@@ -42,8 +42,6 @@ default: &defaults
       access_token: <%= ENV["ADWORDS_ACCESS_TOKEN"] %>
       refresh_token: <%= ENV["ADWORDS_REFRESH_TOKEN"] %>
 
-
-
 development:
   <<: *defaults
 
