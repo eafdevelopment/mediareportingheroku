@@ -20,7 +20,7 @@
           %td= params[:date_to]
 
     %h4 #{params[:channel].first.split('::').last} summary metrics
-    - if @summary_report.any?
+    - if @summary_report.any? && @summary_report[:header_row] && @summary_report[:summary_row]
       %table
         %tr
           - @summary_report[:header_row].each do |header_item|
