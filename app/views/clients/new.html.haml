@@ -20,9 +20,7 @@
         %h4 Client account on #{f.object.nice_name}?
         = f.label :uid, "Unique account ID"
 
-        %p.form-helper
-          - if f.object.nice_name == 'Facebook'
-            Select the relevant account from dropdown menu in the top left hand corner of your Facebook Ad Account. Copy the account ID as it appeaars next to the account name, or from the URL
+        = render partial: '/clients/partials/new_client_form_helper', locals: {channel: f.object.nice_name}
 
         = f.hidden_field :type, value: f.object.class.name
         = f.text_field :uid

@@ -14,12 +14,16 @@
       = campaign_form.text_field :name
 
       = campaign_form.fields_for :campaign_channels do |f|
+
         %h5 #{name(f.object.client_channel)}
         = f.label :uid, "Unique campaign ID"
+        = render partial: '/campaigns/partials/new_campaign_form_helper', locals: {channel: f.object.client_channel.nice_name}
         = f.hidden_field :client_channel_id, value: f.object.client_channel.id
         = f.text_field :uid
+
         %h5 Google Analytics
         = f.label "Google Analytics Campaign Name"
+        %p.form-helper In the client's Google Analaytics dashboard, go to 'Acquisition' and select 'All Campaigns' from the Campaign dropdown in left hand menu, copy the campaign name
         = f.text_field :google_analytics_campaign_name
 
       = campaign_form.submit "Add Campaign", class: 'button small eight-button'

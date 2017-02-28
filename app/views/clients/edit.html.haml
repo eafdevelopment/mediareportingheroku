@@ -12,12 +12,16 @@
             %li= msg
       = client_form.label :name
       = client_form.text_field :name, required: true
-      = client_form.label :google_analytics_view_id
+      = client_form.label :google_analytics_view_id, "Google Analytics Account ID"
+      %p.form-helper In Google Analytics Admin section: select 'Account Name', select 'Property', click 'View Settings', and copy the 'View ID'
       = client_form.text_field :google_analytics_view_id
 
       = client_form.fields_for :client_channels do |f|
         %h4 Client account on #{f.object.nice_name}?
         = f.label :uid, "Unique account ID"
+
+        = render partial: '/clients/partials/new_client_form_helper', locals: {channel: f.object.nice_name}
+
         = f.hidden_field :type, value: f.object.class.name
         = f.text_field :uid
 
