@@ -19,17 +19,18 @@ default: &defaults
     ctr: 'CTR'
     cpc: 'CPC'
     'ga:sessions': 'Sessions'
-    'ga:avgSessionDuration': 'Average Session Duration'
+    'ga:avgSessionDuration': 'Avg Session Duration'
     'ga:goalCompletionsAll': 'Goal Completions (all)'
     'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
   summary_header_columns:
     impressions: 'Impressions'
     clicks: 'Clicks'
+    spend: 'Spend'
     cpc: 'CPC'
     ctr: 'CTR'
     'ga:sessions': 'Sessions'
-    'ga:avgSessionDuration': 'Average Session Duration'
+    'ga:avgSessionDuration': 'Avg Session Duration'
     'ga:goalCompletionsAll': 'Goal Completions (all)'
     'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
