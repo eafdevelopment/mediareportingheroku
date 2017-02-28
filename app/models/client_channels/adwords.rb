@@ -7,7 +7,7 @@ class ClientChannels::Adwords < ClientChannel
     # client_customer_id, which is the account ID e.g. for Dirty Martini in AdWords,
     # which needs to be set before requesting info about that account's campaigns
     #
-    # adwords_client.config.set("authentication.client_customer_id", "529-163-1130")
+    adwords_client.config.set("authentication.client_customer_id", "752-213-4824")
     campaign_service = adwords_client.service(:CampaignService, :v201609)
     campaigns = campaign_service.get({:fields => ['Id', 'Name', 'Status']})
     puts "> campaigns: " + campaigns.inspect
@@ -17,8 +17,8 @@ class ClientChannels::Adwords < ClientChannel
 
   def get_adwords_client
     authentication_hash = AppConfig.adwords.merge({
-      user_agent: 'eight&four',
-      client_customer_id: '316-190-9175'
+      user_agent: 'eight&four'
+      # client_customer_id: '316-190-9175'
     })
 
     adwords = AdwordsApi::Api.new({
