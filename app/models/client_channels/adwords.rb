@@ -1,8 +1,6 @@
 class ClientChannels::Adwords < ClientChannel
 
   def fetch_metrics #(from_date, to_date, uid, campaign_name)
-    # Find and return metrics from Google AdWords
-    adwords_client = get_adwords_client
     # The following line will apparently help us programmatically set the correct
     # client_customer_id, which is the account ID e.g. for Dirty Martini in AdWords,
     # which needs to be set before requesting info about that account's campaigns
@@ -15,13 +13,23 @@ class ClientChannels::Adwords < ClientChannel
 
   private
 
-  def get_adwords_client
-    authentication_hash = AppConfig.adwords.merge({
-      user_agent: 'eight&four'
-      # client_customer_id: '316-190-9175'
-    })
+  # Internal: Build and return a new Adwords API client. Ensures that the
+  # client has a valid un-expired token.
+  #
+  # Subsequent calls to this method will return the same initialized client.
+  def adwords_client
+    if @adwords_client
+      # Ensure token hasn't expired
+      @adwords_client.authorize
+      update authentication: @adwords_client.get_auth_handler.get_token
 
-    adwords = AdwordsApi::Api.new({
+      return @adwords_client
+    end
+  
+    authentication_hash = AppConfig.adwords.deep_dup
+    authentication_hash[:oauth2_token].merge!(self.authentication)
+
+    @adwords_client = AdwordsApi::Api.new({
       :authentication => authentication_hash,
       :service => {
         :environment => 'PRODUCTION'
@@ -34,11 +42,17 @@ class ClientChannels::Adwords < ClientChannel
       }
     })
 
-    # Will raise an exception if authorization fails, but also will refresh
-    # the access token if it has expired (which it almost certainly will have)
-    adwords.authorize
+    # Try and get a new access token if it's expired.
+    token = @adwords_client.authorize
 
-    return adwords
+    # AdwordsApi does nothing if issued_at is nil (for example, if we've never
+    # requested an access token before for this client channel), but for us
+    # that means we definitely want to get a new one!
+    @adwords_client.get_auth_handler.refresh_token! if !token[:issued_at]
+
+    update authentication: @adwords_client.get_auth_handler.get_token
+
+    return @adwords_client
   end
 
 end
