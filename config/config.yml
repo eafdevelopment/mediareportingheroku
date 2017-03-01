@@ -6,6 +6,18 @@ default: &defaults
     - ClientChannels::Instagram
     - ClientChannels::Twitter
 
+  adwords_headers:
+    for_csv:
+      campaign: 'Campaign'
+      cost: 'Cost'
+      impressions: 'Impressions'
+      clicks: 'Clicks'
+      ctr: 'CTR'
+      cpc: 'CPC'
+    for_summary:
+      campaign: 'Campaign'
+      cost: 'Cost'
+      impressions: 'Impressions'
   facebook_headers:
     for_csv:
       date_start: 'Date'
