@@ -1,13 +1,30 @@
 class ClientChannels::Adwords < ClientChannel
 
-  def fetch_metrics(from_date, to_date, uid, campaign_name, optional={})
-    # Find and return metrics from Google AdWords
-    puts "> self.uid: " + self.uid.inspect
-    adwords_client.config.set("authentication.client_customer_id", self.uid) # DMU Intl: "752-213-4824"
-    campaign_service = adwords_client.service(:CampaignService, :v201609)
-    campaigns = campaign_service.get({:fields => ['Id', 'Name', 'Status']})
-    puts "> campaigns: " + campaigns.inspect
+  # For testing in console:
+  # ClientChannel.last.fetch_metrics('2017-02-10', '2017-02-17', '749546343', 'india_recruitment_sept_2017')
 
+  def fetch_metrics(from_date, to_date, adwords_campaign_uid, ga_campaign_name, optional={})
+    # Find and return metrics from Google AdWords
+    adwords_client.config.set("authentication.client_customer_id", self.uid) # DMU Intl: "752-213-4824"
+    report_utils = adwords_client.report_utils()
+    # Here we only expect reports that fit into memory. For large reports
+    # you may want to save them to files and serve separately.
+    report_data = report_utils.download_report(report_definition(adwords_campaign_uid, from_date, to_date))
+    puts "> report_data:  " + report_data.inspect
+    parsed_data = xml_doc  = Nokogiri::XML(report_data)
+    puts "> parsed_data" + parsed_data.inspect
+
+    # fetch from GA metrics, if ga_campaign_name.present?
+
+    # complete the calculated metrics (CTR, CPC, cost per goal conversion [later])
+
+    # turn into arrays as rows, to return to Report ready for view or CSV
+    adwords_metrics = {
+      header_row: [],
+      data_rows: [],
+      summary_row: []
+    }
+    return adwords_metrics
   end
 
   private
@@ -52,6 +69,29 @@ class ClientChannels::Adwords < ClientChannel
     update authentication: @adwords_client.get_auth_handler.get_token
 
     return @adwords_client
+  end
+
+  def report_definition(campaign_id, from_date, to_date)
+    fields = AppConfig.adwords_headers.for_csv.map(&:first)
+    fields.push('Date') # for segmenting the results by day
+    return {
+      :selector => {
+        :fields => fields,
+        :predicates => {
+          :field => 'CampaignId',
+          :operator => 'IN',
+          :values => [campaign_id]
+        },
+        :date_range => {
+          :min => from_date.gsub(/\D/, ''),
+          :max => to_date.gsub(/\D/, '')
+        }
+      },
+      :report_name => 'AdWords Campaign Performance Report',
+      :report_type => 'CAMPAIGN_PERFORMANCE_REPORT',
+      :download_format => 'XML',
+      :date_range_type => 'CUSTOM_DATE'
+    }
   end
 
 end

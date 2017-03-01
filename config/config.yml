@@ -8,16 +8,15 @@ default: &defaults
 
   adwords_headers:
     for_csv:
-      campaign: 'Campaign'
-      cost: 'Cost'
-      impressions: 'Impressions'
-      clicks: 'Clicks'
-      ctr: 'CTR'
-      cpc: 'CPC'
+      CampaignName: 'Campaign'
+      Impressions: 'Impressions'
+      Clicks: 'Clicks'
+      Cost: 'Cost'
     for_summary:
-      campaign: 'Campaign'
-      cost: 'Cost'
-      impressions: 'Impressions'
+      CampaignName: 'Campaign'
+      Impressions: 'Impressions'
+      Clicks: 'Clicks'
+      Cost: 'Cost'
   facebook_headers:
     for_csv:
       date_start: 'Date'
