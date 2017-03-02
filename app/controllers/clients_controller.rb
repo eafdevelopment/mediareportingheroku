@@ -59,7 +59,7 @@ class ClientsController < ApplicationController
   private
 
   def client_params
-    params.require(:client).permit(:name, :google_analytics_view_id, client_channels_attributes: [:id, :type, :uid])
+    params.require(:client).permit(:name, :google_analytics_view_id, client_channels_attributes: [:id, :type, :uid, :_destroy])
   end
 
   def find_client

@@ -25,6 +25,11 @@
         = f.hidden_field :type, value: f.object.class.name
         = f.text_field :uid
 
+        - if f.object.persisted?
+          = f.label :_destroy, "Remove channel for #{@client.name}"
+          = f.check_box :_destroy
+          %br
+
       = client_form.submit "Update Client", class: 'button small eight-button'
     
     %p WARNING! Deleting a client will delete all of their campaigns and other associated data from this application.
