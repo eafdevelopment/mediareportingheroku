@@ -1,53 +1,69 @@
 class ClientChannels::Facebook < ClientChannel
 
-  def fetch_metrics(from_date, to_date, uid, ga_campaign_name, optional={})
+  def generate_report_all_campaigns(from, to)
+    headers = AppConfig.facebook_headers.for_csv.map(&:first)
+    all_metrics = {
+      header_row: AppConfig.facebook_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last)),
+      data_rows: []
+    }
+
+    # Find account and all campaigns for that account
+    FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
+    account = FacebookAds::AdAccount.find(self.uid)
+    all_campaigns = account.ad_campaigns(effective_status: ['ACTIVE', 'PAUSED'])
+
+    # Call fetch metrics on all the campaigns
+    all_campaigns.each do |campaign|
+      # Getting facebook and analytics metrics in rows per day
+      campaign_metrics = self.fetch_metrics(from, to, campaign.id, campaign.name, headers)
+      all_metrics[:data_rows].concat(campaign_metrics[:data_rows])
+    end
+
+    # Needs to return an actual CSV
+    return to_csv(all_metrics)
+  end
+
+  def fetch_metrics(from_date, to_date, uid, name, headers, optional={})
     # Find and return Insights from a Facebook campaign, and any
     # Google Analytics metrics that we want with them
-    FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
     ad_campaign = FacebookAds::AdCampaign.find(uid)
     date_range = Date.parse(from_date)..Date.parse(to_date)
     insights = ad_campaign.ad_insights(
       range: date_range,
       time_increment: 1
     )
-    fb_metrics = parse_facebook_insights(insights, optional)
-    ga_metrics = GoogleAnalytics.fetch_and_parse_metrics(from_date, to_date, self.client.google_analytics_view_id, ga_campaign_name)
-    all_metrics = {
-      header_row: fb_metrics[:header_row].concat(ga_metrics[:header_row]),
-      data_rows: fb_metrics[:data_rows].each_with_index{|data_row, index| data_row.concat(ga_metrics[:data_rows][index]) unless ga_metrics[:data_rows][index].nil? },
-      summary_row: fb_metrics[:summary_row].concat(ga_metrics[:summary_row])
+
+    fb_metrics = parse_facebook_insights(insights, headers, optional)
+    ga_metrics = GoogleAnalytics.fetch_and_parse_metrics(from_date, to_date, self.client.google_analytics_view_id, name)
+
+    metrics = {
+      data_rows: fb_metrics[:data_rows].each_with_index{ |data_row, index| data_row.concat(ga_metrics[:data_rows][index]) unless ga_metrics[:data_rows][index].nil? }
     }
-    all_metrics_with_calculations = complete_calculations(all_metrics)
-    return all_metrics_with_calculations
+
+    return metrics
   end
 
   private
 
-  def parse_facebook_insights(insights, optional)
-    # We need a header row e.g. ['impressions', 'clicks', 'cpc'] ...
-    # plus a row of summed or averaged values
-    parsed_insights = { data_rows: [], summary_row: [] }
-
-    # If we have been given optional summary metrics, exclude any headers
-    # that aren't one of those, so they won't appear in the report
-    if optional[:summary_metrics]
-      # List of report headers in app config with following format {data_attribute: column_header}
-      parsed_insights[:header_row] = AppConfig.facebook_headers.for_summary.to_hash
-    else
-      parsed_insights[:header_row] = AppConfig.facebook_headers.for_csv.to_hash
+  def to_csv(all_metrics)
+    csv_report = CSV.generate do |csv|
+      csv << all_metrics[:header_row]
+      all_metrics[:data_rows].each do |data_row|
+        csv << data_row
+      end
     end
+    return csv_report
+  end
+
+  def parse_facebook_insights(insights, headers, optional)
+    parsed_insights = { data_rows: [] }
 
     # Create data rows for each individual date within the date range searched.
     # Data rows are created from the column headers required for the summary table or csv report.
     insights_grouped_by_date = insights.group_by(&:date_start)
     insights_grouped_by_date.each do |that_days_insights|
-      parsed_insights[:data_rows].push(make_row(parsed_insights[:header_row], that_days_insights))
+      parsed_insights[:data_rows].push(make_row(headers, that_days_insights))
     end
-    # Include a summary row, too, for displaying in the view
-    parsed_insights[:summary_row] = make_row(parsed_insights[:header_row], insights)
-
-    # Return header_row array instead of hash object with 'pretty' column headers
-    parsed_insights[:header_row] = parsed_insights[:header_row].values
     
     return parsed_insights
   end
@@ -97,10 +113,6 @@ class ClientChannels::Facebook < ClientChannel
     end
     row = strip_trailing_zeros(row)
     return row
-  end
-
-  def valid_float?(value)
-    !!Float(value) rescue false
   end
 
   def valid_date?(value)
