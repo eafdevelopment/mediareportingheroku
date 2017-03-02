@@ -1,5 +1,8 @@
 %p.form-helper
-  - if channel == 'Facebook'
-    Select an account from the dropdown menu in the top left hand corner of your Facebook Ad Account. Copy the account ID as it appeaars next to the account name, or from the URL
   - if channel == 'Twitter'
     Log in to your Twitter account, click the account name in the top right and go to 'Account settings', copy the unique ID displayed below the form for naming your account
+  - elsif channel == 'Adwords'
+    In your AdWords dashboard on the 'Accounts' page, copy the unique ID displayed under the relevant account name
+  - elsif channel == 'Facebook' || 'Instagram'
+    Select an account from the dropdown menu in the top left hand corner of your Facebook Ad Account. Copy the account ID as it appeaars next to the account name, or from the URL
+

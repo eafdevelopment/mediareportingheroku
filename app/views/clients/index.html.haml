@@ -7,8 +7,6 @@
           .small-6.columns.clients-box-name
             %h4.eight-link
               = link_to client.name, edit_client_path(client), class: 'clients-box-client-link'
-          .small-6.columns.clients-box-new-campaign
-            = link_to "+ New Campaign", new_client_campaign_path(client), class: 'button small eight-button'
         - if client.campaigns.any?
           .row
             %table.client-table
@@ -22,13 +20,7 @@
                     %td
                       = link_to edit_client_campaign_path(client, campaign), class: 'clients-box-campaign-link' do
                         = campaign.name
-                    %td= campaign.campaign_channels.map { |c| c.client_channel.nice_name }.join(', ')
-
-
-
-
-        - else
-          No campaigns added yet.
+                    %td= campaign.campaign_channels.map { |c| c.client_channel.nice_name if c.client_channel }.join(', ')
 
 :javascript
   - scollableTable();

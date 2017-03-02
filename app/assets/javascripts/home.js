@@ -1,7 +1,6 @@
 $(document).ready(function() {
 
   $('#client_select').on('change', function() {
-
     var clientId = $(this).children('option:selected').first().val();
     if (clientId) {
       var url = $(this).data('ajaxUrl').replace('_CLIENT_ID_', clientId);
