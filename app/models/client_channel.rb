@@ -12,9 +12,7 @@ class ClientChannel < ApplicationRecord
   validates :uid, presence: true
 
   # Methods
-
   def nice_name
     self.class.name.split('::').last
   end
-
 end

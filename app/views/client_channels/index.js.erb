@@ -1,0 +1,3 @@
+<% if @client_channels.any? %>
+  $("#channels_select").empty().append("<%= escape_javascript(render(:partial => '/client_channels/client_channel', collection: @client_channels)) %>")
+<% end %>

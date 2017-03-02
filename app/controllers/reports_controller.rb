@@ -8,20 +8,8 @@ class ReportsController < ApplicationController
   before_action :check_date, only: :index
 
   def index
-    @client = Client.find(params[:client])
-    @campaign = Campaign.find(params[:campaign])
-    client_channels = @client.client_channels.where(type: params[:channel])
-    campaign_channels = @campaign.campaign_channels.where(client_channel_id: client_channels.map(&:id))
-
-    respond_to do |format|
-      format.html {
-        @summary_report = Report.build_summary_report(params[:date_from], params[:date_to], campaign_channels)
-      }
-      format.csv { 
-        @csv_report = Report.build_csv_report(params[:date_from], params[:date_to], campaign_channels)
-        send_data csv_download(@csv_report), filename: file_name(client_channels) 
-      }
-    end
+    flash[:notice] = 'We are dealing with your search...'
+    redirect_back(fallback_location: root_path) and return
   end
 
   private
