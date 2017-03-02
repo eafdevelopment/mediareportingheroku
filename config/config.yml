@@ -8,15 +8,23 @@ default: &defaults
 
   adwords_headers:
     for_csv:
+      AccountDescriptiveName: 'Account Name'
+      Day: 'Day'
       CampaignName: 'Campaign'
+      Labels: 'Labels'
       Impressions: 'Impressions'
       Clicks: 'Clicks'
+      Ctr: 'Ctr'
+      AverageCpc: 'Average CPC'
       Cost: 'Cost'
-    for_summary:
-      CampaignName: 'Campaign'
-      Impressions: 'Impressions'
-      Clicks: 'Clicks'
-      Cost: 'Cost'
+      AveragePosition: 'Average Position'
+      Conversions: 'Conversions'
+      ConversionRate: 'Conversion Rate'
+      SearchImpressionShare: 'Search Impression Share'
+      AverageTimeOnSite: 'Avg Time on Site'
+      BounceRate: 'Bounce Rate'
+      AveragePageviews: 'Avg Pageviews'
+      PercentNewVisitors: 'PercentNewVisitors'
   facebook_headers:
     for_csv:
       date_start: 'Date'

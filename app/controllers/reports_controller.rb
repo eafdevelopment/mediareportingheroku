@@ -8,8 +8,9 @@ class ReportsController < ApplicationController
   before_action :check_date, only: :index
 
   def index
-    flash[:notice] = 'We are dealing with your search...'
-    redirect_back(fallback_location: root_path) and return
+    cc = ClientChannel.find_by(id: params[:channel])
+    report_data = cc.generate_report_all_campaigns(params[:date_from], params[:date_to])
+    send_data report_data, filename: 'report.csv'
   end
 
   private
@@ -28,15 +29,6 @@ class ReportsController < ApplicationController
     unless valid_date_range
       flash[:alert] = "Invalid date range."
       redirect_back(fallback_location: root_path) and return
-    end
-  end
-
-  def csv_download(csv_report)
-    CSV.generate do |csv|
-      csv << csv_report[:header_row]
-      csv_report[:data_rows].each do |data_row|
-        csv << data_row
-      end
     end
   end
 
