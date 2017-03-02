@@ -7,4 +7,5 @@ class Campaign < ApplicationRecord
 
   accepts_nested_attributes_for :campaign_channels, allow_destroy: true
   validates_uniqueness_of :name, scope: :client
+  validates_presence_of :name
 end

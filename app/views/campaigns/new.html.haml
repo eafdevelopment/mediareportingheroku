@@ -11,7 +11,7 @@
           - @campaign.errors.full_messages.each do |msg|
             %li= msg
       = campaign_form.label :name
-      = campaign_form.text_field :name
+      = campaign_form.text_field :name, required: true
 
       = campaign_form.fields_for :campaign_channels do |f|
 
