@@ -9,7 +9,11 @@ module GoogleAnalytics
     # IMPORTANT: GA allows us to request up to 5 reports, but currently our
     # app will only look at the first returned report
     header_rows = AppConfig.google_analytics_headers.for_csv.map(&:first)
-    if campaign_name.present? && header_rows.any?
+    puts "> from_date: " + from_date.inspect
+    puts "> to_date: " + to_date.inspect
+    puts "> uid: " + uid.inspect
+    puts "> campaign_name: " + campaign_name.inspect
+    if header_rows.any?
       grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
       rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
       rr.view_id = uid
@@ -23,8 +27,7 @@ module GoogleAnalytics
     else
       return {
         header_row: [],
-        data_rows: [],
-        summary_row: []
+        data_rows: []
       }
     end
   end
@@ -65,7 +68,6 @@ module GoogleAnalytics
     parsed_metrics = {
       header_row: report.column_header.metric_header.metric_header_entries.map{|header| header.name},
       data_rows: data_rows,
-      summary_row: report.data.totals.map{|total_row| total_row.values}.flatten
     }
     # Some of the metrics Google Analytics gives us should be modified
     # for display in the front-end
@@ -74,18 +76,15 @@ module GoogleAnalytics
       when "ga:avgSessionDuration"
         # Google gives us an avgSessionDuration in seconds, e.g. 36.92846216
         # which we need to turn into a readable time value, e.g. 00:00:37
-        avg_session_duration = parsed_metrics[:summary_row][index].to_f.round
-        parsed_metrics[:summary_row][index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
         parsed_metrics[:data_rows].each do |data_row|
           avg_session_duration = data_row[index].to_f.round
           data_row[index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
         end
-      when "ga:costPerGoalConversion"
-        # This metric must be calculated later, from spend / total goal conversions
-        parsed_metrics[:summary_row][index] = ""
-        parsed_metrics[:data_rows].each do |data_row|
-          data_row[index] = ""
-        end
+      # when "ga:costPerGoalConversion"
+      #   # This metric must be calculated later, from spend / total goal conversions
+      #   parsed_metrics[:data_rows].each do |data_row|
+      #     data_row[index] = ""
+      #   end
       end
     end
     # Lastly, switch each "ga:" header for it's nicer name
