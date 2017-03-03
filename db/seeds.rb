@@ -37,7 +37,7 @@ dmu_eu.client_channels.where(
   uid: "382-151-9617" 
 ).first_or_create
 # > Instagram
-dmu_intl.client_channels.where(
+dmu_eu.client_channels.where(
   type: "ClientChannels::Instagram",
   uid: "act_1406179109678952"
 ).first_or_create
