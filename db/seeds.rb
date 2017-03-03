@@ -42,6 +42,40 @@ dmu_eu.client_channels.where(
   uid: "act_1406179109678952"
 ).first_or_create
 
+# CREATE: DMU - Leicester Castle Business School
+# > Create
+dmu_leicester = Client.where(
+  name: "DMU (Leicester Castle Business School)",
+  google_analytics_view_id: "90647904"
+).first_or_create
+# > Facebook
+dmu_leicester.client_channels.where(
+  type: "ClientChannels::Facebook",
+  uid: "act_1143706438973923"
+).first_or_create
+# > Instagram
+dmu_leicester.client_channels.where(
+  type: "ClientChannels::Instagram",
+  uid: "act_1143706438973923"
+).first_or_create
+
+# CREATE: De Montfort University Leicester (DMU)
+# > Create
+leicester = Client.where(
+  name: "De Montfort University Leicester (DMU)",
+  google_analytics_view_id: "90647904"
+).first_or_create
+# > Facebook
+leicester.client_channels.where(
+  type: "ClientChannels::Facebook",
+  uid: "act_1376049629358567"
+).first_or_create
+# > Instagram
+leicester.client_channels.where(
+  type: "ClientChannels::Instagram",
+  uid: "act_1376049629358567"
+).first_or_create
+
 # CLIENT: Dirty Martini
 # > Create
 dm = Client.where(
