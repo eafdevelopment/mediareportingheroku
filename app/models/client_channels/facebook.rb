@@ -14,8 +14,17 @@ class ClientChannels::Facebook < ClientChannel
 
     # Call fetch metrics on all the campaigns
     all_campaigns.each do |campaign|
+
+      if campaign.ad_sets && campaign.ad_sets.first && campaign.ad_sets.first.targeting['publisher_platforms'].include?('instagram')
+        # If generating a report for Instagram, only include these campaigns
+        puts ">> This campaign is run on instagram <<"
+      else 
+        # If generating a report for Facebook, only include these campaigns
+        puts ">>>> This campaign is run on facebook <<<<"
+      end
+
       # Getting facebook and analytics metrics in rows per day
-      campaign_metrics = self.fetch_metrics(from, to, campaign.id, campaign.name, headers)
+      campaign_metrics = self.fetch_facebook_metrics(from, to, campaign.id, campaign.name, headers)
       all_metrics[:data_rows].concat(campaign_metrics[:data_rows])
     end
 
@@ -23,10 +32,11 @@ class ClientChannels::Facebook < ClientChannel
     return to_csv(all_metrics)
   end
 
-  def fetch_metrics(from_date, to_date, uid, name, headers, optional={})
+  def fetch_facebook_metrics(from_date, to_date, uid, name, headers, optional={})
     # Find and return Insights from a Facebook campaign, and any
     # Google Analytics metrics that we want with them
     ad_campaign = FacebookAds::AdCampaign.find(uid)
+
     date_range = Date.parse(from_date)..Date.parse(to_date)
     insights = ad_campaign.ad_insights(
       range: date_range,

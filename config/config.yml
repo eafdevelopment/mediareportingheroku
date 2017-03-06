@@ -31,7 +31,7 @@ default: &defaults
       date_start: 'Date'
       account_name: 'Account Name'
       campaign_name: 'Campaign Name'
-      spend: 'Spend'
+      spend: 'Amount Spent'
       impressions: 'Impressions'
       clicks: 'Clicks'
       cpm: 'CPM'
@@ -49,7 +49,6 @@ default: &defaults
     for_csv:
       'ga:sessions': 'Sessions'
       'ga:avgSessionDuration': 'Avg Session Duration'
-      'ga:goalCompletionsAll': 'Goal Completions (all)'
       # 'ga:goal1Completions': 'Goal 1 Competions'
       # 'ga:goal2Completions': 'Goal 2 Competions'
       # 'ga:goal3Completions': 'Goal 3 Competions'
@@ -70,7 +69,7 @@ default: &defaults
       # 'ga:goal18Completions': 'Goal 18 Competions'
       # 'ga:goal19Completions': 'Goal 19 Competions'
       # 'ga:goal20Completions': 'Goal 20 Competions'
-      # 'ga:costPerGoalConversion': 'Cost per Goal Conversion'
+      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
   adwords:
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>
