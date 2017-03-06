@@ -5,9 +5,9 @@
 # Campaigns may or may not run accross all the channels they use for that client
 
 class CampaignsController < ApplicationController
-
   before_action :find_client
   before_action :find_campaign, only: [:edit, :update]
+  before_action :remove_ignored_campaign_channel_uids, only: [:create]
 
   def index
     # this route receives AJAX $.get requests to update
@@ -28,7 +28,6 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    remove_ignored_uid_fields!(params[:campaign]["campaign_channels_attributes"])
     # Create the campaign & campaign channels
     @campaign = Campaign.new(campaign_params)
     @campaign.client = @client
@@ -78,5 +77,10 @@ class CampaignsController < ApplicationController
 
   def find_campaign
     @campaign = Campaign.find(params[:id])
+  end
+
+  def remove_ignored_campaign_channel_uids
+    remove_ignored_uid_fields!(params[:campaign][:campaign_channels_attributes]) if params[:campaign]
+    true
   end
 end
