@@ -69,7 +69,7 @@ default: &defaults
       # 'ga:goal18Completions': 'Goal 18 Competions'
       # 'ga:goal19Completions': 'Goal 19 Competions'
       # 'ga:goal20Completions': 'Goal 20 Competions'
-      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
+      # 'ga:costPerGoalConversion': 'Cost per Goal Conversion'
 
   adwords:
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>
