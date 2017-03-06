@@ -21,6 +21,7 @@ default: &defaults
       Conversions: 'Conversions'
       ConversionRate: 'Conversion Rate'
       SearchImpressionShare: 'Search Impression Share'
+      NumOfflineInteractions: 'Calls'
       AverageTimeOnSite: 'Avg Time on Site'
       BounceRate: 'Bounce Rate'
       AveragePageviews: 'Avg Pageviews'
