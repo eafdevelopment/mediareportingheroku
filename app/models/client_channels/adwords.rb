@@ -1,8 +1,5 @@
 class ClientChannels::Adwords < ClientChannel
 
-  # For testing in console:
-  # ClientChannel.last.fetch_metrics('2017-02-10', '2017-02-17', '749546343', 'india_recruitment_sept_2017')
-
   def generate_report_all_campaigns(from_date, to_date)
     # Get all the campaigns for this account.
     adwords_client.config.set("authentication.client_customer_id", self.uid)
