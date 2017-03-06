@@ -9,10 +9,6 @@ module GoogleAnalytics
     # IMPORTANT: GA allows us to request up to 5 reports, but currently our
     # app will only look at the first returned report
     header_rows = AppConfig.google_analytics_headers.for_csv.map(&:first)
-    puts "> from_date: " + from_date.inspect
-    puts "> to_date: " + to_date.inspect
-    puts "> uid: " + uid.inspect
-    puts "> campaign_name: " + campaign_name.inspect
     if header_rows.any?
       grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
       rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
