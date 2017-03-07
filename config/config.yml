@@ -18,6 +18,7 @@ default: &defaults
       AverageCpc: 'Average CPC'
       Cost: 'Cost'
       AveragePosition: 'Average Position'
+      # ConversionTypeName: 'Conversion Name'
       Conversions: 'Conversions'
       ConversionRate: 'Conversion Rate'
       SearchImpressionShare: 'Search Impression Share'
@@ -70,6 +71,9 @@ default: &defaults
       'ga:goal19Completions': 'Goal 19 Completions'
       'ga:goal20Completions': 'Goal 20 Completions'
       'ga:costPerGoalConversion': 'Cost per Goal Conversion'
+      'ga:transactions': 'Transactions'
+      'ga:transactionRevenue': 'Revenue'
+      'ga:transactionsPerSession': 'Ecommerce Conversion Rate'
 
   adwords:
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>

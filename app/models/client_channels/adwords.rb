@@ -9,10 +9,12 @@ class ClientChannels::Adwords < ClientChannel
     report_data = report_utils.download_report(report_definition_all_campaigns(from_date, to_date))
     combined_data_rows = []
     parsed_csv = CSV.parse(report_data, headers: true)
+    # we need to make sure there aren't any CSV-ruining commas in the 'Labels' fields
+    parsed_csv.each { |row| row["Labels"].gsub!(",", "|"); row }
     parsed_csv.each_with_index do |row, index|
       # each row is an AdWords campaign, so attempt to fetch Google Analytics data
       # for that campaign
-      # if index <= 1 # just do a couple of rows for testing (less slow)
+      # if index <= 3 # just do a few rows for testing (less slow)
         ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
         if ga_data[:data_rows].first
           # got some GA data, so concat to the AdWords data row
