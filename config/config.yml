@@ -27,7 +27,7 @@ default: &defaults
       BounceRate: 'Bounce Rate'
       AveragePageviews: 'Avg Pageviews'
       PercentNewVisitors: 'PercentNewVisitors'
-  facebook_headers:
+  fb_and_insta_headers:
     for_csv:
       date_start: 'Date'
       account_name: 'Account Name'

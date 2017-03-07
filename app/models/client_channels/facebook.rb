@@ -2,9 +2,9 @@ class ClientChannels::Facebook < ClientChannel
 
   def generate_report_all_campaigns(from, to)
 
-    headers = AppConfig.facebook_headers.for_csv.map(&:first)
+    headers = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
     all_metrics = {
-      header_row: AppConfig.facebook_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last)),
+      header_row: AppConfig.fb_and_insta_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last)),
       data_rows: []
     }
 
