@@ -10,7 +10,7 @@ class ReportsController < ApplicationController
   def index
     cc = ClientChannel.find_by(id: params[:channel])
     report_data = cc.generate_report_all_campaigns(params[:date_from], params[:date_to])
-    send_data report_data, filename: 'report.csv'
+    send_data report_data, filename: cc.client.name.gsub(/\W+/, "_") + "_" + cc.nice_name + "_" + params[:date_from].gsub(/\W+/, "") + "_" + params[:date_to].gsub(/\W+/, "") + ".csv"
   end
 
   private
