@@ -15,42 +15,12 @@ class ClientChannels::Facebook < ClientChannel
     date_range = Date.parse(from)..Date.parse(to)
     all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)
     
-    # Make rows with the insights ordered by campaign id
-    rows = { data: [] }
-    # campgian insights is a hash object with campaign id as key and an 
-    # array of campaign insights as the value
-    all_campaign_insights.each do |campaign_insights|
-      # Insights order by campaign and date_start 
-      insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
-      insights_ordered_by_date.each do |day_insights|
-        rows[:data].push(make_row(headers, day_insights))
-      end
-    end
+    # Rows of Facebook & GA metrics 
+    all_rows = parse_facebook_insights(all_campaign_insights, headers)
 
-    all_metrics[:data_rows].concat(rows[:data])
+    all_metrics[:data_rows].concat(all_rows[:data])
     return to_csv(all_metrics)
   end
-
-  # def fetch_facebook_metrics(from_date, to_date, uid, name, headers)
-    # Find and return Insights from a Facebook campaign, and any
-    # Google Analytics metrics that we want with them
-  #   ad_campaign = FacebookAds::AdCampaign.find(uid)
-
-  #   date_range = Date.parse(from_date)..Date.parse(to_date)
-  #   insights = ad_campaign.ad_insights(
-  #     range: date_range,
-  #     time_increment: 1
-  #   )
-
-  #   fb_metrics = parse_facebook_insights(insights, headers)
-  #   ga_metrics = GoogleAnalytics.fetch_and_parse_metrics(from_date, to_date, self.client.google_analytics_view_id, name)
-
-  #   metrics = {
-  #     data_rows: fb_metrics[:data_rows].each_with_index{ |data_row, index| data_row.concat(ga_metrics[:data_rows][index]) unless ga_metrics[:data_rows][index].nil? }
-  #   }
-
-  #   return metrics
-  # end
 
   private
 
@@ -64,19 +34,33 @@ class ClientChannels::Facebook < ClientChannel
     return csv_report
   end
 
-  # def parse_facebook_insights(insights, headers)
-  #   parsed_insights = { data_rows: [] }
+  def parse_facebook_insights(insights, headers)
 
-    # Create data rows for each individual date within the date range searched.
-    # Data rows are created from the column headers required for the summary table or csv report.
-  #   insights_grouped_by_date = insights.group_by(&:date_start)
+    rows = { data: [] }
+    insights.each do |campaign_insights|
+      campaign = FacebookAds::AdCampaign.find(campaign_insights[0])
 
-  #   insights_grouped_by_date.each do |that_days_insights|
-  #     parsed_insights[:data_rows].push(make_row(headers, that_days_insights))
-  #   end
+      # Insights ordered by campaign and date_start 
+      insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
+      insights_ordered_by_date.each do |day_insights|
+        # Facebook metrics for single row (one campaign, one day)
+        fb_row = make_row(headers, day_insights)
+        # GA metrics for single row (one campaign, one day)
+        ga_row = GoogleAnalytics.fetch_and_parse_metrics(fb_row.first, fb_row.first, self.client.google_analytics_view_id, campaign.name)
+        
+        # Create row with GA campaign metrics if there are any
+        if ga_row[:data_rows].any?
+          campaign_row = fb_row.concat(ga_row[:data_rows].first)
+        else 
+          campaign_row = fb_row
+        end
+
+        rows[:data].push(campaign_row)
+      end
+    end
     
-  #   return parsed_insights
-  # end
+    return rows
+  end
 
   def make_row(col_headers, insights)
     # Make a row containing the correct value to match each col_header
