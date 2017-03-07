@@ -11,21 +11,51 @@ module GoogleAnalytics
     header_rows = AppConfig.google_analytics_headers.for_csv.map(&:first)
     if header_rows.any?
       grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
-      rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
-      rr.view_id = uid
-      rr.metrics = header_rows.map{ |header| self.metric(header) }
-      rr.date_ranges = [self.date_range(from_date, to_date)]
-      rr.filters_expression = "ga:campaign==" + campaign_name
-      rr.dimensions = [self.dimension("ga:day")]
-      grr.report_requests = [rr]
-      response = self.google_client.batch_get_reports(grr)
-      return self.parse_metrics(response.reports.first)
-    else
-      return {
+      report_requests = []
+      # generate one ReportRequest for each group of up to 10 metrics
+      header_rows.each_slice(10) do |header_group|
+        rr = Google::Apis::AnalyticsreportingV4::ReportRequest.new
+        rr.view_id = uid
+        rr.metrics = header_group.map{ |header| self.metric(header) }
+        rr.date_ranges = [self.date_range(from_date, to_date)]
+        rr.filters_expression = "ga:campaign==" + campaign_name
+        rr.dimensions = [self.dimension("ga:day")]
+        rr.include_empty_rows = true
+        report_requests.push(rr)
+      end
+      # we can request up to 5 reports at a time
+      combined_parsed_report = {
         header_row: [],
         data_rows: []
       }
+      report_requests.each_slice(5) do |report_request_group|
+        grr.report_requests = report_request_group
+        response = self.google_client.batch_get_reports(grr)
+        response.reports.each do |report|
+          parsed_report = self.parse_metrics(report)
+          # each parsed report should contain the same number of rows of data,
+          # which each need to be concatenated with the equivalent rows in
+          # the other reports here, to create one final combined report to return
+          combined_parsed_report[:header_row].concat(parsed_report[:header_row])
+          parsed_report[:data_rows].each_with_index do |data_row, index|
+            if combined_parsed_report[:data_rows][index].present?
+              # our combined report already contains the start of this data row
+              combined_parsed_report[:data_rows][index].concat(data_row)
+            else
+              # our combined report doesn't yet contain a row for this data
+              combined_parsed_report[:data_rows][index] = data_row
+            end
+          end
+        end unless response.reports.nil?
+      end
+      return combined_parsed_report
     end
+    # if we haven't been able to successfully return data, return an
+    # empty object
+    return {
+      header_row: [],
+      data_rows: []
+    }
   end
 
   private
@@ -60,7 +90,13 @@ module GoogleAnalytics
   end
 
   def self.parse_metrics(report)
-    data_rows = report.data.try(:rows) ? report.data.rows.map{|row| row.metrics.map{|metrics_row| metrics_row.values}.flatten } : []
+    # first, check whether the report contains rows of data or just a 'totals'
+    # row full of zeroes
+    if report.data.try(:rows)
+      data_rows = report.data.rows.map{|row| row.metrics.map{|metrics_row| metrics_row.values}.flatten }
+    else
+      data_rows = report.data.totals.map{|total| total.values}
+    end
     parsed_metrics = {
       header_row: report.column_header.metric_header.metric_header_entries.map{|header| header.name},
       data_rows: data_rows,
