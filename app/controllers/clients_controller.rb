@@ -5,8 +5,8 @@
 # and then narrowing down which campaign and channel metrics should be included
 
 class ClientsController < ApplicationController
-
   before_action :find_client, only: [:show, :edit, :update, :destroy]
+  before_action :remove_ignored_client_channel_uids, only: [:create, :update]
 
   def index
     @clients = Client.all.order(name: :desc)
@@ -20,7 +20,6 @@ class ClientsController < ApplicationController
   end
 
   def create
-    remove_ignored_uid_fields!(params[:client]["client_channels_attributes"])
     @client = Client.new(client_params)
     if @client.save
       flash[:notice] = "Client successfully created."
@@ -42,7 +41,6 @@ class ClientsController < ApplicationController
   def update
     # TODO: This needs to be adjusted so a user can delete the value and it
     # saves in the db as opposed to ignoring the empty string
-    remove_ignored_uid_fields!(params[:client]["client_channels_attributes"])
     if @client.update(client_params)
       flash[:notice] = "Client successfully updated."
       redirect_to client_path(@client)
@@ -66,4 +64,10 @@ class ClientsController < ApplicationController
     @client = Client.find(params[:id])
   end
 
+  # Internal: Remove any nested client channels that have empty UIDs, so that
+  # they don't fail validations when the user doesn't want to add them.
+  def remove_ignored_client_channel_uids
+    remove_ignored_uid_fields!(params[:client][:client_channels_attributes]) if params[:client]
+    true
+  end
 end

@@ -31,7 +31,7 @@ default: &defaults
       date_start: 'Date'
       account_name: 'Account Name'
       campaign_name: 'Campaign Name'
-      spend: 'Spend'
+      spend: 'Amount Spent'
       impressions: 'Impressions'
       clicks: 'Clicks'
       cpm: 'CPM'
