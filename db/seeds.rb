@@ -59,7 +59,7 @@ dmu_leicester.client_channels.where(
   uid: "act_1143706438973923"
 ).first_or_create
 
-# CREATE: De Montfort University Leicester (DMU)
+# CLIENT: De Montfort University Leicester (DMU)
 # > Create
 leicester = Client.where(
   name: "De Montfort University Leicester (DMU)",
@@ -74,6 +74,18 @@ leicester.client_channels.where(
 leicester.client_channels.where(
   type: "ClientChannels::Instagram",
   uid: "act_1376049629358567"
+).first_or_create
+
+# CLIENT: DMU Domestic
+# > Create
+dmu_domestic = Client.where(
+  name: "DMU Domestic",
+  google_analytics_view_id: "90647904"
+).first_or_create
+# > AdWords
+dmu_domestic.client_channels.where(
+  type: "ClientChannels::Adwords",
+  uid: "279-453-2610" 
 ).first_or_create
 
 # CLIENT: Dirty Martini
