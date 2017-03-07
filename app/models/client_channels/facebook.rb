@@ -1,9 +1,6 @@
 class ClientChannels::Facebook < ClientChannel
 
   def generate_report_all_campaigns(from, to)
-    puts self
-    puts self.type
-    puts "Above is the client_channel <<"
 
     headers = AppConfig.facebook_headers.for_csv.map(&:first)
     all_metrics = {
@@ -19,8 +16,13 @@ class ClientChannels::Facebook < ClientChannel
     date_range = Date.parse(from)..Date.parse(to)
     all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)
 
-    # Rows of Facebook & GA metrics 
-    all_rows = parse_facebook_insights(all_campaign_insights, headers)
+    if self.type == "ClientChannels::Instagram"
+      # Rows of Instagram & GA metrics
+      all_rows = parse_instagram_insights(all_campaign_insights, headers)
+    else
+      # Rows of Facebook & GA metrics 
+      all_rows = parse_facebook_insights(all_campaign_insights, headers)
+    end
 
     all_metrics[:data_rows].concat(all_rows[:data])
     return to_csv(all_metrics)
@@ -39,39 +41,27 @@ class ClientChannels::Facebook < ClientChannel
   end
 
   def parse_facebook_insights(insights, headers)
-
     rows = { data: [] }
     insights.each do |campaign_insights|
       campaign = FacebookAds::AdCampaign.find(campaign_insights[0])
 
       # Exclude instagram campaigns from the Facebook report
       unless campaign.ad_sets && campaign.ad_sets.first && campaign.ad_sets.first.targeting['publisher_platforms'].include?('instagram')
-        rows[:data].push(campaign_insights_row(campaign_insights, campaign, headers))
+        # Insights ordered by campaign and date_start 
+        insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
+        insights_ordered_by_date.each do |day_insights|
+          # Facebook metrics for single row (one campaign, one day)
+          fb_row = make_row(headers, day_insights)
+          # GA metrics for single row (one campaign, one day)
+          ga_row = GoogleAnalytics.fetch_and_parse_metrics(fb_row.first, fb_row.first, self.client.google_analytics_view_id, campaign.name)
+          # Create row of FB & GA campaign metrics if there are any
+          ga_row[:data_rows].any? ? campaign_row = fb_row.concat(ga_row[:data_rows].first) : campaign_row = fb_row
+
+          rows[:data].push(fb_row)
+        end
       end
     end
-    
     return rows
-  end
-
-  def campaign_insights_row(insights, campaign, headers)
-    # Insights ordered by campaign and date_start 
-    insights_ordered_by_date = insights[1].group_by(&:date_start)
-    insights_ordered_by_date.each do |day_insights|
-
-      # Facebook metrics for single row (one campaign, one day)
-      fb_row = make_row(headers, day_insights)
-      # GA metrics for single row (one campaign, one day)
-      ga_row = GoogleAnalytics.fetch_and_parse_metrics(fb_row.first, fb_row.first, self.client.google_analytics_view_id, campaign.name)
-      
-      # Create row with GA campaign metrics if there are any
-      if ga_row[:data_rows].any?
-        campaign_row = fb_row.concat(ga_row[:data_rows].first)
-      else 
-        campaign_row = fb_row
-      end
-
-      return campaign_row
-    end
   end
 
   def make_row(col_headers, insights)
