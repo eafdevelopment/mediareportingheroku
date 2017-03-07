@@ -14,7 +14,7 @@ class ClientChannels::Facebook < ClientChannel
     # Getting all insights for an account, at ad level
     date_range = Date.parse(from)..Date.parse(to)
     all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)
-    
+
     # Rows of Facebook & GA metrics 
     all_rows = parse_facebook_insights(all_campaign_insights, headers)
 
@@ -43,6 +43,7 @@ class ClientChannels::Facebook < ClientChannel
       # Insights ordered by campaign and date_start 
       insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
       insights_ordered_by_date.each do |day_insights|
+
         # Facebook metrics for single row (one campaign, one day)
         fb_row = make_row(headers, day_insights)
         # GA metrics for single row (one campaign, one day)
@@ -55,7 +56,7 @@ class ClientChannels::Facebook < ClientChannel
           campaign_row = fb_row
         end
 
-        rows[:data].push(campaign_row)
+        rows[:data].push(fb_row)
       end
     end
     
