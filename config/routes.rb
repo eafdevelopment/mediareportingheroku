@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  
+  # require 'sidekiq/web'
+  # mount Sidekiq::Web => '/sidekiq'
 
   resources :home, only: :index
   resources :reports, only: :index
@@ -10,6 +13,7 @@ Rails.application.routes.draw do
   resources :campaigns, only: [] do
     resources :campaign_channels, only: [:index]
   end
+  resources :datasets, only: :create
 
   root to: 'home#index'
 end

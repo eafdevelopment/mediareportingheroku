@@ -5,35 +5,16 @@ require 'csv'
 
 class ReportsController < ApplicationController
 
-  before_action :check_date, only: :index
-
   def index
-    cc = ClientChannel.find_by(id: params[:channel])
-    report_data = cc.generate_report_all_campaigns(params[:date_from], params[:date_to])
-    send_data report_data, filename: cc.client.name.gsub(/\W+/, "_") + "_" + cc.nice_name + "_" + params[:date_from].gsub(/\W+/, "") + "_" + params[:date_to].gsub(/\W+/, "") + ".csv"
+    @reports = Dataset.all.order(created_at: :desc)
+    # cc = ClientChannel.find_by(id: params[:channel])
+    # report_data = cc.generate_report_all_campaigns(params[:date_from], params[:date_to])
+    # send_data report_data, filename: file_name(cc)
   end
 
   private
 
-  def valid_date_range
-    if params[:date_from].present? && params[:date_to].present?
-      from = Date.parse(params[:date_from])
-      to = Date.parse(params[:date_to])
-      if from <= to
-        return true
-      end
-    end
-  end
-
-  def check_date
-    unless valid_date_range
-      flash[:alert] = "Invalid date range."
-      redirect_back(fallback_location: root_path) and return
-    end
-  end
-
-  def file_name(client_channels)
-    channel = client_channels.first.class.name.split('::').last
-    "#{@client.name}_#{channel}_report_from_#{params[:date_from]}_to_#{params[:date_to]}.csv"
+  def file_name(cc)
+    cc.client.name.gsub(/\W+/, "_") + "_" + cc.nice_name + "_" + params[:date_from].gsub(/\W+/, "") + "_" + params[:date_to].gsub(/\W+/, "") + ".csv"
   end
 end

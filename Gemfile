@@ -35,6 +35,11 @@ gem 'google-api-client', '~> 0.9', require: 'google/apis/analyticsreporting_v4'
 gem 'google-adwords-api', require: 'adwords_api'
 # For Twitter API integration
 gem 'twitter-ads', '~> 1.0.0'
+# Running background jobs with sidekiq
+gem 'sidekiq', '~> 4.1.2'
+# For storing CSV reports
+gem 'paperclip', '5.1.0'
+gem 'aws-sdk', '2.8.2'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

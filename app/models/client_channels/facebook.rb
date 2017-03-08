@@ -2,16 +2,16 @@ class ClientChannels::Facebook < ClientChannel
 
   def generate_report_all_campaigns(from, to)
 
+    puts 'STARTING FB Method'
+
     headers = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
     all_metrics = {
       header_row: AppConfig.fb_and_insta_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last)),
       data_rows: []
     }
-
     # Find account and all campaigns for that account
     FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
     account = FacebookAds::AdAccount.find(self.uid)
-
     # Getting all insights for an account, at ad level
     date_range = Date.parse(from)..Date.parse(to)
     all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)

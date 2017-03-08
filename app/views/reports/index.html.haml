@@ -1,32 +1,17 @@
 .row
   .small-12.columns.searched
-    %h2 #{@client.name} Report
-    %h4 Summary of your search
-    %table#metrics-table
+    %h2 All reports
+.row
+  .small-12.columns
+    %table
       %thead
         %tr
-          %th Client
-          %th Campaign Name
-          %th Channel(s)
-          %th From
-          %th To
+          %th Report title
+          %th Link
       %tbody
-        %tr
-          %td= @client.name
-          %td= @campaign.name
-          - params[:channel].each do |channel|
-            %td= channel.split('::').last
-          %td= params[:date_from]
-          %td= params[:date_to]
+        - @reports.each do |report|
+          %tr
+            %td= report.title
+            %td -
 
-    %h4 #{params[:channel].first.split('::').last} summary metrics
-    - if @summary_report.any? && @summary_report[:header_row] && @summary_report[:summary_row]
-      %table
-        %tr
-          - @summary_report[:header_row].each do |header_item|
-            %th= header_item
-        %tr
-          - @summary_report[:summary_row].each do |item|
-            %td.metric= item
-
-    = link_to 'Download', reports_path(format: 'csv', client: @client.id, campaign: @campaign.id, channel: params[:channel], date_from: params[:date_from], date_to: params[:date_to]), class: 'small button eight-button'
+    

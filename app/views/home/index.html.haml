@@ -1,7 +1,7 @@
 .row
   .small-12.columns.homeForm
     %h3.eight-header Report Search
-    = form_tag(reports_path, id: "getReport", method: "get") do
+    = form_tag url_for(:controller => 'datasets', :action => 'create'), :method => 'post', id: 'getReport' do
       = label_tag "Client *"
       = select_tag :client, options_for_select(format_options(@clients)), prompt: 'Select client', data: {ajax_url: client_client_channels_path('_CLIENT_ID_')}, id: 'client_select', required: true
       = label_tag "Channel *"
