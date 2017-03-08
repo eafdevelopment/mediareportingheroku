@@ -37,6 +37,8 @@ gem 'google-adwords-api', require: 'adwords_api'
 gem 'twitter-ads', '~> 1.0.0'
 # Running background jobs with sidekiq
 gem 'sidekiq', '~> 4.1.2'
+# Sidekiq web for monitoring sidekiq processes
+gem 'sinatra', github: 'sinatra/sinatra', require: false
 # For storing CSV reports
 gem 'paperclip', '5.1.0'
 gem 'aws-sdk', '2.8.2'

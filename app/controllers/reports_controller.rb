@@ -7,9 +7,6 @@ class ReportsController < ApplicationController
 
   def index
     @reports = Dataset.all.order(created_at: :desc)
-    # cc = ClientChannel.find_by(id: params[:channel])
-    # report_data = cc.generate_report_all_campaigns(params[:date_from], params[:date_to])
-    # send_data report_data, filename: file_name(cc)
   end
 
   private

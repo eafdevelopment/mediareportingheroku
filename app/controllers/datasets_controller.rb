@@ -8,7 +8,7 @@ class DatasetsController < ApplicationController
     @dataset = Dataset.new(title: file_name(cc), client_channel: cc)
     if @dataset.save
       # Begin ClientChannel get report method in the background ReportWorker
-      ReportWorker.perform_async(@dataset.id)
+      ReportWorker.perform_async(@dataset.id, params[:date_from], params[:date_to])
       flash[:notice] = "Report generating..."
       redirect_to reports_path and return
     else
