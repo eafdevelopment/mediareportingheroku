@@ -24,8 +24,6 @@ default: &defaults
       SearchImpressionShare: 'Search Impression Share'
       NumOfflineInteractions: 'Calls'
       AverageTimeOnSite: 'Avg Time on Site'
-      BounceRate: 'Bounce Rate'
-      AveragePageviews: 'Avg Pageviews'
       PercentNewVisitors: 'PercentNewVisitors'
   fb_and_insta_headers:
     for_csv:
@@ -48,8 +46,14 @@ default: &defaults
       ctr: 'CTR'
   google_analytics_headers:
     for_csv:
+      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
       'ga:sessions': 'Sessions'
       'ga:avgSessionDuration': 'Avg Session Duration'
+      'ga:bounceRate': 'Bounce Rate'
+      'ga:pageviewsPerSession': 'Pages / Session'
+      'ga:transactionsPerSession': 'Ecommerce Conversion Rate'
+      'ga:transactions': 'Transactions'
+      'ga:transactionRevenue': 'Revenue'
       'ga:goal1Completions': 'Goal 1 Completions'
       'ga:goal2Completions': 'Goal 2 Completions'
       'ga:goal3Completions': 'Goal 3 Completions'
@@ -70,12 +74,6 @@ default: &defaults
       'ga:goal18Completions': 'Goal 18 Completions'
       'ga:goal19Completions': 'Goal 19 Completions'
       'ga:goal20Completions': 'Goal 20 Completions'
-      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
-      'ga:transactions': 'Transactions'
-      'ga:transactionRevenue': 'Revenue'
-      'ga:transactionsPerSession': 'Ecommerce Conversion Rate'
-      'ga:bounceRate': 'Bounce Rate'
-      'ga:pageviewsPerSession': 'Pages / Session'
 
   adwords:
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>

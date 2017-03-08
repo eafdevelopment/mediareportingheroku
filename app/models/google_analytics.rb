@@ -112,11 +112,14 @@ module GoogleAnalytics
           avg_session_duration = data_row[index].to_f.round
           data_row[index] = Time.at(avg_session_duration).utc.strftime("%H:%M:%S")
         end
-      # when "ga:costPerGoalConversion"
-      #   # This metric must be calculated later, from spend / total goal conversions
-      #   parsed_metrics[:data_rows].each do |data_row|
-      #     data_row[index] = ""
-      #   end
+      when "ga:bounceRate"
+        parsed_metrics[:data_rows].each do |data_row|
+          data_row[index] = data_row[index].to_f.round(2)
+        end
+      when "ga:pageviewsPerSession"
+        parsed_metrics[:data_rows].each do |data_row|
+          data_row[index] = data_row[index].to_f.round(2)
+        end
       end
     end
     # Lastly, switch each "ga:" header for it's nicer name
@@ -125,5 +128,4 @@ module GoogleAnalytics
     end
     return parsed_metrics
   end
-
 end
