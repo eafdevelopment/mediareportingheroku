@@ -74,6 +74,8 @@ default: &defaults
       'ga:transactions': 'Transactions'
       'ga:transactionRevenue': 'Revenue'
       'ga:transactionsPerSession': 'Ecommerce Conversion Rate'
+      'ga:bounceRate': 'Bounce Rate'
+      'ga:pageviewsPerSession': 'Pages / Session'
 
   adwords:
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>
