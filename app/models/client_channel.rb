@@ -14,7 +14,7 @@ class ClientChannel < ApplicationRecord
 
   # Methods
   def nice_name
-    self.class.name.split('::').last
+    self.class.name.demodulize
   end
 
 end
