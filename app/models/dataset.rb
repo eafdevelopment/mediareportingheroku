@@ -5,7 +5,7 @@
 class Dataset < ApplicationRecord
 
   belongs_to :client_channel, inverse_of: :datasets
-  has_attached_file :csv
+  has_attached_file :csv, url: ':s3_domain_url'
 
   validates_attachment :csv, content_type: { content_type: "text/csv" }
 end
