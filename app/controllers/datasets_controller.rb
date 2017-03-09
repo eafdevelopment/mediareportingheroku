@@ -24,6 +24,11 @@ class DatasetsController < ApplicationController
     redirect_to reports_path
   end
 
+  def download
+    dataset = Dataset.find(params[:id])
+    redirect_to dataset.csv.expiring_url(10)
+  end
+
   private
 
   def file_name(cc)

@@ -13,7 +13,11 @@ Rails.application.routes.draw do
   resources :campaigns, only: [] do
     resources :campaign_channels, only: [:index]
   end
-  resources :datasets, only: [:create, :destroy]
+  resources :datasets, only: [:create, :destroy] do
+    member do
+      get :download
+    end
+  end
 
   root to: 'home#index'
 end
