@@ -17,6 +17,13 @@ class DatasetsController < ApplicationController
     end
   end
 
+  def destroy
+    dataset = Dataset.find(params[:id])
+    dataset.destroy!
+    flash[:notice] = "Report deleted"
+    redirect_to reports_path
+  end
+
   private
 
   def file_name(cc)

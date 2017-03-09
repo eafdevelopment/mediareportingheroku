@@ -6,12 +6,17 @@
     %table
       %thead
         %tr
-          %th Report title
-          %th Link
+          %th Created
+          %th Report title (click to download)
+          %th 
       %tbody
         - @reports.each do |report|
           %tr
-            %td= report.title
-            %td -
+            %td= report.created_at.strftime("%d/%m/%Y")
+            %td
+              = link_to report.csv.url do
+                = report.title
+            %td= link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
+            
 
     
