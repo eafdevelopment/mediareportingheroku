@@ -25,3 +25,6 @@
 
 # Ignore client secrets 
 /private/*.json
+
+# Ignore Redis dump
+dump.rdb

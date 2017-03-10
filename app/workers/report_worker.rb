@@ -11,7 +11,7 @@ class ReportWorker
       csv_file = StringIO.new(report_data)
       dataset.csv = csv_file
       dataset.csv_content_type = 'text/csv'
-      dataset.csv_file_name = 'my file name.csv'
+      dataset.csv_file_name = dataset.title
       dataset.save!
     rescue => e
       puts e.message
