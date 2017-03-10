@@ -1,5 +1,6 @@
 class ReportWorker
   include Sidekiq::Worker
+  sidekiq_options :retry => 1
 
   def perform(report_id, from, to)
     dataset = Dataset.find(report_id)
