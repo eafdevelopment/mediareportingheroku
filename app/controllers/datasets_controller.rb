@@ -5,10 +5,11 @@ class DatasetsController < ApplicationController
   # Create and store a csv report 
   def create
     cc = ClientChannel.find_by(id: params[:channel])
-    @dataset = Dataset.new(title: file_name(cc), client_channel: cc)
+    @dataset = Dataset.new(title: file_name(cc), client_channel: cc, status: 'generating')
     if @dataset.save
       # Begin ClientChannel get report method in the background ReportWorker
-      ReportWorker.perform_async(@dataset.id, params[:date_from], params[:date_to])
+      job_id = ReportWorker.perform_async(@dataset.id, params[:date_from], params[:date_to])
+      @dataset.update(job_id: job_id.to_s)
       flash[:notice] = "Report generating..."
       redirect_to reports_path and return
     else

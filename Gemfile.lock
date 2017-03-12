@@ -322,6 +322,8 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       redis (~> 3.2, >= 3.2.1)
       sinatra (>= 1.4.7)
+    sidekiq-status (0.6.0)
+      sidekiq (>= 2.7)
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -410,6 +412,7 @@ DEPENDENCIES
   rspec-rails
   sass-rails (~> 5.0)
   sidekiq (~> 4.1.2)
+  sidekiq-status
   sinatra!
   spring
   spring-commands-rspec

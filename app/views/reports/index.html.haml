@@ -8,23 +8,29 @@
         %tr
           %th Created
           %th Report title (click to download)
+          %th Status
           %th Delete
       %tbody
         - @reports.each do |report|
           %tr
             %td= report.created_at.strftime("%d/%m/%Y")
-            %td
-              - if report.csv.exists?
+            - if report.csv.exists?
+              %td
                 = link_to download_dataset_path(report) do
                   = report.title
-              - else
-                = report.title
-            %td
-              - if report.csv.exists?
+              %td
+                - if report.status
+                  = report.status
+              %td
                 = link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
-              - else
-                generating..
-
+            - else
+              %td
+                = report.title
+              %td
+                - if report.status
+                  = report.status
+              %td
+                -
             
 
     
