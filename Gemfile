@@ -36,7 +36,7 @@ gem 'google-adwords-api', require: 'adwords_api'
 # For Twitter API integration
 gem 'twitter-ads', '~> 1.0.0'
 # Running background jobs with sidekiq
-gem 'sidekiq', '~> 4.1.2'
+gem 'sidekiq', '~> 4.2.9'
 # For tracking status of background jobs
 gem 'sidekiq-status'
 # Sidekiq web for monitoring sidekiq processes
