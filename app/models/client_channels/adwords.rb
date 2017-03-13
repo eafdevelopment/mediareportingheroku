@@ -5,10 +5,9 @@ class ClientChannels::Adwords < ClientChannel
     adwords_client.config.set("authentication.client_customer_id", self.uid)
     adwords_client.skip_report_header = true
     adwords_client.skip_report_summary = true
+    adwords_client.include_zero_impressions = true
     report_utils = adwords_client.report_utils()
     report_data = report_utils.download_report(report_definition_all_campaigns(from_date, to_date))
-    puts "> report_data: " + report_data.inspect
-    logger.debug "> report_data: #{report_data.inspect}"
     combined_data_rows = []
     parsed_csv = CSV.parse(report_data, headers: true)
     parsed_csv.each_with_index do |row, index|
