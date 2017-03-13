@@ -16,6 +16,7 @@ class ClientChannels::Adwords < ClientChannel
       # for that campaign
       # if index <= 3 # just do a few rows for testing (less slow)
         ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
+        print ">> AdWord & Analytics metrics for campaign: #{row["Campaign"]}  "
         if ga_data[:data_rows].first
           # got some GA data, so concat to the AdWords data row
           combined_data_rows.push( row.map{|k,v| v}.concat(ga_data[:data_rows].first) )
