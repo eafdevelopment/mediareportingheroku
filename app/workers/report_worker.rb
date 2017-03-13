@@ -22,6 +22,8 @@ class ReportWorker
       dataset.save!
     rescue => e
       # catch failed background jobs and update status
+
+      # re raise exception back to rollbar - rollbar.error and give it the exception
       puts e.message
       dataset.status = 'failed'
       dataset.save

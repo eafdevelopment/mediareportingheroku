@@ -41,6 +41,8 @@ class ClientChannels::Facebook < ClientChannel
         # Insights ordered by campaign and date_start 
         insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
         insights_ordered_by_date.each do |day_insights|
+          # Log what is going on here - the campaign, insight, which channel etc
+
           # Facebook metrics for single row (one campaign, one day)
           fb_row = make_row(headers, day_insights)
           # GA metrics for single row (one campaign, one day)
