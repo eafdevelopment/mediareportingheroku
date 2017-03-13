@@ -3,6 +3,7 @@
 class HomeController < ApplicationController
 
   def index
+
     @clients = Client.all.order(name: :desc)
   end
   
