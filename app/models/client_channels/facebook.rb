@@ -13,13 +13,7 @@ class ClientChannels::Facebook < ClientChannel
     date_range = Date.parse(from)..Date.parse(to)
     all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)
 
-    if self.type == "ClientChannels::Instagram"
-      # Rows of Instagram & GA metrics
-      all_rows = parse_instagram_insights(all_campaign_insights, headers)
-    else
-      # Rows of Facebook & GA metrics 
-      all_rows = parse_facebook_insights(all_campaign_insights, headers)
-    end
+    all_rows = parse_insights(all_campaign_insights, headers)
 
     all_metrics[:data_rows].concat(all_rows[:data])
     return to_csv(all_metrics)
@@ -37,7 +31,7 @@ class ClientChannels::Facebook < ClientChannel
     return csv_report
   end
 
-  def parse_facebook_insights(insights, headers)
+  def parse_insights(insights, headers)
     rows = { data: [] }
     insights.each do |campaign_insights|
       campaign = FacebookAds::AdCampaign.find(campaign_insights[0])
