@@ -24,7 +24,7 @@ class ClientChannels::Adwords < ClientChannel
     end
     header_row = AppConfig.adwords_headers.for_csv.map(&:second).concat(AppConfig.google_analytics_headers.for_csv.map(&:second))
     combined_data_rows.unshift(header_row)
-    rows_for_csv = combined_data_rows.map{ |row| row.to_csv }.join("\n")
+    rows_for_csv = combined_data_rows.map{ |row| row.to_csv }.join("")
     return rows_for_csv
   end
 
