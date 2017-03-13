@@ -5,9 +5,6 @@ module GoogleAnalytics
     # - the uid argument here represents the GA View ID, and the campaign_name
     # is for filtering data within that view (eight&four would go to Reporting >
     # Acquisition > Campaigns in Google Analytics to see the data they want)
-    #
-    # IMPORTANT: GA allows us to request up to 5 reports, but currently our
-    # app will only look at the first returned report
     header_rows = AppConfig.google_analytics_headers.for_csv.map(&:first)
     if header_rows.any?
       grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
