@@ -10,26 +10,28 @@ class ClientChannels::Twitter < ClientChannel
       ENV['TWITTER_ACCESS_TOKEN'],
       ENV['TWITTER_ACCESS_TOKEN_SECRET']
     )
+    account = client.accounts(self.uid)
+    campaign_ids = account.campaigns.map{ |c| c.id }
+    line_item_ids = account.line_items.map{ |c| c.id }
 
-    from = DateTime.now - 2
-    to = DateTime.now - 1
+    from = Time.zone.now.midnight - 2.day
+    to =  Time.zone.now.midnight - 1.day
 
-    account = client.accounts('18ce53uuays')
-    line_items = account.line_items(nil, count: 10)[0..9]
+    # GETTING METRICS FROM RUBY SDK
+    # account.line_items.each do |i|
+    #   puts "Line Item: #{i.id}"
+    #   stats = TwitterAds::LineItem.stats(account, [i.id], ['ENGAGEMENT'], start_time: from, end_time: to, granularity: 'DAY')
+    #   puts stats
+    #   puts '-----------'
+    # end
 
-    line_items.each do |l|
-      campaign = account.campaigns(l.campaign_id.to_s)
-      puts "Campaign Info"
-      puts "ID: #{l.campaign_id}"
-      puts "Name: #{campaign.name}"
-    end
+    # GETTING METRICS FROM TWURL
+    # finds individual line_item: twurl -H ads-api.twitter.com "/1/accounts/18ce53uuays/line_items/6fzcg"
+    # find campaign metrics: twurl -H ads-api.twitter.com "/1/stats/accounts/18ce53uuays?entity_ids=1jwhi&entity=CAMPAIGN&start_time=2017-03-01T00:00:00Z&granularity=DAY&metric_groups=ENGAGEMENT&end_time=2017-03-03T00:00:00Z&placement=ALL_ON_TWITTER"
+    # find line_item metrics: twurl -H ads-api.twitter.com "/1/stats/accounts/18ce53uuays?entity_ids=1gytc&entity=LINE_ITEM&start_time=2017-03-01T00:00:00Z&granularity=DAY&metric_groups=ENGAGEMENT&end_time=2017-03-03T00:00:00Z&placement=ALL_ON_TWITTER"
 
-    ids = line_items.map(&:id)
-    metric_group = ['ENGAGEMENT']
-    stats = TwitterAds::LineItem.stats(account, ids, metric_group, start_time: from, end_time: to)
-
-    puts '---------'
-    puts stats
+    # sample campaign id's: ["1i6jy", "1ikj8", "1isbp", "1izpk", "1jwhi"]
+    # sample line item id's: ["1g63z", "1gip2", "1gqz4", "1gytc", "1hwxt"]
 
     # Find and return Insights for a Twitter account & campaign
     # * just dummy data for now *

@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-# ruby '2.4.0'
+ruby '2.4.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
@@ -35,6 +35,7 @@ gem 'google-api-client', '~> 0.9', require: 'google/apis/analyticsreporting_v4'
 gem 'google-adwords-api', require: 'adwords_api'
 # For Twitter API integration
 gem 'twitter-ads', '~> 1.0.0'
+gem 'twurl'
 # Running background jobs with sidekiq
 gem 'sidekiq', '~> 4.1.2'
 # For tracking status of background jobs
