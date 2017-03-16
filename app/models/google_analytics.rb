@@ -117,6 +117,10 @@ module GoogleAnalytics
         parsed_metrics[:data_rows].each do |data_row|
           data_row[index] = data_row[index].to_f.round(2)
         end
+      when "ga:percentNewSessions"
+        parsed_metrics[:data_rows].each do |data_row|
+          data_row[index] = data_row[index].to_f.round(2)
+        end
       end
     end
     # Lastly, switch each "ga:" header for it's nicer name
