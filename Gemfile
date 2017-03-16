@@ -35,7 +35,6 @@ gem 'google-api-client', '~> 0.9', require: 'google/apis/analyticsreporting_v4'
 gem 'google-adwords-api', require: 'adwords_api'
 # For Twitter API integration
 gem 'twitter-ads', '~> 1.0.0'
-gem 'twurl'
 # Running background jobs with sidekiq
 gem 'sidekiq', '~> 4.1.2'
 # For tracking status of background jobs

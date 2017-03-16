@@ -1,5 +1,4 @@
 require 'twitter-ads'
-require 'net/http'
 
 class ClientChannels::Twitter < ClientChannel
 
@@ -17,34 +16,43 @@ class ClientChannels::Twitter < ClientChannel
       ENV['TWITTER_ACCESS_TOKEN_SECRET']
     )
     account = client.accounts(self.uid)
-    campaign_ids = account.campaigns.map{ |c| c.id }
-    line_item_ids = account.line_items.map{ |c| c.id }
 
     from = Time.zone.now.midnight - 10.day
-    to =  Time.zone.now.midnight - 8.day
+    to =  Time.zone.now.midnight - 5.day
+    # from = Time.zone.parse('08-10-2016').midnight
+    # to = Time.zone.parse('11-10-2016').midnight
+
+    data = {}
 
     # GETTING METRICS FROM RUBY SDK
     account.line_items.each do |i|
-      puts "Line Item: #{i.id}"
       campaign = account.campaigns(i.campaign_id)
-      puts "Campaign Name: #{campaign.name}"
-      stats = TwitterAds::LineItem.stats(account, [i.id], ['ENGAGEMENT'], start_time: from, end_time: to, granularity: 'DAY')
-      puts stats
-      puts '-----------'
+
+      # Excluse Campaigns that have 'EXPIRED' or have are 'BUDGET_EXPIRED'
+      # So as to keep API requests as low as possible
+      # Including Campaigns that are ACTIVE or 'PAUSED_BY_ADVERTISER'
+      if !campaign.reasons_not_servable.include?('EXPIRED') && !campaign.reasons_not_servable.include?('BUDGET_EXHAUSTED')
+        puts "Getting metrics for campaign: #{campaign.name}"
+        stats = TwitterAds::LineItem.stats(account, [i.id], ['ENGAGEMENT'], start_time: from, end_time: to, granularity: 'DAY')
+        impressions = stats.first[:id_data].first[:metrics][:impressions]
+        
+        if impressions == nil
+          data[campaign.name] = nil
+        else
+          data[campaign.name] = impressions
+        end
+      end
     end
 
-    # GETTING METRICS FROM TWURL
-    # finds individual line_item: twurl -H ads-api.twitter.com "/1/accounts/18ce53uuays/line_items/6fzcg"
-    # find campaign metrics: twurl -H ads-api.twitter.com "/1/stats/accounts/18ce53uuays?entity_ids=1jwhi&entity=CAMPAIGN&start_time=2017-03-10T00:00:00Z&granularity=DAY&metric_groups=ENGAGEMENT&end_time=2017-03-12T00:00:00Z&placement=ALL_ON_TWITTER"
-    # find line_item metrics: twurl -H ads-api.twitter.com "/1/stats/accounts/18ce53uuays?entity_ids=6fzcg&entity=LINE_ITEM&start_time=2017-03-10T00:00:00Z&granularity=DAY&metric_groups=ENGAGEMENT&end_time=2017-03-12T00:00:00Z&placement=ALL_ON_TWITTER"    
+    puts data
 
     # Find and return Insights for a Twitter account & campaign
     # * just dummy data for now *
-    return {
-      twitterClicks: 999,
-      twitterCtr: 4.02002002,
-      twitterImpressions: 4016
-    }
+    # return {
+    #   twitterClicks: 999,
+    #   twitterCtr: 4.02002002,
+    #   twitterImpressions: 4016
+    # }
   end
 
 end
