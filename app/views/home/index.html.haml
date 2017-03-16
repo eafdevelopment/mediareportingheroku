@@ -5,7 +5,7 @@
       = label_tag "Client *"
       = select_tag :client, options_for_select(format_options(@clients)), prompt: 'Select client', data: {ajax_url: client_client_channels_path('_CLIENT_ID_')}, id: 'client_select', required: true
       = label_tag "Channel *"
-      = select_tag :channel, options_for_select([['Select campaign', '']]), required: true, id: "channels_select"
+      = select_tag :channel, options_for_select([['Select channel', '']]), required: true, id: "channels_select"
       = label_tag "Date From"
       = date_field_tag :date_from, 1.day.ago.strftime('%Y-%m-%d')
       = label_tag "Date To"
