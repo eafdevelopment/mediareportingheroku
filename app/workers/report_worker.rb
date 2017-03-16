@@ -7,6 +7,7 @@ class ReportWorker
     dataset = Dataset.find(report_id)
     cc = dataset.client_channel
     job_id = dataset.job_id
+
     begin
       # store csv as dataset attachment
       report_data = cc.generate_report_all_campaigns(from, to)
@@ -22,6 +23,7 @@ class ReportWorker
       dataset.save!
     rescue => e
       # catch failed background jobs and update status
+      Rollbar.error(e)
       puts e.message
       dataset.status = 'failed'
       dataset.save

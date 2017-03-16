@@ -58,6 +58,7 @@ default: &defaults
     for_csv:
       'ga:costPerGoalConversion': 'Cost per Goal Conversion'
       'ga:sessions': 'Sessions'
+      'ga:percentNewSessions': '% New Sessions'
       'ga:avgSessionDuration': 'Avg Session Duration'
       'ga:bounceRate': 'Bounce Rate'
       'ga:pageviewsPerSession': 'Pages / Session'

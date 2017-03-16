@@ -2,10 +2,11 @@ class ClientChannels::Instagram < ClientChannels::Facebook
 
   # All methods inherited from ClientChannels::Facebook
   
-  def parse_instagram_insights(insights, headers)
+  def parse_insights(insights, headers)
     rows = { data: [] }
     insights.each do |campaign_insights|
       campaign = FacebookAds::AdCampaign.find(campaign_insights[0])
+      print ">> Instagram & Analytics metrics for campaign: #{campaign.name}  "
 
       # Exclude FB campaigns from the Instagram report
       if campaign.ad_sets && campaign.ad_sets.first && campaign.ad_sets.first.targeting['publisher_platforms'].include?('instagram')
