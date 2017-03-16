@@ -12,12 +12,35 @@ class ClientChannels::Adwords < ClientChannel
     # Get a separate report containing conversions data
     adwords_client.include_zero_impressions = false # (the conversions report is incompatible with this setting)
     report_conversions = report_utils.download_report(report_def_all_campaigns_conversions(from_date, to_date))
-    conversions_data_hash = parsed_conversions_report(report_conversions)
-
+    puts "> report_conversions: " + report_conversions.inspect
+    # puts "> " + CSV.parse(report_conversions, headers: true).to_a.inspect #.max_by{|row| row.length}
+    conversions_data = parsed_conversions_report(report_conversions)
+    conversion_headers = create_conversion_headers(conversions_data)
+    puts ">"
+    puts "> conversion_headers: " + conversion_headers.inspect
     combined_data_rows = []
+
+    parsed_report_main.each do |row|
+      conversion_data_fields = create_conversion_data_fields(row["Day"], row["Campaign ID"], conversion_headers, conversions_data)
+      # ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
+      ga_data = {data_rows: []}
+      if ga_data[:data_rows].first
+        # got some GA data, so concat to the AdWords data row as well as possible conversion fields
+        # combined_data_rows.push( row.map{|k,v| v}.concat(ga_data[:data_rows].first) )
+      else
+        # no GA data returned, so only concat possible conversion fields
+        combined_data_rows.push( row.map{|k,v| v} )
+      end
+    end
+    header_row = AppConfig.adwords_headers.for_csv.map(&:second).concat(conversion_headers).concat(AppConfig.google_analytics_headers.for_csv.map(&:second))
+    combined_data_rows.unshift(header_row)
     
-    
-    # conversion_report_headers = AppConfig.adwords_headers.conversions.map(&:second).reject{|header| header == "Date" || header == "Campaign ID"}
+    # combined_data_rows.map{ |row|
+    #   puts "-----"
+    #   puts "> combined_data_rows row: " + row.inspect
+    # }
+
+
     # conversion_report_rows = []
     
     
@@ -47,22 +70,7 @@ class ClientChannels::Adwords < ClientChannel
     # puts "> conversion_report_rows.max_by: " + conversion_report_rows.max_by(&:length).inspect
 
     # # for each row, also fetch any Google Analytics data for that campaign
-    # parsed_report_main.each do |row|
-    #   # ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
-    #   ga_data = {data_rows: []}
-    #   if ga_data[:data_rows].first
-    #     # got some GA data, so concat to the AdWords data row as well as possible conversion fields
-    #     combined_data_rows.push( row.map{|k,v| v}.concat(ga_data[:data_rows].first) )
-    #   else
-    #     # no GA data returned, so only concat possible conversion fields
-    #     combined_data_rows.push( row.map{|k,v| v} )
-    #   end
-    # end
-    # header_row = AppConfig.adwords_headers.for_csv.map(&:second).concat(conversion_report_headers).concat(AppConfig.google_analytics_headers.for_csv.map(&:second))
-    # combined_data_rows.unshift(header_row)
-    # combined_data_rows.map{ |row|
-    #   puts "> combined_data_rows row: " + row.inspect
-    # }
+
     return "" #combined_data_rows.map{ |row| row.to_csv }.join("")
   end
 
@@ -155,14 +163,52 @@ class ClientChannels::Adwords < ClientChannel
   end
 
   def parsed_conversions_report(conversions_report)
-    puts "> parsing conversions_report: " + conversions_report.inspect
     parsed_report = []
     CSV.parse(conversions_report, headers: true).each do |row|
-      puts ">> row: " + row.inspect
       parsed_report.push(row.to_h)
     end
-    puts "> returning parsed_report: " + parsed_report.inspect
     return parsed_report
+  end
+
+  def create_conversion_headers(conversions_data_hash)
+    headers = []
+    grouped_conversion_types = conversions_data_hash.group_by{|row| row["Conversion Tracker Id"]}
+    grouped_conversion_types.each do |conversion_type_id, conversions|
+      conversions.each do |conversion|
+        conversion_type_name = conversion["Conversion name"]
+        unless headers.include?(conversion_type_name + " (total)")
+          headers.push(conversion_type_name + " (total conversions)")
+          headers.push(conversion_type_name + " (conversion rate)")
+        end
+      end
+    end
+    return headers
+  end
+
+  def create_conversion_data_fields(date, campaign_id, conversions_headers, conversions_data)
+    data_fields = []
+    puts "-----------------------------"
+    # puts "> date: " + date.inspect
+    # puts "> campaign_id: " + campaign_id.inspect
+    # puts "> conversions_data: " + conversions_data.inspect
+    associated_conversions = conversions_data.select{|conversion| conversion["Day"] == date && conversion["Campaign ID"] == campaign_id}
+    # are there any associated conversions to return? (use conversions_headers to organise fields correctly)
+    puts "> associated_conversions: " + associated_conversions.inspect
+    conversions_headers.each do |header|
+      puts "> checking header: " + header.inspect
+      if associated_conversions.any?
+        # put either a value or a -
+        associated_conversions.select{ |conv|
+          puts ">> associated conversion: " + conv.inspect
+          
+        }
+      else
+        puts ">> (need to return '-')"
+        data_fields.push("-")
+      end
+    end
+    puts "> returning data_fields: " + data_fields.inspect
+    return data_fields
   end
 
 end

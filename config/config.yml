@@ -28,7 +28,8 @@ default: &defaults
       Date: 'Date'
       CampaignId: 'Campaign ID'
       CampaignName: 'Campaign'
-      ConversionTypeName: 'Conversion Name'
+      ConversionTrackerId: 'Conversion Type ID'
+      ConversionTypeName: 'Conversion Type Name'
       Conversions: 'Conversions'
       ConversionRate: 'Conversion Rate'
   fb_and_insta_headers:
