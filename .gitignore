@@ -28,3 +28,5 @@
 
 # Ignore Redis dump
 dump.rdb
+
+/public/system
