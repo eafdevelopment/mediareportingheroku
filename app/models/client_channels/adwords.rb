@@ -12,7 +12,7 @@ class ClientChannels::Adwords < ClientChannel
     combined_data_rows = []
     report_main.each do |row|
       associated_conversions = report_conversions.select{|conversion| conversion["Day"] == row["Day"] && conversion["Campaign ID"] == row["Campaign ID"]}
-      conversion_data_fields = create_conversion_data_fields(row["Day"], row["Campaign ID"], conversion_col_headers, associated_conversions)
+      conversion_data_fields = create_conversion_data_fields(conversion_col_headers, associated_conversions)
       ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
       if ga_data[:data_rows].first # if GA data present
         combined_data_rows.push(
@@ -163,7 +163,7 @@ class ClientChannels::Adwords < ClientChannel
     }
   end
 
-  def create_conversion_data_fields(date, campaign_id, conversions_headers, conversions_data)
+  def create_conversion_data_fields(conversions_headers, conversions_data)
     # every row in our final CSV report should contain either data or "-"s
     # for each possible conversion column
     data_fields = []
