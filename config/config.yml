@@ -24,14 +24,17 @@ default: &defaults
       NumOfflineInteractions: 'Calls'
       AverageTimeOnSite: 'Avg Time on Site'
       PercentNewVisitors: 'PercentNewVisitors'
-    conversions:
+    account_conversions:
+      Conversions: 'Conversions'
+      ConversionTypeName: 'Conversion Type Name'
+    conversion_data:
       Date: 'Date'
       CampaignId: 'Campaign ID'
       CampaignName: 'Campaign'
-      ConversionTrackerId: 'Conversion Type ID'
-      ConversionTypeName: 'Conversion Type Name'
       Conversions: 'Conversions'
       ConversionRate: 'Conversion Rate'
+      ConversionTrackerId: 'Conversion Type ID'
+      ConversionTypeName: 'Conversion Type Name'
   fb_and_insta_headers:
     for_csv:
       date_start: 'Date'
