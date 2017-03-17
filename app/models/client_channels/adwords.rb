@@ -83,7 +83,17 @@ class ClientChannels::Adwords < ClientChannel
     adwords_client.include_zero_impressions = true
     report_utils = adwords_client.report_utils()
     report_main = report_utils.download_report(report_def_all_campaigns(from_date, to_date))
-    return CSV.parse(report_main, headers: true)
+    parsed_report = CSV.parse(report_main, headers: true)
+    parsed_report.each do |row|
+      # Adwords API returns money in 'micro currency units' (£1 = 1,000,000)
+      if row["Cost"] != "0"
+        row["Cost"] = ((row["Cost"].to_f) / 1000000).round(2).to_s
+      end
+      if row["Avg. CPC"] != "0"
+        row["Avg. CPC"] = ((row["Avg. CPC"].to_f) / 1000000).round(2).to_s
+      end
+    end
+    return parsed_report
   end
 
   def get_and_parse_conversion_headers
