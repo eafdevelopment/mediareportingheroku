@@ -9,23 +9,27 @@ class ClientChannels::Adwords < ClientChannel
     conversion_col_headers = get_and_parse_conversion_headers
     
     # Ready to combine main report data, conversion report data & GA data
+    header_row = AppConfig.adwords_headers.for_csv.map(&:second).concat(conversion_col_headers).concat(AppConfig.google_analytics_headers.for_csv.map(&:second))
     combined_data_rows = []
     report_main.each do |row|
       associated_conversions = report_conversions.select{|conversion| conversion["Day"] == row["Day"] && conversion["Campaign ID"] == row["Campaign ID"]}
       conversion_data_fields = create_conversion_data_fields(conversion_col_headers, associated_conversions)
       ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
-      if ga_data[:data_rows].first # if GA data present
-        combined_data_rows.push(
-          row.map{|k,v| v}.concat(conversion_data_fields).concat(ga_data[:data_rows].first)
-        )
-      else
-        combined_data_rows.push(
-          row.map{|k,v| v}.concat(conversion_data_fields)
-        )
+      if ga_data[:data_rows].first # if GA data present, concat it
+        row = row.map{|k,v| v}.concat(conversion_data_fields).concat(ga_data[:data_rows].first)
+      else # if not, concat the correct number of "-"s
+        row = row.map{|k,v| v}.concat(conversion_data_fields).concat(AppConfig.google_analytics_headers.for_csv.map{|header| "-"})
       end
+      if row.length != header_row.length
+        puts ">> row: " + row.inspect
+        puts ">> row.length: " + row.length.inspect
+        puts ">> header_row: " + header_row.inspect
+        puts ">> header_row.length: " + header_row.length.inspect
+        raise "HEADER ROW LENGTH SHOULD EQUAL FIRST DATA ROW LENGTH"
+      end
+      combined_data_rows.push(row)
+      puts "> data row appended"
     end
-
-    header_row = AppConfig.adwords_headers.for_csv.map(&:second).concat(conversion_col_headers).concat(AppConfig.google_analytics_headers.for_csv.map(&:second))
     combined_data_rows.unshift(header_row)
 
     return combined_data_rows.map{ |row| row.to_csv }.join("")
