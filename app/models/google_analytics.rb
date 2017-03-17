@@ -46,6 +46,9 @@ module GoogleAnalytics
           end
         end unless response.reports.nil?
       end
+      if combined_parsed_report[:header_row].length != combined_parsed_report[:data_rows].first.length
+        raise "HEADER_ROW LENGTH SHOULD EQUAL DATA_ROW.FIRST.LENGTH"
+      end
       return combined_parsed_report
     end
     # if we haven't been able to successfully return data, return an
