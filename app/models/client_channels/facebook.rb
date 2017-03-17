@@ -9,14 +9,29 @@ class ClientChannels::Facebook < ClientChannel
     # Find account and all campaigns for that account
     FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
     account = FacebookAds::AdAccount.find(self.uid)
-    # Getting all insights for an account, at ad level
-    date_range = Date.parse(from)..Date.parse(to)
-    all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)
+    
+    account.ad_campaigns(effective_status: ["ACTIVE", "PAUSED"]).each do |campaign|
+      puts "-------------------"
+      puts "> campaign: " + campaign.inspect
+      # Exclude instagram campaigns from the Facebook report
+      unless campaign.ad_sets && campaign.ad_sets.first && campaign.ad_sets.first.targeting['publisher_platforms'].include?('instagram')
+        insights = campaign.ad_insights(range: Date.parse(from)..Date.parse(to))
+        parsed_insights = parse_insights(campaign.name, insights, headers)
+        puts "> parsed_insights: " + parsed_insights.inspect
+        sleep 10
+        # all_metrics[:data_rows].push(parsed_insights)
+      end
+    end
+    return true
+    
+    # # Getting all insights for an account, at ad level
+    # date_range = Date.parse(from)..Date.parse(to)
+    # all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)
 
-    all_rows = parse_insights(all_campaign_insights, headers)
+    # all_rows = parse_insights(all_campaign_insights, headers)
 
-    all_metrics[:data_rows].concat(all_rows[:data])
-    return to_csv(all_metrics)
+    # all_metrics[:data_rows].concat(all_rows[:data])
+    # return to_csv(all_metrics)
   end
 
   private
@@ -31,29 +46,29 @@ class ClientChannels::Facebook < ClientChannel
     return csv_report
   end
 
-  def parse_insights(insights, headers)
+  def parse_insights(campaign_name, insights, headers)
     rows = { data: [] }
-    insights.each do |campaign_insights|
-      campaign = FacebookAds::AdCampaign.find(campaign_insights[0])
-      puts ">> Facebook & Analytics metrics for campaign: #{campaign.name}"
-      # Exclude instagram campaigns from the Facebook report
-      unless campaign.ad_sets && campaign.ad_sets.first && campaign.ad_sets.first.targeting['publisher_platforms'].include?('instagram')
-        # Insights ordered by campaign and date_start 
-        insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
-        insights_ordered_by_date.each do |day_insights|
-          # Facebook metrics for single row (one campaign, one day)
-          fb_row = make_row(headers, day_insights)
+    # fb_row = make_row(headers, insights_for_day)
+    # puts "> fb_row: " + fb_row.inspect
+    # rows[:data].push(fb_row)
+    # insights.each do |insights_for_day|
+    #   # puts "> insights_for_day: " + insights_for_day.inspect
+      
+    #   #   # Insights ordered by campaign and date_start 
+    #   #   insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
+    #   #   insights_ordered_by_date.each do |day_insights|
+        
+    #   # # Facebook metrics for single row (one campaign, one day)
+    #   # fb_row = make_row(headers, insights_for_day)
 
-          # GA metrics for single row (one campaign, one day)
-          ga_row = GoogleAnalytics.fetch_and_parse_metrics(fb_row.first, fb_row.first, self.client.google_analytics_view_id, campaign.name)
+    #   # # GA metrics for single row (one campaign, one day)
+    #   # ga_row = GoogleAnalytics.fetch_and_parse_metrics(fb_row.first, fb_row.first, self.client.google_analytics_view_id, campaign_name)
           
-          # Create row of FB & GA campaign metrics if there are any
-          ga_row[:data_rows].any? ? campaign_row = fb_row.concat(ga_row[:data_rows].first) : campaign_row = fb_row
+    #   # # Create row of FB & GA campaign metrics if there are any
+    #   # ga_row[:data_rows].any? ? campaign_row = fb_row.concat(ga_row[:data_rows].first) : campaign_row = fb_row
 
-          rows[:data].push(fb_row)
-        end
-      end
-    end
+    #   # rows[:data].push(fb_row)
+    # end
     return rows
   end
 
