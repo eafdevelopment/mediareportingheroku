@@ -7,7 +7,7 @@ default: &defaults
     - ClientChannels::Twitter
 
   adwords_headers:
-    for_csv:
+    main_report:
       AccountDescriptiveName: 'Account Name'
       Date: 'Date'
       CampaignName: 'Campaign'
@@ -24,9 +24,6 @@ default: &defaults
       NumOfflineInteractions: 'Calls'
       AverageTimeOnSite: 'Avg Time on Site'
       PercentNewVisitors: 'PercentNewVisitors'
-    account_conversions:
-      Conversions: 'Conversions'
-      ConversionTypeName: 'Conversion Type Name'
     conversion_data:
       Date: 'Date'
       CampaignId: 'Campaign ID'
@@ -35,6 +32,14 @@ default: &defaults
       ConversionRate: 'Conversion Rate'
       ConversionTrackerId: 'Conversion Type ID'
       ConversionTypeName: 'Conversion Type Name'
+    criteria_performance:
+      Date: 'Date'
+      CampaignId: 'Campaign ID'
+      CampaignName: 'Campaign'
+      AdGroupName: 'Ad Group Name'
+      AdGroupStatus: 'Ad Group Status'
+      QualityScore: 'Quality Score'
+
   fb_and_insta_headers:
     for_csv:
       date_start: 'Date'
