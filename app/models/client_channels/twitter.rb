@@ -2,11 +2,6 @@ require 'twitter-ads'
 
 class ClientChannels::Twitter < ClientChannel
 
-  # From Twitter:
-  # Campaign Name
-  # Impressions
-  # Spend
-
   def generate_report_all_campaigns(from, to)
 
     client = twitter_credentials
@@ -14,36 +9,69 @@ class ClientChannels::Twitter < ClientChannel
 
     # Add a day before the search query because Twitter only accepts date
     # params with time set at midnight, so first date isn't included in metrics
+    # Then remove added day from dates array
     from = format_date(from) - 1.day
     to = format_date(to)
-    # Remove first date from dates array as there are no metrics
-    time_array = ((from..to).map{ |date| date.strftime("%d-%m-%Y") }).drop(1)
-    api_metrics = {}
+    dates_array = ((from..to).map{ |date| date.strftime("%d-%m-%Y") }).drop(1)
 
-    #  GETTING METRICS FROM RUBY SDK
-    account.line_items.each do |i|
-      campaign = account.campaigns(i.campaign_id)
+    # Getting metrics from Twitter Ads Ruby SDK
+    api_metrics = get_twitter_metrics(account, from, to)
 
-      # Exclude Campaigns that have 'EXPIRED' or have are 'BUDGET_EXPIRED'
-      # So as to keep API requests as low as possible
-      # Include Campaigns that are ACTIVE or 'PAUSED_BY_ADVERTISER'
-      if !campaign.reasons_not_servable.include?('EXPIRED') && !campaign.reasons_not_servable.include?('BUDGET_EXHAUSTED')
-        puts "Getting metrics for campaign: #{campaign.name}"
-        stats = TwitterAds::LineItem.stats(account, [i.id], ['ENGAGEMENT'], start_time: from, end_time: to, granularity: 'DAY')
-        impressions = stats.first[:id_data].first[:metrics][:impressions]
-        
-        if impressions == nil
-          api_metrics[campaign.name] = nil
-        else
-          api_metrics[campaign.name] = impressions
-        end
-      end
-    end
+    # Arranging data with dates, campaign & metrics
+    report_metrics = format_twitter_metrics(api_metrics, dates_array)
 
-    puts api_metrics
+    # Getting report rows and returning a CSV
+    data = parse_metrics(report_metrics[:data_rows], report_metrics[:header_row])
+    puts report_metrics[:header_rows]
+    puts '>>>>>>>>>>>>>>>'
+    puts data[:rows]
+
+    # return to_csv(report_metrics[:header_rows], data[:rows])
   end
 
   private
+
+  def to_csv(header_row, data_rows)
+    csv_report = CSV.generate do |csv|
+      csv << header_row
+      data_rows.each do |data_row|
+        puts data_row
+        csv << data_row
+      end
+    end
+    return csv_report
+  end
+
+  def parse_metrics(metrics_data, headers)
+    all_data_rows = { rows: [] }
+    metrics_data.each do |date, campaigns_array|
+      campaigns_array.each do |c|
+        row = []
+        headers.each do |header|
+          case header
+          when 'Date'
+            row << date
+          when 'Campaign'
+            row << c[:name]
+          when 'Impressions'
+            if c[:metrics][:impressions] != nil
+              row << c[:metrics][:impressions] 
+            else
+              row << '-'
+            end
+          when 'Spend'
+            if c[:metrics][:spend] != nil
+              row << c[:metrics][:spend]
+            else
+              row << '-'
+            end
+          end
+        end
+        all_data_rows[:rows] << row
+      end
+    end
+    return all_data_rows
+  end
 
   def twitter_credentials
     TwitterAds::Client.new(
@@ -58,5 +86,60 @@ class ClientChannels::Twitter < ClientChannel
     now = DateTime.now 
     datetime = Time.parse(date_string)
     return DateTime.new(datetime.year, datetime.month, datetime.day, 0, 0, 0, now.zone)
+  end
+
+  def get_twitter_metrics(account, from, to)
+    api_metrics = {}
+    account.line_items.each do |i|
+      campaign = account.campaigns(i.campaign_id)
+      # Exclude Campaigns that have 'EXPIRED' or have are 'BUDGET_EXPIRED'
+      # So as to keep API requests as low as possible
+      # Include Campaigns that are ACTIVE or 'PAUSED_BY_ADVERTISER'
+      if !campaign.reasons_not_servable.include?('EXPIRED') && !campaign.reasons_not_servable.include?('BUDGET_EXHAUSTED')
+        puts "Getting metrics for campaign: #{campaign.name}"
+        stats = TwitterAds::LineItem.stats(account, [i.id], ['ENGAGEMENT', 'BILLING'], start_time: from, end_time: to, granularity: 'DAY')
+
+        impressions = stats.first[:id_data].first[:metrics][:impressions]
+        total_spend = stats.first[:id_data].first[:metrics][:billed_charge_local_micro]
+        billed_spend = total_spend ? total_spend.map{ |amount| amount / 1000000 } : nil
+
+        api_metrics[campaign.name] = []
+        
+        campaign_metrics = {
+          impressions: impressions ? impressions : '-',
+          spend: billed_spend ? (billed_spend) : '-'
+        }
+
+        api_metrics[campaign.name] << campaign_metrics
+      end
+    end
+    return api_metrics
+  end
+
+  def format_twitter_metrics(api_metrics, dates_array)
+    report_metrics = { 
+      header_row: AppConfig.twitter_headers.for_csv.map(&:last),
+      data_rows: {  }
+    }
+
+    # Iterate through each date within the range searched
+    dates_array.each_with_index do |date, index|
+      campaigns = []
+
+      # Iterate through campaigns and metrics
+      api_metrics.each do |campaign_name, metrics|
+        campaign_object = {
+          name: campaign_name, 
+          metrics: {
+            impressions: metrics.first[:impressions][index],
+            spend: metrics.first[:spend][index]
+          }
+        }
+        campaigns << campaign_object
+      end
+      # Save array of campaigns and metrics to each date
+      report_metrics[:data_rows][date] = campaigns
+    end
+    return report_metrics
   end
 end
