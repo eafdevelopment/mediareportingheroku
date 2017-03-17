@@ -56,15 +56,16 @@ default: &defaults
       ctr: 'CTR'
   google_analytics_headers:
     for_csv:
-      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
       'ga:sessions': 'Sessions'
       'ga:percentNewSessions': '% New Sessions'
       'ga:avgSessionDuration': 'Avg Session Duration'
       'ga:bounceRate': 'Bounce Rate'
-      'ga:pageviewsPerSession': 'Pages / Session'
+      'ga:pageviewsPerSession': 'Pageviews per Session'
       'ga:transactionsPerSession': 'Ecommerce Conversion Rate'
       'ga:transactions': 'Transactions'
       'ga:transactionRevenue': 'Revenue'
+      'ga:goalCompletionsAll': 'Goal Completions (All)'
+      'ga:costPerGoalConversion': 'Cost per Goal Conversion'
       'ga:goal1Completions': 'Goal 1 Completions'
       'ga:goal2Completions': 'Goal 2 Completions'
       'ga:goal3Completions': 'Goal 3 Completions'
@@ -85,7 +86,6 @@ default: &defaults
       'ga:goal18Completions': 'Goal 18 Completions'
       'ga:goal19Completions': 'Goal 19 Completions'
       'ga:goal20Completions': 'Goal 20 Completions'
-
   adwords:
     oauth2_client_id: <%= ENV["ADWORDS_OAUTH2_CLIENT_ID"] %>
     oauth2_client_secret: <%= ENV["ADWORDS_OAUTH2_CLIENT_SECRET"] %>
