@@ -96,6 +96,11 @@ class ClientChannels::Adwords < ClientChannel
       if row["Avg. CPC"] != "0"
         row["Avg. CPC"] = ((row["Avg. CPC"].to_f) / 1000000).round(2).to_s
       end
+      # The final report header for avg. session duration doesn't include
+      # (seconds), so format to a more recognisable time value
+      if row["Avg. session duration (seconds)"] != "0"
+        row["Avg. session duration (seconds)"] = Time.at(row["Avg. session duration (seconds)"].to_i).utc.strftime("%H:%M:%S")
+      end
     end
     return parsed_report
   end
