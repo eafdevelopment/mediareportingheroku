@@ -89,7 +89,7 @@ class ClientChannels::Twitter < ClientChannel
     # Iterate through each date within the range searched
     dates_array.each_with_index do |date, index|
       campaigns = []
-      # Iterate through campaigns and metrics
+      # Iterate through campaigns collecting Twitter & GA metrics
       api_metrics.each do |campaign_name, metrics|
         campaign_object = {
           name: campaign_name, 
@@ -107,7 +107,7 @@ class ClientChannels::Twitter < ClientChannel
   end
 
   def parse_metrics(metrics_data, headers)
-    all_data_rows = { rows: [] }
+    all_data_rows = { rows: [], headers: [] }
     metrics_data.each do |date, campaigns_array|
       campaigns_array.each do |c|
         row = []
@@ -131,6 +131,12 @@ class ClientChannels::Twitter < ClientChannel
             end
           end
         end
+        # Add GA metrics onto individual row
+        puts c[:name]
+        ga_data = GoogleAnalytics.fetch_and_parse_metrics(date, date, self.client.google_analytics_view_id, c[:name])
+        puts ga_data
+        puts '-----------------'
+
         all_data_rows[:rows] << row
       end
     end

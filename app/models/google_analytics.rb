@@ -18,7 +18,7 @@ module GoogleAnalytics
         rr.view_id = uid
         rr.metrics = header_group.map{ |header| self.metric(header) }
         rr.date_ranges = [self.date_range(from_date, to_date)]
-        rr.filters_expression = "ga:campaign==" + campaign_name
+        rr.filters_expression = "ga:campaign==" + campaign_name.gsub(",", "\\,") #(/[,+;+]/) { |x| "\\#{x}" }
         rr.dimensions = [self.dimension("ga:day")]
         rr.include_empty_rows = true
         report_requests.push(rr)
