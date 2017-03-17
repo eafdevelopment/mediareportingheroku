@@ -5,6 +5,7 @@ module GoogleAnalytics
     # - the uid argument here represents the GA View ID, and the campaign_name
     # is for filtering data within that view (eight&four would go to Reporting >
     # Acquisition > Campaigns in Google Analytics to see the data they want)
+    Google::Apis.logger.level = Logger::ERROR
     header_rows = AppConfig.google_analytics_headers.for_csv.map(&:first)
     if header_rows.any?
       grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
