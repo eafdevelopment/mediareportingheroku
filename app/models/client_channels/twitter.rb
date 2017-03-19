@@ -129,6 +129,8 @@ class ClientChannels::Twitter < ClientChannel
             else
               row << '-'
             end
+          when 'CPM'
+            calculate_cpm(row, c[:metrics][:spend], c[:metrics][:impressions])
           end
         end
         # Add GA metrics onto individual row
@@ -140,5 +142,16 @@ class ClientChannels::Twitter < ClientChannel
     end
 
     return all_data_rows
+  end
+
+  def calculate_cpm(row, spend, impressions)
+    if spend != nil && impressions != nil &&
+      spend != '-' && impressions != '-'
+        cpm = (spend/impressions) * 1000
+        row << cpm.round(2)
+    else
+      row << '-'
+    end
+    return row
   end
 end

@@ -44,6 +44,7 @@ default: &defaults
       campaign_name: 'Campaign'
       impressions: 'Impressions'
       spend: 'Spend'
+      cpm: 'CPM'
   google_analytics_headers:
     for_csv:
       'ga:costPerGoalConversion': 'Cost per Goal Conversion'
