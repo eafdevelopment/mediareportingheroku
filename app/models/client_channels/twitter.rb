@@ -6,7 +6,7 @@ class ClientChannels::Twitter < ClientChannel
 
     client = twitter_credentials
     account = client.accounts(self.uid)
-    headers = AppConfig.twitter_headers.for_csv.map(&:last)
+    headers = AppConfig.twitter_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last))
 
     # Add a day before the search query because Twitter only accepts date
     # params with time set at midnight, so first date isn't included in metrics
@@ -132,14 +132,13 @@ class ClientChannels::Twitter < ClientChannel
           end
         end
         # Add GA metrics onto individual row
-        puts c[:name]
         ga_data = GoogleAnalytics.fetch_and_parse_metrics(date, date, self.client.google_analytics_view_id, c[:name])
-        puts ga_data
-        puts '-----------------'
+        ga_data[:data_rows].any? ? ga_twitter_row = row.concat(ga_data[:data_rows].first) : ga_twitter_row = row
 
-        all_data_rows[:rows] << row
+        all_data_rows[:rows] << ga_twitter_row
       end
     end
+
     return all_data_rows
   end
 end
