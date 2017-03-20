@@ -54,12 +54,13 @@ default: &defaults
       cpp: 'CPP'
       ctr: 'CTR'
       cpc: 'CPC'
-    for_summary:
+  twitter_headers:
+    for_csv:
+      date: 'Date'
+      campaign_name: 'Campaign'
       impressions: 'Impressions'
-      clicks: 'Clicks'
       spend: 'Spend'
-      cpc: 'CPC'
-      ctr: 'CTR'
+      cpm: 'CPM'
   google_analytics_headers:
     for_csv:
       'ga:sessions': 'Sessions'

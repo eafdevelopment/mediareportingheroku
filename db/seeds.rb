@@ -19,6 +19,11 @@ dmu_intl.client_channels.where(
   type: "ClientChannels::Instagram",
   uid: "act_1406179109678952"
 ).first_or_create
+# > Twitter
+dmu_intl.client_channels.where(
+  type: "ClientChannels::Twitter", 
+  uid: "18ce53uuays"
+).first_or_create
 
 # CLIENT: DMU (EU)
 # > Create
@@ -41,6 +46,11 @@ dmu_eu.client_channels.where(
   type: "ClientChannels::Instagram",
   uid: "act_1406179109678952"
 ).first_or_create
+# > Twitter
+dmu_eu.client_channels.where(
+  type: "ClientChannels::Twitter", 
+  uid: "18ce53uuays"
+).first_or_create
 
 # CREATE: DMU - Leicester Castle Business School
 # > Create
@@ -57,6 +67,11 @@ dmu_leicester.client_channels.where(
 dmu_leicester.client_channels.where(
   type: "ClientChannels::Instagram",
   uid: "act_1143706438973923"
+).first_or_create
+# > Twitter
+dmu_leicester.client_channels.where(
+  type: "ClientChannels::Twitter", 
+  uid: "18ce53uuays"
 ).first_or_create
 
 # CLIENT: De Montfort University Leicester (DMU)
@@ -75,6 +90,11 @@ leicester.client_channels.where(
   type: "ClientChannels::Instagram",
   uid: "act_1376049629358567"
 ).first_or_create
+# > Twitter
+leicester.client_channels.where(
+  type: "ClientChannels::Twitter", 
+  uid: "18ce53uuays"
+).first_or_create
 
 # CLIENT: DMU Domestic
 # > Create
@@ -86,6 +106,11 @@ dmu_domestic = Client.where(
 dmu_domestic.client_channels.where(
   type: "ClientChannels::Adwords",
   uid: "279-453-2610" 
+).first_or_create
+# > Twitter
+dmu_domestic.client_channels.where(
+  type: "ClientChannels::Twitter", 
+  uid: "18ce53uuays"
 ).first_or_create
 
 # CLIENT: Dirty Martini
