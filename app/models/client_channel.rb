@@ -21,10 +21,11 @@ class ClientChannel < ApplicationRecord
   private
 
   def generating_dataset?
-    puts 'HEELLLLO'
     # If there is a dataset that is in the process of generating
     # don't let the client channel get deleted
+    puts "Checking if any datasets are currently generating for #{self.nice_name}"
     if datasets.where(status: 'generating').any?
+      puts datasets.where(status: 'generating')
       errors.add(:base, "You can't delete this client channel while it is generating a report")
       return false
     end

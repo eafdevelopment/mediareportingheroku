@@ -12,8 +12,12 @@ class ClientChannels::Twitter < ClientChannel
     # params with time set at midnight, so first date isn't included in metrics
     # Then remove added day from dates array
     from = format_date(from)
-    to = (format_date(to)) + 1.day
-    dates_array = (from..(to - 1.day)).map{ |date| date.strftime("%d-%m-%Y") }
+    to = (format_date(to)) #+ 1.day
+    puts from
+    puts to
+    puts from.iso8601
+    puts to.iso8601
+    dates_array = (from..(to + 1.hour)).map{ |date| date.strftime("%d-%m-%Y") }
 
     # Getting metrics from Twitter Ads Ruby SDK
     api_metrics = get_twitter_metrics(account, from, to)
@@ -125,15 +129,16 @@ class ClientChannels::Twitter < ClientChannel
             end
           when 'Spend'
             if c[:metrics][:spend] != nil
-              row << c[:metrics][:spend]
+              row << c[:metrics][:spend].to_f.round(2)
             else
-              row << '-'
+              row << '0'
             end
           when 'CPM'
             calculate_cpm(row, c[:metrics][:spend], c[:metrics][:impressions])
           end
         end
         # Add GA metrics onto individual row
+        puts "Getting GA data from #{c[:name]}"
         ga_data = GoogleAnalytics.fetch_and_parse_metrics(date, date, self.client.google_analytics_view_id, c[:name])
         ga_data[:data_rows].any? ? ga_twitter_row = row.concat(ga_data[:data_rows].first) : ga_twitter_row = row
 

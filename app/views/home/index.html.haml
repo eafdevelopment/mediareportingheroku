@@ -11,3 +11,19 @@
       = label_tag "Date To"
       = date_field_tag :date_to, 1.day.ago.strftime('%Y-%m-%d')
       = submit_tag "Submit", class: "button small eight-button", data: {disable_with: "Fetching report..."}
+    %p Valid date range searches per channel
+    %table
+      %thead
+        %tr
+          %th Channel
+          %th Max date range
+      %tbody
+        %tr
+          %td AdWords
+          %td Account duration
+        %tr 
+          %td Facebook & Instagram
+          %td 90 days
+        %tr 
+          %td Twitter
+          %td 6 days
