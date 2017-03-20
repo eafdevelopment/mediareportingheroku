@@ -33,7 +33,7 @@
                 - if report.status == 'failed'
                   = link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
 
-
+    = paginate @reports
             
 
     
