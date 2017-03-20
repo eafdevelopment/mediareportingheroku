@@ -47,6 +47,7 @@ default: &defaults
       campaign_name: 'Campaign Name'
       spend: 'Amount Spent'
       impressions: 'Impressions'
+      frequency: 'Frequency'
       clicks: 'Clicks'
       cpm: 'CPM'
       reach: 'Reach'

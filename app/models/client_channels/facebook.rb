@@ -11,7 +11,11 @@ class ClientChannels::Facebook < ClientChannel
     account = FacebookAds::AdAccount.find(self.uid)
     # Getting all insights for an account, at ad level
     date_range = Date.parse(from)..Date.parse(to)
-    all_campaign_insights = account.ad_insights(range: date_range, time_increment: 1, level: 'ad').group_by(&:campaign_id)
+    all_campaign_insights = account.ad_insights({
+      level: 'ad',
+      range: date_range,
+      time_increment: 1
+    }).group_by(&:campaign_id)
 
     all_rows = parse_insights(all_campaign_insights, headers)
 
