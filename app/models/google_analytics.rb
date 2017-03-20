@@ -5,9 +5,7 @@ module GoogleAnalytics
     # - the uid argument here represents the GA View ID, and the campaign_name
     # is for filtering data within that view (eight&four would go to Reporting >
     # Acquisition > Campaigns in Google Analytics to see the data they want)
-    #
-    # IMPORTANT: GA allows us to request up to 5 reports, but currently our
-    # app will only look at the first returned report
+    Google::Apis.logger.level = Logger::ERROR
     header_rows = AppConfig.google_analytics_headers.for_csv.map(&:first)
     if header_rows.any?
       grr = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
@@ -47,6 +45,9 @@ module GoogleAnalytics
             end
           end
         end unless response.reports.nil?
+      end
+      if combined_parsed_report[:header_row].length != combined_parsed_report[:data_rows].first.length
+        raise "HEADER_ROW LENGTH SHOULD EQUAL DATA_ROW.FIRST.LENGTH"
       end
       return combined_parsed_report
     end
@@ -117,6 +118,10 @@ module GoogleAnalytics
           data_row[index] = data_row[index].to_f.round(2)
         end
       when "ga:pageviewsPerSession"
+        parsed_metrics[:data_rows].each do |data_row|
+          data_row[index] = data_row[index].to_f.round(2)
+        end
+      when "ga:percentNewSessions"
         parsed_metrics[:data_rows].each do |data_row|
           data_row[index] = data_row[index].to_f.round(2)
         end

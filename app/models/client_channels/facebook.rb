@@ -35,7 +35,7 @@ class ClientChannels::Facebook < ClientChannel
     rows = { data: [] }
     insights.each do |campaign_insights|
       campaign = FacebookAds::AdCampaign.find(campaign_insights[0])
-      print ">> Facebook & Analytics metrics for campaign: #{campaign.name}  "
+      puts ">> Facebook & Analytics metrics for campaign: #{campaign.name}"
       # Exclude instagram campaigns from the Facebook report
       unless campaign.ad_sets && campaign.ad_sets.first && campaign.ad_sets.first.targeting['publisher_platforms'].include?('instagram')
         # Insights ordered by campaign and date_start 
