@@ -40,7 +40,7 @@ $ foreman start
 
 This app uses sidekiq-status to view the status of Sidekiq's jobs. View this gem's documentation [here](https://github.com/utgarda/sidekiq-status).
 
-To view Sidekiq job status, append `/statuses` to your development URL.
+To view Sidekiq job status, append `/sidekiq` to your development URL.
 
 ## Running tests
 
