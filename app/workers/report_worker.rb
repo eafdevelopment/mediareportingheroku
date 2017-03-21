@@ -25,7 +25,7 @@ class ReportWorker
       # catch failed background jobs and update status
       Rollbar.error(e)
       error_message = e.message
-      puts e
+      puts e.inspect
       puts error_message
       dataset.status = 'failed'
       dataset.status_explanation = error_message
