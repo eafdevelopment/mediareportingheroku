@@ -21,14 +21,12 @@ class ReportWorker
 
       dataset.status = 'done'
       dataset.save!
-    rescue => e
+    rescue => exception
       # catch failed background jobs and update status
-      Rollbar.error(e)
-      error_message = e.details.first[:message]
-      puts e
-      puts error_message
+      puts "> ERROR: " + exception.inspect
+      Rollbar.error(exception)
       dataset.status = 'failed'
-      dataset.status_explanation = error_message
+      dataset.status_explanation = exception.message
       dataset.save
     end
   end 
