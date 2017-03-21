@@ -24,7 +24,7 @@ class ReportWorker
     rescue => e
       # catch failed background jobs and update status
       Rollbar.error(e)
-      error_message = e.details.first[:message]
+      error_message = e.message
       puts e
       puts error_message
       dataset.status = 'failed'
