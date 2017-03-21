@@ -47,18 +47,20 @@ default: &defaults
       campaign_name: 'Campaign Name'
       spend: 'Amount Spent'
       impressions: 'Impressions'
+      frequency: 'Frequency'
       clicks: 'Clicks'
       cpm: 'CPM'
       reach: 'Reach'
       cpp: 'CPP'
       ctr: 'CTR'
       cpc: 'CPC'
-    for_summary:
+  twitter_headers:
+    for_csv:
+      date: 'Date'
+      campaign_name: 'Campaign'
       impressions: 'Impressions'
-      clicks: 'Clicks'
       spend: 'Spend'
-      cpc: 'CPC'
-      ctr: 'CTR'
+      cpm: 'CPM'
   google_analytics_headers:
     for_csv:
       'ga:sessions': 'Sessions'

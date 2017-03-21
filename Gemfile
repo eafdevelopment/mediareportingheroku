@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-# ruby '2.4.0'
+ruby '2.4.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
@@ -46,6 +46,8 @@ gem 'paperclip', '5.1.0'
 gem 'aws-sdk', '2.8.2'
 # For error tracking
 gem 'rollbar'
+# For pagination
+gem 'kaminari'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

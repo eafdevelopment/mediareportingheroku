@@ -1,6 +1,30 @@
 .row
   .small-12.columns.searched
-    %h2 All reports
+    %h2 Reports
+
+- if @generating.any?
+  .row
+    .small-12.columns.report-current
+      %h4.report-generating-title Currently generating the following reports
+      %p.report-generating-title (please refresh to check the status)
+    .small-12.columns
+      %ul.no-bullet
+        - @generating.each do |report| 
+          %li.report-generating
+            %p.report-generating-info 
+              %b Client: 
+              #{report.client_channel.client.name} 
+              %b Channel: 
+              #{report.client_channel.nice_name}
+              %b From: 
+              #{from_date(report)}
+              %b To: 
+              #{to_date(report)}
+            %p.report-generating-time Estimated time for full report to generate: #{estimated_download_time(report)}
+            %p.report-generating-time Started at: #{report.created_at.strftime("%H:%M")}
+.row 
+  .small-12.columns
+    %h4 All reports
 .row
   .small-12.columns
     %table
@@ -13,27 +37,28 @@
       %tbody
         - @reports.each do |report|
           %tr
-            %td= report.created_at.strftime("%d/%m/%Y")
-            - if report.csv.exists?
-              %td
+            %td
+              - if report.status == 'generating'
+                = report.created_at.strftime("%H:%M %d/%m/%Y")
+              - else
+                = report.created_at.strftime("%d/%m/%Y")
+            %td
+              - if report.csv.exists?
                 = link_to download_dataset_path(report) do
                   = report.title
-              %td
-                - if report.status
-                  = report.status
-              %td
-                = link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
-            - else
-              %td
+              - else
                 = report.title
-              %td
-                - if report.status
-                  = report.status
-              %td
-                - if report.status == 'failed'
-                  = link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
+            %td
+              - if report.status == 'failed' && report.status_explanation.present?
+                Failed: #{report.status_explanation} 
+                %b - this error has been logged
+              - else
+                = report.status
+            %td
+              - if report.status != 'generating'
+                = link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
 
-
+    = paginate @reports
             
 
     

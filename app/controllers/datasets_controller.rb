@@ -10,7 +10,8 @@ class DatasetsController < ApplicationController
       # Begin ClientChannel get report method in the background ReportWorker
       job_id = ReportWorker.perform_async(@dataset.id, params[:date_from], params[:date_to])
       @dataset.update(job_id: job_id.to_s)
-      flash[:notice] = "Report generating. Please refresh the page to check it's status"
+      flash[:notice] = "Generating report for '#{cc.client.name}' on #{cc.nice_name}
+      ( from #{params[:date_from]} to #{params[:date_to]} ) Please refresh the page to check it's status"
       redirect_to reports_path and return
     else
       flash[:notice] = "There was a problem creating your report"
