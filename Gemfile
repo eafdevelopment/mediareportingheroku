@@ -25,8 +25,6 @@ gem 'haml-rails', '~> 0.9.0'
 gem 'foreman', '~> 0.83.0'
 # Config variables
 gem 'yappconfig', '~> 0.3.1'
-# Facebook Marketing API integration
-gem 'facebook_ads', '~> 0.1'
 # Google's official Ruby client library for oauth2
 gem 'googleauth', require: 'googleauth'
 # Google Analytics API integration

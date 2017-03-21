@@ -24,9 +24,16 @@ class ReportWorker
     rescue => exception
       # catch failed background jobs and update status
       puts "> ERROR: " + exception.inspect
+      
       Rollbar.error(exception)
       dataset.status = 'failed'
-      dataset.status_explanation = exception.message
+      
+      if exception.try(:response)
+        dataset.status_explanation = JSON.parse(exception.response)["message"]
+      else
+       dataset.status_explanation = exception.message
+      end
+      
       dataset.save
     end
   end 

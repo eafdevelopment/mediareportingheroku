@@ -1,41 +1,51 @@
+require 'rest-client'
+
 class ClientChannels::Facebook < ClientChannel
 
   def generate_report_all_campaigns(from, to)
-    headers = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
+    insight_names = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
     all_metrics = {
       header_row: AppConfig.fb_and_insta_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last)),
       data_rows: []
     }
-    # Find account and all campaigns for that account
-    FacebookAds.access_token = ENV["FACEBOOK_ACCESS_TOKEN"]
-    account = FacebookAds::AdAccount.find(self.uid)
-    
-    account.ad_campaigns(effective_status: ["ACTIVE", "PAUSED"]).each do |campaign|
-      puts "-------------------"
-      puts "> campaign: " + campaign.inspect
-      # Exclude instagram campaigns from the Facebook report
-      unless campaign.ad_sets && campaign.ad_sets.first && campaign.ad_sets.first.targeting['publisher_platforms'].include?('instagram')
-        insights = campaign.ad_insights(range: Date.parse(from)..Date.parse(to))
-        parsed_insights = parse_insights(campaign.name, insights, headers)
-        puts "> parsed_insights: " + parsed_insights.inspect
-        sleep 10
-        # all_metrics[:data_rows].push(parsed_insights)
+
+    begin
+      res = RestClient.get("https://graph.facebook.com/v2.8/#{self.uid}/campaigns", {params: {
+        access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+        fields: "name,id,status",
+        status: ["ACTIVE", "PAUSED", "DELETED", "ARCHIVED"]
+      }})
+      campaigns = JSON.parse(res.body)["data"]
+      campaigns.each_with_index do |campaign, index|
+        # if index < 2
+          puts "---------------------------------"
+          puts "> campaign: " +  campaign.inspect
+          # TODO: check whether this is an Instagram or Facebook campaign, and exclude as required
+          # !
+          res = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/insights", {params: {
+            access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+            time_range: {"since": from, "until": to},
+            fields: insight_names.join(","),
+            time_increment: 1
+          }})
+          campaign_insights = JSON.parse(res)["data"]
+          puts "> campaign_insights: " + campaign_insights.inspect
+          campaign_insights.each do |insights_row|
+            # TODO: exclude date_stop from the row, include a Status field, and concat GA metrics
+            # !
+            all_metrics[:data_rows].push(insights_row.map(&:second))
+          end
+        # end
+      end
+    rescue => e
+      puts "> EXCEPTION: " + e.inspect
+      if e.try(:response) # if API error
+        puts "> " + JSON.parse(e.response).inspect
       end
     end
-    return true
-    
-    # # Getting all insights for an account, at ad level
-    # date_range = Date.parse(from)..Date.parse(to)
-    # all_campaign_insights = account.ad_insights({
-    #   level: 'ad',
-    #   range: date_range,
-    #   time_increment: 1
-    # }).group_by(&:campaign_id)
+    puts "> all_metrics: " + all_metrics.inspect
 
-    # all_rows = parse_insights(all_campaign_insights, headers)
-
-    # all_metrics[:data_rows].concat(all_rows[:data])
-    # return to_csv(all_metrics)
+    return to_csv(all_metrics)
   end
 
   private
@@ -50,8 +60,17 @@ class ClientChannels::Facebook < ClientChannel
     return csv_report
   end
 
-  def parse_insights(campaign_name, insights, headers)
-    rows = { data: [] }
+  def parse_insights(insights, campaign_name, status, insight_names)
+    puts "> parsing insights: " + insights.inspect
+    row = [date, campaign_name, status]
+    insight_names.each do |insight_name|
+      puts "> insight_name: " + insight_name.inspect
+      if insights.any? && insights[insight_name].present?
+        row.push(insight[insight_name])
+      else
+        row.push("")
+      end
+    end
     # fb_row = make_row(headers, insights_for_day)
     # puts "> fb_row: " + fb_row.inspect
     # rows[:data].push(fb_row)
@@ -73,7 +92,8 @@ class ClientChannels::Facebook < ClientChannel
 
     #   # rows[:data].push(fb_row)
     # end
-    return rows
+    puts "> returning row: " + row.inspect
+    return row
   end
 
   def make_row(col_headers, insights)
