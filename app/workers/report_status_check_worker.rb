@@ -18,11 +18,9 @@ class ReportStatusCheckWorker
           job_status = Sidekiq::Status::get_all dataset.job_id
           if job_status.present?
             case job_status
-            when "complete"
-              dataset.update_attributes(status: "done")
             when "working" || "queued"
               # ... leave this dataset's status as "generating"
-            when "failed" || "interrupted"
+            else
               dataset.update_attributes(status: "failed")
             end
           else
