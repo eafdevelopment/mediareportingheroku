@@ -55,8 +55,7 @@
               - else
                 = report.status
             %td
-              - if report.status != 'generating'
-                = link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
+              = link_to "X", dataset_path(report), "data-confirm": "Are you sure you want to delete this report?", method: :delete
 
     = paginate @reports
             
