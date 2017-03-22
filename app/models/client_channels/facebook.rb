@@ -2,6 +2,8 @@ require 'rest-client'
 
 class ClientChannels::Facebook < ClientChannel
 
+  TARGET = "facebook"
+
   def generate_report_all_campaigns(from, to)
     insight_names = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
     all_metrics = {
@@ -10,32 +12,34 @@ class ClientChannels::Facebook < ClientChannel
     }
 
     begin
-      res = RestClient.get("https://graph.facebook.com/v2.8/#{self.uid}/campaigns", {params: {
+      campaigns_res = RestClient.get("https://graph.facebook.com/v2.8/#{self.uid}/campaigns", {params: {
         access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
         fields: "name,id,status",
         status: ["ACTIVE", "PAUSED", "DELETED", "ARCHIVED"]
       }})
-      campaigns = JSON.parse(res.body)["data"]
+      campaigns = JSON.parse(campaigns_res.body)["data"]
       campaigns.each_with_index do |campaign, index|
-        # if index < 2
+        if index < 11
           puts "---------------------------------"
           puts "> campaign: " +  campaign.inspect
-          # TODO: check whether this is an Instagram or Facebook campaign, and exclude as required
-          # !
-          res = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/insights", {params: {
-            access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
-            time_range: {"since": from, "until": to},
-            fields: insight_names.join(","),
-            time_increment: 1
-          }})
-          campaign_insights = JSON.parse(res)["data"]
-          puts "> campaign_insights: " + campaign_insights.inspect
-          campaign_insights.each do |insights_row|
-            # TODO: exclude date_stop from the row, include a Status field, and concat GA metrics
-            # !
-            all_metrics[:data_rows].push(insights_row.map(&:second))
+          # check whether this is a Facebook campaign (not Instagram)
+          if campaign_targeting_correct?(campaign)
+            puts "> facebook campaign"
+            res_insights = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/insights", {params: {
+              access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+              time_range: {"since": from, "until": to},
+              fields: insight_names.join(","),
+              time_increment: 1
+            }})
+            campaign_insights = JSON.parse(res_insights)["data"]
+            campaign_insights.each do |insights|
+              # create the data rows that we need for the CSV
+              all_metrics[:data_rows].push(make_row(insight_names, insights))
+              # TODO: concat GA metrics
+              # !
+            end
           end
-        # end
+        end
       end
     rescue => e
       puts "> EXCEPTION: " + e.inspect
@@ -58,6 +62,19 @@ class ClientChannels::Facebook < ClientChannel
       end
     end
     return csv_report
+  end
+
+  def campaign_targeting_correct?(campaign)
+    res_adsets = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/adsets", {params: {
+      access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+      fields: "id,targeting"
+    }})
+    campaign_adsets = JSON.parse(res_adsets)["data"]
+    if campaign_adsets.first["targeting"]["publisher_platforms"].include?(TARGET)
+      return true
+    else
+      return false
+    end
   end
 
   def parse_insights(insights, campaign_name, status, insight_names)
@@ -97,49 +114,56 @@ class ClientChannels::Facebook < ClientChannel
   end
 
   def make_row(col_headers, insights)
-    # Make a row containing the correct value to match each col_header
+    # Make a row with the correct insight value ordering according to col_headers
     row = []
-    date = nil
-    if valid_date?(insights.first)
-      # If passed a set of insights grouped by date, the first value in 'insights'
-      # will be a date, so update 'insights' to be the 2nd value (the insights array)
-      date = insights.first
-      insights = insights.second
-    end
-
-    # Start putting values into our row
-    col_headers.each do |insight, header|
-      case insight
-      when 'date_start'
-        if date.present? then row.push(date) else row.push('') end
-      when 'account_name'
-        row.push(self.client.name)
-      when 'campaign_name'
-        if insights.first && insights.first.campaign_id
-          campaign = FacebookAds::AdCampaign.find(insights.first.campaign_id)
-          row.push(campaign['name'])
+    col_headers.each do |header|
+      puts "> checking header: " + header.inspect
+      insight = insights[header]
+      puts "> matching insight: " + insight.inspect
+      if insight.present?
+        if header == "date_start" || header == "account_name" || header =="campaign_name"
+          puts ">> don't modify insight"
+          row.push(insights[header])
         else
-          row.push('')
+          puts ">> modify insight" 
+          row.push(insights[header].to_f.round(2).to_s)
         end
-      when 'ctr'
-        # this metric must be calculated later from ga:sessions / impressions
-        row.push('')
-      when 'cpc'
-        # this metric must be calculated later from spend / ga:sessions
-        row.push('')
-      when 'cpm'
-        total_spend = total('spend', insights)
-        impressions_per_thousand = total('impressions', insights)/1000
-        total_spend != 0 && impressions_per_thousand != 0 ? row.push((total_spend / impressions_per_thousand).round(2).to_s) : ''
-      when 'cpp'
-        total_spend = total('spend', insights)
-        total_reach = total('reach', insights)
-        total_spend != 0 && total_reach != 0 ? row.push((total_spend / total_reach).round(5).to_s) : ''
       else
-        row.push(insights.sum{ |i| i[insight].to_f }.round(2).to_s)
+        row.push("")
       end
     end
+    
+    #   case insight
+    #   when 'date_start'
+    #     if date.present? then row.push(date) else row.push('') end
+    #   when 'account_name'
+    #     row.push(self.client.name)
+    #   when 'campaign_name'
+    #     if insights.first && insights.first.campaign_id
+    #       campaign = FacebookAds::AdCampaign.find(insights.first.campaign_id)
+    #       row.push(campaign['name'])
+    #     else
+    #       row.push('')
+    #     end
+    #   when 'ctr'
+    #     # this metric must be calculated later from ga:sessions / impressions
+    #     row.push('')
+    #   when 'cpc'
+    #     # this metric must be calculated later from spend / ga:sessions
+    #     row.push('')
+    #   when 'cpm'
+    #     total_spend = total('spend', insights)
+    #     impressions_per_thousand = total('impressions', insights)/1000
+    #     total_spend != 0 && impressions_per_thousand != 0 ? row.push((total_spend / impressions_per_thousand).round(2).to_s) : ''
+    #   when 'cpp'
+    #     total_spend = total('spend', insights)
+    #     total_reach = total('reach', insights)
+    #     total_spend != 0 && total_reach != 0 ? row.push((total_spend / total_reach).round(5).to_s) : ''
+    #   else
+    #     row.push(insights.sum{ |i| i[insight].to_f }.round(2).to_s)
+    #   end
     row = strip_trailing_zeros(row)
+    puts "> returning row: " + row.inspect
     return row
   end
 
