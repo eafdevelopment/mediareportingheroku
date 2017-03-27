@@ -1,8 +1,4 @@
-require 'rest-client'
-
 class ClientChannels::Facebook < ClientChannel
-
-  TARGET = "facebook"
 
   def generate_report_all_campaigns(from, to)
     insight_names = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
@@ -11,57 +7,39 @@ class ClientChannels::Facebook < ClientChannel
       data_rows: []
     }
 
-    begin
-      campaigns_res = RestClient.get("https://graph.facebook.com/v2.8/#{self.uid}/campaigns", {params: {
-        access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
-        fields: "name,id,status",
-        status: ["ACTIVE", "PAUSED", "DELETED", "ARCHIVED"]
-      }})
-      campaigns = JSON.parse(campaigns_res.body)["data"]
-      campaigns.each_with_index do |campaign, index|
-        if index < 11
-          puts "---------------------------------"
-          puts "> campaign: " +  campaign.inspect
-          # check whether this is a Facebook campaign (not Instagram)
-          if campaign_targeting_correct?(campaign)
-            puts "> facebook campaign"
-            res_insights = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/insights", {params: {
-              access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
-              time_range: {"since": from, "until": to},
-              fields: insight_names.join(","),
-              time_increment: 1
-            }})
-            campaign_insights = JSON.parse(res_insights)["data"]
-            campaign_insights.each do |insights|
-              # create the data rows that we need for the CSV
-              all_metrics[:data_rows].push(make_row(insight_names, insights))
-              # TODO: concat GA metrics
-              # !
-            end
-          end
+    campaigns_res = RestClient.get("https://graph.facebook.com/v2.8/#{self.uid}/campaigns", {params: {
+      access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+      fields: "name,id,status",
+      status: ["ACTIVE", "PAUSED", "DELETED", "ARCHIVED"]
+    }})
+    campaigns = JSON.parse(campaigns_res.body)["data"]
+
+    campaigns.each_with_index do |campaign, index|
+      # check whether this campaign is targeting the correct platform
+      if campaign_targeting_correct?(campaign)
+        res_insights = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/insights", {params: {
+          access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+          time_range: {"since": from, "until": to},
+          fields: insight_names.join(","),
+          time_increment: 1
+        }})
+        campaign_insights = JSON.parse(res_insights)["data"]
+        # create the data row for each insight that we need for the CSV
+        campaign_insights.each do |insights|
+          fb_fields = make_row(insight_names, insights)
+          ga_fields = GoogleAnalytics.fetch_and_parse_metrics(insights["date_start"], insights["date_stop"], self.client.google_analytics_view_id, insights["campaign_name"])[:data_rows][0]
+          all_metrics[:data_rows].push(fb_fields + ga_fields)
         end
       end
-    rescue => e
-      puts "> EXCEPTION: " + e.inspect
-      if e.try(:response) # if API error
-        puts "> " + JSON.parse(e.response).inspect
-      end
     end
-    puts "> all_metrics: " + all_metrics.inspect
 
     return to_csv(all_metrics)
   end
 
   private
 
-  def to_csv(all_metrics)
-    csv_report = CSV.generate do |csv|
-      csv << all_metrics[:header_row]
-      all_metrics[:data_rows].each do |data_row|
-        csv << data_row
-      end
-    end
-    return csv_report
+  def targeting_platform
+    "facebook"
   end
 
   def campaign_targeting_correct?(campaign)
@@ -70,62 +48,22 @@ class ClientChannels::Facebook < ClientChannel
       fields: "id,targeting"
     }})
     campaign_adsets = JSON.parse(res_adsets)["data"]
-    if campaign_adsets.first["targeting"]["publisher_platforms"].include?(TARGET)
+    if campaign_adsets.present? && campaign_adsets.any? && campaign_adsets.first["targeting"]["publisher_platforms"].include?(targeting_platform)
       return true
     else
       return false
     end
   end
 
-  def parse_insights(insights, campaign_name, status, insight_names)
-    puts "> parsing insights: " + insights.inspect
-    row = [date, campaign_name, status]
-    insight_names.each do |insight_name|
-      puts "> insight_name: " + insight_name.inspect
-      if insights.any? && insights[insight_name].present?
-        row.push(insight[insight_name])
-      else
-        row.push("")
-      end
-    end
-    # fb_row = make_row(headers, insights_for_day)
-    # puts "> fb_row: " + fb_row.inspect
-    # rows[:data].push(fb_row)
-    # insights.each do |insights_for_day|
-    #   # puts "> insights_for_day: " + insights_for_day.inspect
-      
-    #   #   # Insights ordered by campaign and date_start 
-    #   #   insights_ordered_by_date = campaign_insights[1].group_by(&:date_start)
-    #   #   insights_ordered_by_date.each do |day_insights|
-        
-    #   # # Facebook metrics for single row (one campaign, one day)
-    #   # fb_row = make_row(headers, insights_for_day)
-
-    #   # # GA metrics for single row (one campaign, one day)
-    #   # ga_row = GoogleAnalytics.fetch_and_parse_metrics(fb_row.first, fb_row.first, self.client.google_analytics_view_id, campaign_name)
-          
-    #   # # Create row of FB & GA campaign metrics if there are any
-    #   # ga_row[:data_rows].any? ? campaign_row = fb_row.concat(ga_row[:data_rows].first) : campaign_row = fb_row
-
-    #   # rows[:data].push(fb_row)
-    # end
-    puts "> returning row: " + row.inspect
-    return row
-  end
-
   def make_row(col_headers, insights)
     # Make a row with the correct insight value ordering according to col_headers
     row = []
     col_headers.each do |header|
-      puts "> checking header: " + header.inspect
       insight = insights[header]
-      puts "> matching insight: " + insight.inspect
       if insight.present?
         if header == "date_start" || header == "account_name" || header =="campaign_name"
-          puts ">> don't modify insight"
           row.push(insights[header])
         else
-          puts ">> modify insight" 
           row.push(insights[header].to_f.round(2).to_s)
         end
       else
@@ -163,7 +101,6 @@ class ClientChannels::Facebook < ClientChannel
     #     row.push(insights.sum{ |i| i[insight].to_f }.round(2).to_s)
     #   end
     row = strip_trailing_zeros(row)
-    puts "> returning row: " + row.inspect
     return row
   end
 
@@ -208,5 +145,15 @@ class ClientChannels::Facebook < ClientChannel
     end
 
     return all_metrics_with_calculations
+  end
+
+  def to_csv(all_metrics)
+    csv_report = CSV.generate do |csv|
+      csv << all_metrics[:header_row]
+      all_metrics[:data_rows].each do |data_row|
+        csv << data_row
+      end
+    end
+    return csv_report
   end
 end
