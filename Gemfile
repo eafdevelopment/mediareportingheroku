@@ -25,8 +25,8 @@ gem 'haml-rails', '~> 0.9.0'
 gem 'foreman', '~> 0.83.0'
 # Config variables
 gem 'yappconfig', '~> 0.3.1'
-# Facebook Marketing API integration
-gem 'facebook_ads', '~> 0.1'
+# for general API calls
+gem 'rest-client', require: 'rest-client'
 # Google's official Ruby client library for oauth2
 gem 'googleauth', require: 'googleauth'
 # Google Analytics API integration
@@ -39,6 +39,10 @@ gem 'twitter-ads', '~> 1.0.0'
 gem 'sidekiq', '~> 4.2.9'
 # For tracking status of background jobs
 gem 'sidekiq-status'
+# For scheduling cron-like jobs
+gem "sidekiq-cron", "~> 0.4.0"
+# For allowing only one of each job type in the job queue
+gem 'sidekiq-unique-jobs', "~> 4.0.18"
 # Sidekiq web for monitoring sidekiq processes
 gem 'sinatra', github: 'sinatra/sinatra', require: false
 # For storing CSV reports

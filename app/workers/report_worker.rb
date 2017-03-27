@@ -21,14 +21,20 @@ class ReportWorker
 
       dataset.status = 'done'
       dataset.save!
-    rescue => e
+    rescue => exception
       # catch failed background jobs and update status
-      Rollbar.error(e)
-      error_message = e.message
-      puts e.inspect
-      puts error_message
       dataset.status = 'failed'
-      dataset.status_explanation = error_message
+      api_response = exception.try(:response)
+      
+      if api_response # if exception from Facebook API error
+        parsed_response = JSON.parse(api_response)
+        dataset.status_explanation = parsed_response["message"]
+        Rollbar.error(parsed_response)
+      else
+        dataset.status_explanation = exception.message
+        Rollbar.error(e)
+      end
+      
       dataset.save
     end
   end 

@@ -1,6 +1,11 @@
 require 'sidekiq'
 require 'sidekiq-status'
 
+Sidekiq.default_worker_options = {
+  unique: :until_executing,
+  unique_args: ->(args) { [ args.first.except('job_id') ] }
+}
+
 Sidekiq.configure_client do |config|
   config.client_middleware do |chain|
     # accepts :expiration (optional)

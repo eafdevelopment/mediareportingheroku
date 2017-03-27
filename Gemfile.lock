@@ -96,9 +96,6 @@ GEM
       railties (>= 3.2, < 5.1)
     erubis (2.7.0)
     execjs (2.7.0)
-    facebook_ads (0.1.11)
-      hashie (~> 3.4)
-      rest-client (>= 1.6)
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.5.0)
@@ -286,6 +283,8 @@ GEM
     rb-inotify (0.9.8)
       ffi (>= 0.5.0)
     redis (3.3.3)
+    redis-namespace (1.5.3)
+      redis (~> 3.0, >= 3.0.4)
     representable (3.0.3)
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
@@ -320,6 +319,8 @@ GEM
     rspec-support (3.5.0)
     ruby_parser (3.8.4)
       sexp_processor (~> 4.1)
+    rufus-scheduler (3.3.4)
+      tzinfo
     sass (3.4.23)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
@@ -334,8 +335,15 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
       redis (~> 3.2, >= 3.2.1)
+    sidekiq-cron (0.4.5)
+      redis-namespace (>= 1.5.2)
+      rufus-scheduler (>= 2.0.24)
+      sidekiq (>= 4.2.1)
     sidekiq-status (0.6.0)
       sidekiq (>= 2.7)
+    sidekiq-unique-jobs (4.0.18)
+      sidekiq (>= 2.6)
+      thor
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -403,7 +411,6 @@ DEPENDENCIES
   byebug
   capybara
   dotenv-rails
-  facebook_ads (~> 0.1)
   factory_girl_rails (~> 4.5.0)
   foreman (~> 0.83.0)
   foundation-rails (~> 6.2.3.0)
@@ -421,11 +428,14 @@ DEPENDENCIES
   pg
   puma (~> 3.0)
   rails (~> 5.0.0, >= 5.0.0.1)
+  rest-client
   rollbar
   rspec-rails
   sass-rails (~> 5.0)
   sidekiq (~> 4.2.9)
+  sidekiq-cron (~> 0.4.0)
   sidekiq-status
+  sidekiq-unique-jobs (~> 4.0.18)
   sinatra!
   spring
   spring-commands-rspec

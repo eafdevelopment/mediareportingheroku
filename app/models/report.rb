@@ -1,6 +1,6 @@
 # This module puts together the requested metric names and values from each API,
-# returning an object with a header_row and an array of 1+ data rows ready to display
-# in the view (as a summary) or to turn into a CSV
+# returning an object with a header_row and an array of 1+ data rows ready to
+# display in the view (as a summary) or to turn into a CSV
 
 module Report
 
