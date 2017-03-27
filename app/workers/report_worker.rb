@@ -26,7 +26,7 @@ class ReportWorker
       dataset.status = 'failed'
       api_response = exception.try(:response)
       
-      if api_response # if exception from API error
+      if api_response # if exception from Facebook API error
         parsed_response = JSON.parse(api_response)
         dataset.status_explanation = parsed_response["message"]
         Rollbar.error(parsed_response)

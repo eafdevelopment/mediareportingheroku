@@ -3,26 +3,22 @@ require 'twitter-ads'
 class ClientChannels::Twitter < ClientChannel
 
   def generate_report_all_campaigns(from, to)
-
     client = twitter_credentials
     account = client.accounts(self.uid)
     headers = AppConfig.twitter_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last))
 
-    # Add a day before the search query because Twitter only accepts date
-    # params with time set at midnight, so first date isn't included in metrics
-    # Then remove added day from dates array
-    from = format_date(from)
-    to = (format_date(to)) #+ 1.day
-    puts from
-    puts to
-    puts from.iso8601
-    puts to.iso8601
-    dates_array = (from..(to + 1.hour)).map{ |date| date.strftime("%d-%m-%Y") }
+    # Subtract a day to start from midnight on the day before the
+    # requested date range (e.g. if 10th-16th is requested, we want
+    # to start from midnight on the 9th)
+    from = format_date(from, account.timezone) - 1.day
+    to = (format_date(to, account.timezone))
 
     # Getting metrics from Twitter Ads Ruby SDK
     api_metrics = get_twitter_metrics(account, from, to)
 
     # Arranging data with dates, campaign & metrics
+    # (undoing the previous subtraction from the 'from' date)
+    dates_array = ((from+1.day)..to).map{ |date| date.strftime("%d-%m-%Y") }
     report_metrics = format_twitter_metrics(api_metrics, dates_array)
 
     # Getting report rows and returning a CSV
@@ -52,10 +48,9 @@ class ClientChannels::Twitter < ClientChannel
     )
   end
 
-  def format_date(date_string)
-    now = DateTime.now 
+  def format_date(date_string, timezone)
     datetime = Time.parse(date_string)
-    return DateTime.new(datetime.year, datetime.month, datetime.day, 0, 0, 0, now.zone)
+    return DateTime.new(datetime.year, datetime.month, datetime.day, 0, 0, 0, timezone)
   end
 
   def get_twitter_metrics(account, from, to)
