@@ -42,6 +42,14 @@ This app uses sidekiq-status to view the status of Sidekiq's jobs. View this gem
 
 To view Sidekiq job status, append `/sidekiq` to your development URL.
 
+The app also uses sidekiq-unique-jobs to allow only one job of each type to be in the queue at one time.
+
+This gem comes with helper methods to view and manage unique job keys. To view them, run:
+
+```bash
+$ bundle exec jobs
+```
+
 ## Running tests
 
 ```bash

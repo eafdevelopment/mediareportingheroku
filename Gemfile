@@ -41,6 +41,8 @@ gem 'sidekiq', '~> 4.2.9'
 gem 'sidekiq-status'
 # For scheduling cron-like jobs
 gem "sidekiq-cron", "~> 0.4.0"
+# For allowing only one of each job type in the job queue
+gem 'sidekiq-unique-jobs', "~> 4.0.18"
 # Sidekiq web for monitoring sidekiq processes
 gem 'sinatra', github: 'sinatra/sinatra', require: false
 # For storing CSV reports
