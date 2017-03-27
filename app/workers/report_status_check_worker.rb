@@ -21,11 +21,11 @@ class ReportStatusCheckWorker
             when "working" || "queued"
               # ... leave this dataset's status as "generating"
             else
-              dataset.update_attributes(status: "failed")
+              dataset.update_attributes(status: "failed", status_explanation: "Background job lost.")
             end
           else
             # if no CSV and no job in Sidekiq, dataset is "failed"
-            dataset.update_attributes(status: "failed")
+            dataset.update_attributes(status: "failed", status_explanation: "Background job lost.")
           end
         end
       end
