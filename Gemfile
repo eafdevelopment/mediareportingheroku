@@ -39,6 +39,8 @@ gem 'twitter-ads', '~> 1.0.0'
 gem 'sidekiq', '~> 4.2.9'
 # For tracking status of background jobs
 gem 'sidekiq-status'
+# For scheduling cron-like jobs
+gem "sidekiq-cron", "~> 0.4.0"
 # Sidekiq web for monitoring sidekiq processes
 gem 'sinatra', github: 'sinatra/sinatra', require: false
 # For storing CSV reports
