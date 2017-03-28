@@ -57,7 +57,9 @@ default: &defaults
   twitter_headers:
     for_csv:
       date: 'Date'
+      account_name: 'Account'
       campaign_name: 'Campaign'
+      status: 'Status'
       impressions: 'Impressions'
       spend: 'Spend'
       cpm: 'CPM'

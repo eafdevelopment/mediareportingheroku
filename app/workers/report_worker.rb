@@ -30,8 +30,11 @@ class ReportWorker
         parsed_response = JSON.parse(api_response)
         dataset.status_explanation = parsed_response["message"]
         Rollbar.error(parsed_response)
-      else
+      elsif exception.try(:message)
         dataset.status_explanation = exception.message
+        Rollbar.error(e)
+      else
+        dataset.status_explanation = e.inspect
         Rollbar.error(e)
       end
       
