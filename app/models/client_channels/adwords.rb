@@ -1,41 +1,47 @@
 class ClientChannels::Adwords < ClientChannel
 
   def generate_report_all_campaigns(from_date, to_date)
-    # Get data for all the campaigns for this account
-    report_main = get_and_parse_report_main(from_date, to_date)
-    puts "> report_main rows: " + report_main.length.inspect
+    begin
+      # Get data for all the campaigns for this account
+      report_main = get_and_parse_report_main(from_date, to_date)
 
-    # Get a separate report containing quality score data
-    report_quality_score = get_and_parse_report_quality_score(from_date, to_date)
+      # Get a separate report containing quality score data
+      report_quality_score = get_and_parse_report_quality_score(from_date, to_date)
 
-    # Get a separate report containing all conversions data
-    report_conversions = get_and_parse_report_conversions(from_date, to_date)
-    # And an array of all possible conversion column headers
-    conversion_col_headers = get_and_parse_conversion_headers
-    
-    # Ready to combine main report data, conversion report data & GA data
-    header_row = AppConfig.adwords_headers.main_report.map(&:second).concat(["Quality Score (AdGroup Avg.)"]).concat(conversion_col_headers).concat(AppConfig.google_analytics_headers.for_csv.map(&:second))
-    combined_data_rows = []
-    report_main.each do |row|
-      associated_quality_scores = report_quality_score.select{|quality_score| quality_score["Day"] == row["Day"] && quality_score["Campaign ID"] == row["Campaign ID"]}
-      avg_quality_score = quality_score_avg_adgroup(associated_quality_scores)
-      associated_conversions = report_conversions.select{|conversion| conversion["Day"] == row["Day"] && conversion["Campaign ID"] == row["Campaign ID"]}
-      conversion_data_fields = create_conversion_data_fields(conversion_col_headers, associated_conversions)
-      ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
-      if ga_data[:data_rows].first # if GA data present, concat it
-        row = row.map{|k,v| v}.push(avg_quality_score).concat(conversion_data_fields).concat(ga_data[:data_rows].first)
-      else # if not, concat the correct number of "-"s
-        row = row.map{|k,v| v}.push(avg_quality_score).concat(conversion_data_fields).concat(AppConfig.google_analytics_headers.for_csv.map{|header| "-"})
+      # Get a separate report containing all conversions data
+      report_conversions = get_and_parse_report_conversions(from_date, to_date)
+      # And an array of all possible conversion column headers
+      conversion_col_headers = get_and_parse_conversion_headers
+      
+      # Ready to combine main report data, conversion report data & GA data
+      header_row = AppConfig.adwords_headers.main_report.map(&:second).concat(["Quality Score (AdGroup Avg.)"]).concat(conversion_col_headers).concat(AppConfig.google_analytics_headers.for_csv.map(&:second))
+      combined_data_rows = []
+      report_main.each do |row|
+        associated_quality_scores = report_quality_score.select{|quality_score| quality_score["Day"] == row["Day"] && quality_score["Campaign ID"] == row["Campaign ID"]}
+        avg_quality_score = quality_score_avg_adgroup(associated_quality_scores)
+        associated_conversions = report_conversions.select{|conversion| conversion["Day"] == row["Day"] && conversion["Campaign ID"] == row["Campaign ID"]}
+        conversion_data_fields = create_conversion_data_fields(conversion_col_headers, associated_conversions)
+        ga_data = GoogleAnalytics.fetch_and_parse_metrics(row["Day"], row["Day"], self.client.google_analytics_view_id, row["Campaign"])
+        if ga_data[:data_rows].first # if GA data present, concat it
+          row = row.map{|k,v| v}.push(avg_quality_score).concat(conversion_data_fields).concat(ga_data[:data_rows].first)
+        else # if not, concat the correct number of "-"s
+          row = row.map{|k,v| v}.push(avg_quality_score).concat(conversion_data_fields).concat(AppConfig.google_analytics_headers.for_csv.map{|header| "-"})
+        end
+        if row.length != header_row.length
+          return { error: "Header row and first data row lengths do not match." }
+        end
+        combined_data_rows.push(row)
       end
-      if row.length != header_row.length
-        raise "HEADER ROW LENGTH SHOULD EQUAL FIRST DATA ROW LENGTH"
-      end
-      combined_data_rows.push(row)
-      puts "> data row appended"
+
+      combined_data_rows.unshift(header_row)
+      return { csv: combined_data_rows.map{ |row| row.to_csv }.join("") }
+
+    rescue => e
+      # if a problem occurs, log the exception to Rollbar and return a
+      # message to ReportWorker to put in the dataset's status explanation
+      Rollbar.log(e)
+      return { error: (e.try(:message) || e.try(:response) || e.inspect) }
     end
-    combined_data_rows.unshift(header_row)
-
-    return combined_data_rows.map{ |row| row.to_csv }.join("")
   end
 
   private

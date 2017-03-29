@@ -1,39 +1,46 @@
 class ClientChannels::Facebook < ClientChannel
 
   def generate_report_all_campaigns(from, to)
-    insight_names = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
-    all_metrics = {
-      header_row: AppConfig.fb_and_insta_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last)),
-      data_rows: []
-    }
+    begin
+      insight_names = AppConfig.fb_and_insta_headers.for_csv.map(&:first)
+      all_metrics = {
+        header_row: AppConfig.fb_and_insta_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last)),
+        data_rows: []
+      }
 
-    campaigns_res = RestClient.get("https://graph.facebook.com/v2.8/#{self.uid}/campaigns", {params: {
-      access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
-      fields: "name,id,status",
-      status: ["ACTIVE", "PAUSED", "DELETED", "ARCHIVED"]
-    }})
-    campaigns = JSON.parse(campaigns_res.body)["data"]
+      campaigns_res = RestClient.get("https://graph.facebook.com/v2.8/#{self.uid}/campaigns", {params: {
+        access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+        fields: "name,id,status",
+        status: ["ACTIVE", "PAUSED", "DELETED", "ARCHIVED"]
+      }})
+      campaigns = JSON.parse(campaigns_res.body)["data"]
 
-    campaigns.each_with_index do |campaign, index|
-      # check whether this campaign is targeting the correct platform
-      if campaign_targeting_correct?(campaign)
-        res_insights = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/insights", {params: {
-          access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
-          time_range: {"since": from, "until": to},
-          fields: insight_names.join(","),
-          time_increment: 1
-        }})
-        campaign_insights = JSON.parse(res_insights)["data"]
-        # create the data row for each insight that we need for the CSV
-        campaign_insights.each do |insights|
-          fb_fields = make_row(insight_names, insights)
-          ga_fields = GoogleAnalytics.fetch_and_parse_metrics(insights["date_start"], insights["date_stop"], self.client.google_analytics_view_id, insights["campaign_name"])[:data_rows][0]
-          all_metrics[:data_rows].push(fb_fields + ga_fields)
+      campaigns.each_with_index do |campaign, index|
+        # check whether this campaign is targeting the correct platform
+        if campaign_targeting_correct?(campaign)
+          res_insights = RestClient.get("https://graph.facebook.com/v2.8/#{campaign["id"]}/insights", {params: {
+            access_token: ENV["FACEBOOK_ACCESS_TOKEN"],
+            time_range: {"since": from, "until": to},
+            fields: insight_names.join(","),
+            time_increment: 1
+          }})
+          campaign_insights = JSON.parse(res_insights)["data"]
+          # create the data row for each insight that we need for the CSV
+          campaign_insights.each do |insights|
+            fb_fields = make_row(insight_names, insights)
+            ga_fields = GoogleAnalytics.fetch_and_parse_metrics(insights["date_start"], insights["date_stop"], self.client.google_analytics_view_id, insights["campaign_name"])[:data_rows][0]
+            all_metrics[:data_rows].push(fb_fields + ga_fields)
+          end
         end
       end
-    end
+      return { csv: to_csv(all_metrics) }
 
-    return to_csv(all_metrics)
+    rescue => e
+      # if a problem occurs, log the exception to Rollbar and return a
+      # message to ReportWorker to put in the dataset's status explanation
+      Rollbar.log(e)
+      return { error: (e.try(:message) || e.try(:response) || e.inspect) }
+    end
   end
 
   private

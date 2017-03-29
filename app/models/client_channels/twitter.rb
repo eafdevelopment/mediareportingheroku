@@ -8,34 +8,49 @@ class ClientChannels::Twitter < ClientChannel
     headers = AppConfig.twitter_headers.for_csv.map(&:last).concat(AppConfig.google_analytics_headers.for_csv.map(&:last))
     from = format_date(from, account.timezone)
     to = format_date(to, account.timezone)
-    dates_array = from..to
+    dates_array = (from..to).to_a
 
     # Getting metrics from Twitter Ads Ruby SDK, fetching one
     # block of stats per date to bypass 7-day limits
     data_rows = []
     campaigns = get_campaigns(self.uid)
-    campaigns.each do |campaign|
-      puts "> getting stats for campaign: #{campaign[:name]}"
-      dates_array.each do |date|
-        date_string = date.strftime('%Y-%m-%d')
-        stats = get_stats(campaign[:id], date, date+1.day)
-        impressions = begin stats.first[:id_data].first[:metrics][:impressions].first rescue nil end
-        total_spend = begin stats.first[:id_data].first[:metrics][:billed_charge_local_micro].first rescue nil end
-        billed_spend = total_spend ? (total_spend.to_f/1000000).round(2) : nil
-        ga_data = GoogleAnalytics.fetch_and_parse_metrics(date_string, date_string, self.client.google_analytics_view_id, campaign[:name])
-        data_rows.push(
-          [ date_string,
-            account.name,
-            campaign[:name],
-            campaign[:entity_status],
-            (impressions ? impressions : '-'),
-            (billed_spend ? billed_spend : '-'),
-            calculate_cpm(billed_spend, impressions)
-          ].concat(ga_data[:data_rows].first)
-        )
-      end
+
+    total_requests = campaigns.count * dates_array.length
+    # plus 1 request for the account and 1 request for its campaigns
+    if total_requests > 240 # rate limit is 250
+      return { error: "This report request would exceed the API's rate limit. Please try requesting a shorter report, e.g. 7 days." }
     end
-    return to_csv(headers, data_rows)
+
+    begin
+      campaigns.each do |campaign|
+        puts "> getting stats for campaign: #{campaign[:name]}"
+        dates_array.each do |date|
+          date_string = date.strftime('%Y-%m-%d')
+          stats = get_stats(campaign[:id], date, date+1.day)
+          impressions = begin stats.first[:id_data].first[:metrics][:impressions].first rescue nil end
+          total_spend = begin stats.first[:id_data].first[:metrics][:billed_charge_local_micro].first rescue nil end
+          billed_spend = total_spend ? (total_spend.to_f/1000000).round(2) : nil
+          ga_data = GoogleAnalytics.fetch_and_parse_metrics(date_string, date_string, self.client.google_analytics_view_id, campaign[:name])
+          data_rows.push(
+            [ date_string,
+              account.name,
+              campaign[:name],
+              campaign[:entity_status],
+              (impressions ? impressions : '-'),
+              (billed_spend ? billed_spend : '-'),
+              calculate_cpm(billed_spend, impressions)
+            ].concat(ga_data[:data_rows].first)
+          )
+        end
+      end
+      return { csv: to_csv(headers, data_rows) }
+    
+    rescue => e
+      # if a problem occurs, log the exception to Rollbar and return a
+      # message to ReportWorker to put in the dataset's status explanation
+      Rollbar.log(e)
+      return { error: (e.try(:message) || e.try(:response) || e.inspect) }
+    end
   end
 
   private

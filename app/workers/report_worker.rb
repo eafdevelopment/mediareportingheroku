@@ -6,40 +6,24 @@ class ReportWorker
   def perform(report_id, from, to)
     dataset = Dataset.find(report_id)
     cc = dataset.client_channel
-    job_id = dataset.job_id
 
-    begin
-      # store csv as dataset attachment
-      report_data = cc.generate_report_all_campaigns(from, to)
-      csv_file = StringIO.new(report_data)
+    # attempt to fetch report data
+    report_data_result = cc.generate_report_all_campaigns(from, to)
 
+    if report_data_result[:error].present?
+      # report fetch failed, so update dataset accordingly
+      dataset.status = 'failed'
+      dataset.status_explanation = report_data_result[:error]
+    elsif report_data_result[:csv].present?
+      # fetched report data, so store csv as dataset attachment
+      csv_file = StringIO.new(report_data_result[:csv])
       dataset.csv = csv_file
       dataset.csv_content_type = 'text/csv'
       dataset.csv_file_name = dataset.title
-      job_status = Sidekiq::Status::get_all job_id
-      puts job_status
-
       dataset.status = 'done'
-      dataset.save!
-    rescue => exception
-      # catch failed background jobs and update status
-      dataset.status = 'failed'
-      api_response = exception.try(:response)
-      
-      if api_response # if exception from Facebook API error
-        parsed_response = JSON.parse(api_response)
-        dataset.status_explanation = parsed_response["message"]
-        Rollbar.error(parsed_response)
-      elsif exception.try(:message)
-        dataset.status_explanation = exception.message
-        Rollbar.error(e)
-      else
-        dataset.status_explanation = e.inspect
-        Rollbar.error(e)
-      end
-      
-      dataset.save
     end
+    
+    dataset.save!
   end 
 
 end

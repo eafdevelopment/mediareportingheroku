@@ -52,7 +52,7 @@
               %td
                 - if report.status == 'failed' && report.status_explanation.present?
                   Failed: #{report.status_explanation}
-                  %b - this error has been logged
+                  %b This error has been logged.
                 - else
                   = report.status
               %td
