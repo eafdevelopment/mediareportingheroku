@@ -37,6 +37,6 @@ end
 
 Sidekiq::Cron::Job.create(
   class: 'ReportStatusCheckWorker',
-  cron: '0 0 * * *',
+  cron: '0 * * * *',
   name: 'Report Status Check Worker - every hour'
 )
