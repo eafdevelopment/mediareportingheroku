@@ -39,7 +39,6 @@ class ClientChannels::Twitter < ClientChannel
                 gz.each_line do |line|
                   parsed_line = JSON.parse(line)
                   all_stats = parsed_line["data"]
-                  # puts "> all_stats: " + all_stats.inspect
                   all_stats.each do |stats|
                     metrics = stats["id_data"].first["metrics"]
                     puts "> metrics: " + metrics.inspect
